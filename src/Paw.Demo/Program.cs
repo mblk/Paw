@@ -109,6 +109,6 @@ public static class Program
 
         Console.WriteLine("after mainloop");
 
-
+        Environment.Exit(0);
     }
 }

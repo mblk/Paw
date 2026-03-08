@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>
+  <Project Path="src/Paw.BindingGen/Paw.BindingGen.csproj" />
   <Project Path="src/Paw.Core/Paw.Core.csproj" />
   <Project Path="src/Paw.Demo/Paw.Demo.csproj" />
 </Solution>

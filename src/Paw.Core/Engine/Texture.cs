@@ -46,11 +46,11 @@ public unsafe class Texture : Asset, IDisposable
 
         _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, texId);
 
-        //_gl.TexParameterI(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MIN_FILTER, (int)GL.TextureMinFilter.LINEAR);
-        _gl.TexParameterI(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MIN_FILTER, (int)GL.TextureMinFilter.LINEAR_MIPMAP_LINEAR);
-        _gl.TexParameterI(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MAG_FILTER, (int)GL.TextureMinFilter.LINEAR);
-        _gl.TexParameterI(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_WRAP_S, (int)GL.TextureWrapMode.CLAMP_TO_EDGE);
-        _gl.TexParameterI(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_WRAP_T, (int)GL.TextureWrapMode.CLAMP_TO_EDGE);
+        //_gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MIN_FILTER, (int)GL.TextureMinFilter.LINEAR);
+        _gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MIN_FILTER, (int)GL.TextureMinFilter.LINEAR_MIPMAP_LINEAR);
+        _gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MAG_FILTER, (int)GL.TextureMinFilter.LINEAR);
+        _gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_WRAP_S, (int)GL.TextureWrapMode.CLAMP_TO_EDGE);
+        _gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_WRAP_T, (int)GL.TextureWrapMode.CLAMP_TO_EDGE);
 
         fixed (void* pData = data)
         {

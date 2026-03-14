@@ -72,9 +72,9 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
 
             switch (attribInfo)
             {
-                case AttribInfo info: gl.VertexAttribPointer(field.Index, info.Components, info.Type, info.Normalized, stride, field.Offset); break;
-                case IAttribInfo info: gl.VertexAttribIPointer(field.Index, info.Components, info.Type, stride, field.Offset); break;
-                case LAttribInfo info: gl.VertexAttribLPointer(field.Index, info.Components, info.Type, stride, field.Offset); break;
+                case AttribInfo info: gl.VertexAttribPointer(field.Index, info.Components, info.Type, info.Normalized ? (byte)1 : (byte)0, stride, (void*)field.Offset); break;
+                case IAttribInfo info: gl.VertexAttribIPointer(field.Index, info.Components, info.Type, stride, (void*)field.Offset); break;
+                case LAttribInfo info: gl.VertexAttribLPointer(field.Index, info.Components, info.Type, stride, (void*)field.Offset); break;
                 default: throw new NotImplementedException();
             }
         }
@@ -97,7 +97,7 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
         _gl.BindVertexArray(0);
     }
 
-    public void Draw(GL.PrimitiveType mode, int first, uint count)
+    public void Draw(GL.PrimitiveType mode, int first, int count)
     {
         _gl.DrawArrays(mode, first, count);
     }

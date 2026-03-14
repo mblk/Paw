@@ -223,7 +223,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             _material1.SetUniform("uMVP", mvp);
             
             _vertexArrayObject.Bind();
-            _vertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, (uint)_vertexBuffer.Count);
+            _vertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _vertexBuffer.Count);
             _vertexArrayObject.Unbind();
 
             _material1.Unbind();
@@ -246,7 +246,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
                 _textureShader.SetUniform("uTex", 0);
                 {
                     _textureVertexArrayObject.Bind();
-                    _textureVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, (uint)_textureVertexBuffer.Count);
+                    _textureVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _textureVertexBuffer.Count);
                     _textureVertexArrayObject.Unbind();
                 }
                 _textureShader.Unuse();
@@ -272,11 +272,11 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
                     {
                         _fontShader.SetUniform("uPass1", 1.0f);
                         _fontShader.SetUniform("uPass2", 0.0f);
-                        _fontVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, (uint)_fontVertexBuffer.Count);
+                        _fontVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _fontVertexBuffer.Count);
 
                         _fontShader.SetUniform("uPass1", 0.0f);
                         _fontShader.SetUniform("uPass2", 1.0f);
-                        _fontVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, (uint)_fontVertexBuffer.Count);
+                        _fontVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _fontVertexBuffer.Count);
                     }
                     _fontVertexArrayObject.Unbind();
                 }

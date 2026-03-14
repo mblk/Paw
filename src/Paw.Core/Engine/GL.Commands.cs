@@ -4,14 +4,14 @@ using System.Runtime.CompilerServices;
 
 namespace Paw.Core.Engine;
 
-public unsafe partial class GL2
+public unsafe partial class GL
 {
     private delegate* unmanaged[Cdecl]<TriangleFace, void> _cullFace;
     private delegate* unmanaged[Cdecl]<FrontFaceDirection, void> _frontFace;
     private delegate* unmanaged[Cdecl]<HintTarget, HintMode, void> _hint;
     private delegate* unmanaged[Cdecl]<float, void> _lineWidth;
     private delegate* unmanaged[Cdecl]<float, void> _pointSize;
-    private delegate* unmanaged[Cdecl]<TriangleFace, PolygonMode, void> _polygonMode;
+    private delegate* unmanaged[Cdecl]<TriangleFace, PolygonModeEnum, void> _polygonMode;
     private delegate* unmanaged[Cdecl]<int, int, int, int, void> _scissor;
     private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float, void> _texParameterf;
     private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float*, void> _texParameterfv;
@@ -32,9 +32,9 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<void> _finish;
     private delegate* unmanaged[Cdecl]<void> _flush;
     private delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, void> _blendFunc;
-    private delegate* unmanaged[Cdecl]<LogicOp, void> _logicOp;
+    private delegate* unmanaged[Cdecl]<LogicOpEnum, void> _logicOp;
     private delegate* unmanaged[Cdecl]<StencilFunction, int, uint, void> _stencilFunc;
-    private delegate* unmanaged[Cdecl]<StencilOp, StencilOp, StencilOp, void> _stencilOp;
+    private delegate* unmanaged[Cdecl]<StencilOpEnum, StencilOpEnum, StencilOpEnum, void> _stencilOp;
     private delegate* unmanaged[Cdecl]<DepthFunction, void> _depthFunc;
     private delegate* unmanaged[Cdecl]<PixelStoreParameter, float, void> _pixelStoref;
     private delegate* unmanaged[Cdecl]<PixelStoreParameter, int, void> _pixelStorei;
@@ -45,7 +45,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<ErrorCode> _getError;
     private delegate* unmanaged[Cdecl]<GetPName, float*, void> _getFloatv;
     private delegate* unmanaged[Cdecl]<GetPName, int*, void> _getIntegerv;
-    private delegate* unmanaged[Cdecl]<StringName, byte> _getString;
+    private delegate* unmanaged[Cdecl]<StringName, byte*> _getString;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, void*, void> _getTexImage;
     private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, float*, void> _getTexParameterfv;
     private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void> _getTexParameteriv;
@@ -147,18 +147,18 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<uint, FramebufferAttachment, RenderbufferTarget, uint, void> _namedFramebufferRenderbuffer;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _createFramebuffers;
     private delegate* unmanaged[Cdecl]<uint, nint, nint, void*, void> _getNamedBufferSubData;
-    private delegate* unmanaged[Cdecl]<uint, BufferPointerNameARB, void*, void> _getNamedBufferPointerv;
-    private delegate* unmanaged[Cdecl]<uint, BufferPNameARB, long*, void> _getNamedBufferParameteri64v;
-    private delegate* unmanaged[Cdecl]<uint, BufferPNameARB, int*, void> _getNamedBufferParameteriv;
+    private delegate* unmanaged[Cdecl]<uint, BufferPointerName, void**, void> _getNamedBufferPointerv;
+    private delegate* unmanaged[Cdecl]<uint, BufferPName, long*, void> _getNamedBufferParameteri64v;
+    private delegate* unmanaged[Cdecl]<uint, BufferPName, int*, void> _getNamedBufferParameteriv;
     private delegate* unmanaged[Cdecl]<uint, nint, nint, void> _flushMappedNamedBufferRange;
     private delegate* unmanaged[Cdecl]<uint, byte> _unmapNamedBuffer;
-    private delegate* unmanaged[Cdecl]<uint, nint, nint, MapBufferAccessMask, void> _mapNamedBufferRange;
-    private delegate* unmanaged[Cdecl]<uint, BufferAccessARB, void> _mapNamedBuffer;
+    private delegate* unmanaged[Cdecl]<uint, nint, nint, MapBufferAccessMask, void*> _mapNamedBufferRange;
+    private delegate* unmanaged[Cdecl]<uint, BufferAccess, void*> _mapNamedBuffer;
     private delegate* unmanaged[Cdecl]<uint, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void> _clearNamedBufferSubData;
     private delegate* unmanaged[Cdecl]<uint, SizedInternalFormat, PixelFormat, PixelType, void*, void> _clearNamedBufferData;
     private delegate* unmanaged[Cdecl]<uint, uint, nint, nint, nint, void> _copyNamedBufferSubData;
     private delegate* unmanaged[Cdecl]<uint, nint, nint, void*, void> _namedBufferSubData;
-    private delegate* unmanaged[Cdecl]<uint, nint, void*, BufferUsageARB, void> _namedBufferData;
+    private delegate* unmanaged[Cdecl]<uint, nint, void*, BufferUsage, void> _namedBufferData;
     private delegate* unmanaged[Cdecl]<uint, nint, void*, BufferStorageMask, void> _namedBufferStorage;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _createBuffers;
     private delegate* unmanaged[Cdecl]<uint, TransformFeedbackPName, uint, long*, void> _getTransformFeedbacki64_v;
@@ -172,12 +172,12 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<uint, int, uint*, void> _bindImageTextures;
     private delegate* unmanaged[Cdecl]<uint, int, uint*, void> _bindSamplers;
     private delegate* unmanaged[Cdecl]<uint, int, uint*, void> _bindTextures;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, uint, int, uint*, nint*, nint*, void> _bindBuffersRange;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, uint, int, uint*, void> _bindBuffersBase;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, uint*, nint*, nint*, void> _bindBuffersRange;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, uint*, void> _bindBuffersBase;
     private delegate* unmanaged[Cdecl]<uint, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void> _clearTexSubImage;
     private delegate* unmanaged[Cdecl]<uint, int, PixelFormat, PixelType, void*, void> _clearTexImage;
     private delegate* unmanaged[Cdecl]<BufferStorageTarget, nint, void*, BufferStorageMask, void> _bufferStorage;
-    private delegate* unmanaged[Cdecl]<GetPointervPName, void*, void> _getPointerv;
+    private delegate* unmanaged[Cdecl]<GetPointervPName, void**, void> _getPointerv;
     private delegate* unmanaged[Cdecl]<void*, int, int*, char*, void> _getObjectPtrLabel;
     private delegate* unmanaged[Cdecl]<void*, int, char*, void> _objectPtrLabel;
     private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, char*, void> _getObjectLabel;
@@ -219,7 +219,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<uint, CopyImageSubDataTarget, int, int, int, int, uint, CopyImageSubDataTarget, int, int, int, int, int, int, int, void> _copyImageSubData;
     private delegate* unmanaged[Cdecl]<nint, void> _dispatchComputeIndirect;
     private delegate* unmanaged[Cdecl]<uint, uint, uint, void> _dispatchCompute;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void> _clearBufferSubData;
+    private delegate* unmanaged[Cdecl]<BufferTarget, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void> _clearBufferSubData;
     private delegate* unmanaged[Cdecl]<BufferStorageTarget, SizedInternalFormat, PixelFormat, PixelType, void*, void> _clearBufferData;
     private delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, void> _drawTransformFeedbackStreamInstanced;
     private delegate* unmanaged[Cdecl]<PrimitiveType, uint, int, void> _drawTransformFeedbackInstanced;
@@ -227,7 +227,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, void> _texStorage2D;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, void> _texStorage1D;
     private delegate* unmanaged[Cdecl]<MemoryBarrierMask, void> _memoryBarrier;
-    private delegate* unmanaged[Cdecl]<uint, uint, int, byte, int, BufferAccessARB, InternalFormat, void> _bindImageTexture;
+    private delegate* unmanaged[Cdecl]<uint, uint, int, byte, int, BufferAccess, InternalFormat, void> _bindImageTexture;
     private delegate* unmanaged[Cdecl]<uint, uint, AtomicCounterBufferPName, int*, void> _getActiveAtomicCounterBufferiv;
     private delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, int*, void> _getInternalformativ;
     private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, uint, void> _drawElementsInstancedBaseVertexBaseInstance;
@@ -323,7 +323,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<uint, byte> _isProgramPipeline;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _genProgramPipelines;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _deleteProgramPipelines;
-    private delegate* unmanaged[Cdecl]<ShaderType, int, char*, uint> _createShaderProgramv;
+    private delegate* unmanaged[Cdecl]<ShaderType, int, char**, uint> _createShaderProgramv;
     private delegate* unmanaged[Cdecl]<uint, uint, void> _activeShaderProgram;
     private delegate* unmanaged[Cdecl]<uint, UseProgramStageMask, uint, void> _useProgramStages;
     private delegate* unmanaged[Cdecl]<uint, ProgramParameterPName, int, void> _programParameteri;
@@ -385,11 +385,11 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<int, double, double, double, double, void> _uniform4d;
     private delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void> _blendFuncSeparate;
     private delegate* unmanaged[Cdecl]<PrimitiveType, int*, int*, int, void> _multiDrawArrays;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void*, int, void> _multiDrawElements;
-    private delegate* unmanaged[Cdecl]<PointParameterNameARB, float, void> _pointParameterf;
-    private delegate* unmanaged[Cdecl]<PointParameterNameARB, float*, void> _pointParameterfv;
-    private delegate* unmanaged[Cdecl]<PointParameterNameARB, int, void> _pointParameteri;
-    private delegate* unmanaged[Cdecl]<PointParameterNameARB, int*, void> _pointParameteriv;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, void> _multiDrawElements;
+    private delegate* unmanaged[Cdecl]<PointParameterName, float, void> _pointParameterf;
+    private delegate* unmanaged[Cdecl]<PointParameterName, float*, void> _pointParameterfv;
+    private delegate* unmanaged[Cdecl]<PointParameterName, int, void> _pointParameteri;
+    private delegate* unmanaged[Cdecl]<PointParameterName, int*, void> _pointParameteriv;
     private delegate* unmanaged[Cdecl]<int, double, double, double, void> _uniform3d;
     private delegate* unmanaged[Cdecl]<int, double, double, void> _uniform2d;
     private delegate* unmanaged[Cdecl]<int, double, void> _uniform1d;
@@ -438,20 +438,20 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<QueryTarget, QueryParameterName, int*, void> _getQueryiv;
     private delegate* unmanaged[Cdecl]<uint, QueryObjectParameterName, int*, void> _getQueryObjectiv;
     private delegate* unmanaged[Cdecl]<uint, QueryObjectParameterName, uint*, void> _getQueryObjectuiv;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, uint, void> _bindBuffer;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, void> _bindBuffer;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _deleteBuffers;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _genBuffers;
     private delegate* unmanaged[Cdecl]<uint, byte> _isBuffer;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, nint, void*, BufferUsageARB, void> _bufferData;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, nint, nint, void*, void> _bufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, nint, nint, void*, void> _getBufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, BufferAccessARB, void> _mapBuffer;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, byte> _unmapBuffer;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, BufferPNameARB, int*, void> _getBufferParameteriv;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, BufferPointerNameARB, void*, void> _getBufferPointerv;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, void*, BufferUsage, void> _bufferData;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void> _bufferSubData;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void> _getBufferSubData;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferAccess, void*> _mapBuffer;
+    private delegate* unmanaged[Cdecl]<BufferTarget, byte> _unmapBuffer;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, int*, void> _getBufferParameteriv;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPointerName, void**, void> _getBufferPointerv;
     private delegate* unmanaged[Cdecl]<BlendEquationModeEXT, BlendEquationModeEXT, void> _blendEquationSeparate;
     private delegate* unmanaged[Cdecl]<int, DrawBufferMode*, void> _drawBuffers;
-    private delegate* unmanaged[Cdecl]<TriangleFace, StencilOp, StencilOp, StencilOp, void> _stencilOpSeparate;
+    private delegate* unmanaged[Cdecl]<TriangleFace, StencilOpEnum, StencilOpEnum, StencilOpEnum, void> _stencilOpSeparate;
     private delegate* unmanaged[Cdecl]<TriangleFace, StencilFunction, int, uint, void> _stencilFuncSeparate;
     private delegate* unmanaged[Cdecl]<TriangleFace, uint, void> _stencilMaskSeparate;
     private delegate* unmanaged[Cdecl]<uint, uint, void> _attachShader;
@@ -468,7 +468,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<uint, uint, int, int*, int*, UniformType*, char*, void> _getActiveUniform;
     private delegate* unmanaged[Cdecl]<uint, int, int*, uint*, void> _getAttachedShaders;
     private delegate* unmanaged[Cdecl]<uint, char*, int> _getAttribLocation;
-    private delegate* unmanaged[Cdecl]<uint, ProgramPropertyARB, int*, void> _getProgramiv;
+    private delegate* unmanaged[Cdecl]<uint, ProgramProperty, int*, void> _getProgramiv;
     private delegate* unmanaged[Cdecl]<uint, int, int*, char*, void> _getProgramInfoLog;
     private delegate* unmanaged[Cdecl]<uint, ShaderParameterName, int*, void> _getShaderiv;
     private delegate* unmanaged[Cdecl]<uint, int, int*, char*, void> _getShaderInfoLog;
@@ -476,14 +476,14 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<uint, char*, int> _getUniformLocation;
     private delegate* unmanaged[Cdecl]<uint, int, float*, void> _getUniformfv;
     private delegate* unmanaged[Cdecl]<uint, int, int*, void> _getUniformiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPropertyARB, double*, void> _getVertexAttribdv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPropertyARB, float*, void> _getVertexAttribfv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPropertyARB, int*, void> _getVertexAttribiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerPropertyARB, void*, void> _getVertexAttribPointerv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, double*, void> _getVertexAttribdv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, float*, void> _getVertexAttribfv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, int*, void> _getVertexAttribiv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerProperty, void**, void> _getVertexAttribPointerv;
     private delegate* unmanaged[Cdecl]<uint, byte> _isProgram;
     private delegate* unmanaged[Cdecl]<uint, byte> _isShader;
     private delegate* unmanaged[Cdecl]<uint, void> _linkProgram;
-    private delegate* unmanaged[Cdecl]<uint, int, char*, int*, void> _shaderSource;
+    private delegate* unmanaged[Cdecl]<uint, int, char**, int*, void> _shaderSource;
     private delegate* unmanaged[Cdecl]<uint, void> _useProgram;
     private delegate* unmanaged[Cdecl]<int, float, void> _uniform1f;
     private delegate* unmanaged[Cdecl]<int, float, float, void> _uniform2f;
@@ -549,18 +549,18 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix3x4fv;
     private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix4x3fv;
     private delegate* unmanaged[Cdecl]<uint, byte, byte, byte, byte, void> _colorMaski;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, uint, byte*, void> _getBooleani_v;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, byte*, void> _getBooleani_v;
     private delegate* unmanaged[Cdecl]<GetPName, uint, int*, void> _getIntegeri_v;
     private delegate* unmanaged[Cdecl]<EnableCap, uint, void> _enablei;
     private delegate* unmanaged[Cdecl]<EnableCap, uint, void> _disablei;
     private delegate* unmanaged[Cdecl]<EnableCap, uint, byte> _isEnabledi;
     private delegate* unmanaged[Cdecl]<PrimitiveType, void> _beginTransformFeedback;
     private delegate* unmanaged[Cdecl]<void> _endTransformFeedback;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, uint, uint, nint, nint, void> _bindBufferRange;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, uint, uint, void> _bindBufferBase;
-    private delegate* unmanaged[Cdecl]<uint, int, char*, TransformFeedbackBufferMode, void> _transformFeedbackVaryings;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, uint, nint, nint, void> _bindBufferRange;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, uint, void> _bindBufferBase;
+    private delegate* unmanaged[Cdecl]<uint, int, char**, TransformFeedbackBufferMode, void> _transformFeedbackVaryings;
     private delegate* unmanaged[Cdecl]<uint, uint, int, int*, int*, AttributeType*, char*, void> _getTransformFeedbackVarying;
-    private delegate* unmanaged[Cdecl]<ClampColorTargetARB, ClampColorModeARB, void> _clampColor;
+    private delegate* unmanaged[Cdecl]<ClampColorTarget, ClampColorMode, void> _clampColor;
     private delegate* unmanaged[Cdecl]<uint, ConditionalRenderMode, void> _beginConditionalRender;
     private delegate* unmanaged[Cdecl]<void> _endConditionalRender;
     private delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, int, void*, void> _vertexAttribIPointer;
@@ -605,7 +605,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<Buffer, int, uint*, void> _clearBufferuiv;
     private delegate* unmanaged[Cdecl]<Buffer, int, float*, void> _clearBufferfv;
     private delegate* unmanaged[Cdecl]<Buffer, int, float, int, void> _clearBufferfi;
-    private delegate* unmanaged[Cdecl]<StringName, uint, byte> _getStringi;
+    private delegate* unmanaged[Cdecl]<StringName, uint, byte*> _getStringi;
     private delegate* unmanaged[Cdecl]<uint, byte> _isRenderbuffer;
     private delegate* unmanaged[Cdecl]<RenderbufferTarget, uint, void> _bindRenderbuffer;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _deleteRenderbuffers;
@@ -626,8 +626,8 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void> _blitFramebuffer;
     private delegate* unmanaged[Cdecl]<RenderbufferTarget, int, InternalFormat, int, int, void> _renderbufferStorageMultisample;
     private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, uint, int, int, void> _framebufferTextureLayer;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, nint, nint, MapBufferAccessMask, void> _mapBufferRange;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, nint, nint, void> _flushMappedBufferRange;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, MapBufferAccessMask, void*> _mapBufferRange;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void> _flushMappedBufferRange;
     private delegate* unmanaged[Cdecl]<uint, void> _bindVertexArray;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _deleteVertexArrays;
     private delegate* unmanaged[Cdecl]<int, uint*, void> _genVertexArrays;
@@ -637,7 +637,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, uint, void> _texBuffer;
     private delegate* unmanaged[Cdecl]<uint, void> _primitiveRestartIndex;
     private delegate* unmanaged[Cdecl]<CopyBufferSubDataTarget, CopyBufferSubDataTarget, nint, nint, nint, void> _copyBufferSubData;
-    private delegate* unmanaged[Cdecl]<uint, int, char*, uint*, void> _getUniformIndices;
+    private delegate* unmanaged[Cdecl]<uint, int, char**, uint*, void> _getUniformIndices;
     private delegate* unmanaged[Cdecl]<uint, int, uint*, UniformPName, int*, void> _getActiveUniformsiv;
     private delegate* unmanaged[Cdecl]<uint, uint, int, int*, char*, void> _getActiveUniformName;
     private delegate* unmanaged[Cdecl]<uint, char*, uint> _getUniformBlockIndex;
@@ -647,7 +647,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void> _drawElementsBaseVertex;
     private delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, int, void> _drawRangeElementsBaseVertex;
     private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, void> _drawElementsInstancedBaseVertex;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void*, int, int*, void> _multiDrawElementsBaseVertex;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, int*, void> _multiDrawElementsBaseVertex;
     private delegate* unmanaged[Cdecl]<VertexProvokingMode, void> _provokingVertex;
     private delegate* unmanaged[Cdecl]<SyncCondition, SyncBehaviorFlags, nint> _fenceSync;
     private delegate* unmanaged[Cdecl]<nint, byte> _isSync;
@@ -657,7 +657,7 @@ public unsafe partial class GL2
     private delegate* unmanaged[Cdecl]<GetPName, long*, void> _getInteger64v;
     private delegate* unmanaged[Cdecl]<nint, SyncParameterName, int, int*, int*, void> _getSynciv;
     private delegate* unmanaged[Cdecl]<GetPName, uint, long*, void> _getInteger64i_v;
-    private delegate* unmanaged[Cdecl]<BufferTargetARB, BufferPNameARB, long*, void> _getBufferParameteri64v;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, long*, void> _getBufferParameteri64v;
     private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, uint, int, void> _framebufferTexture;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, byte, void> _texImage2DMultisample;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, byte, void> _texImage3DMultisample;
@@ -671,7 +671,7 @@ public unsafe partial class GL2
         _hint = (delegate* unmanaged[Cdecl]<HintTarget, HintMode, void>)Load("glHint");
         _lineWidth = (delegate* unmanaged[Cdecl]<float, void>)Load("glLineWidth");
         _pointSize = (delegate* unmanaged[Cdecl]<float, void>)Load("glPointSize");
-        _polygonMode = (delegate* unmanaged[Cdecl]<TriangleFace, PolygonMode, void>)Load("glPolygonMode");
+        _polygonMode = (delegate* unmanaged[Cdecl]<TriangleFace, PolygonModeEnum, void>)Load("glPolygonMode");
         _scissor = (delegate* unmanaged[Cdecl]<int, int, int, int, void>)Load("glScissor");
         _texParameterf = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float, void>)Load("glTexParameterf");
         _texParameterfv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float*, void>)Load("glTexParameterfv");
@@ -692,9 +692,9 @@ public unsafe partial class GL2
         _finish = (delegate* unmanaged[Cdecl]<void>)Load("glFinish");
         _flush = (delegate* unmanaged[Cdecl]<void>)Load("glFlush");
         _blendFunc = (delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, void>)Load("glBlendFunc");
-        _logicOp = (delegate* unmanaged[Cdecl]<LogicOp, void>)Load("glLogicOp");
+        _logicOp = (delegate* unmanaged[Cdecl]<LogicOpEnum, void>)Load("glLogicOp");
         _stencilFunc = (delegate* unmanaged[Cdecl]<StencilFunction, int, uint, void>)Load("glStencilFunc");
-        _stencilOp = (delegate* unmanaged[Cdecl]<StencilOp, StencilOp, StencilOp, void>)Load("glStencilOp");
+        _stencilOp = (delegate* unmanaged[Cdecl]<StencilOpEnum, StencilOpEnum, StencilOpEnum, void>)Load("glStencilOp");
         _depthFunc = (delegate* unmanaged[Cdecl]<DepthFunction, void>)Load("glDepthFunc");
         _pixelStoref = (delegate* unmanaged[Cdecl]<PixelStoreParameter, float, void>)Load("glPixelStoref");
         _pixelStorei = (delegate* unmanaged[Cdecl]<PixelStoreParameter, int, void>)Load("glPixelStorei");
@@ -705,7 +705,7 @@ public unsafe partial class GL2
         _getError = (delegate* unmanaged[Cdecl]<ErrorCode>)Load("glGetError");
         _getFloatv = (delegate* unmanaged[Cdecl]<GetPName, float*, void>)Load("glGetFloatv");
         _getIntegerv = (delegate* unmanaged[Cdecl]<GetPName, int*, void>)Load("glGetIntegerv");
-        _getString = (delegate* unmanaged[Cdecl]<StringName, byte>)Load("glGetString");
+        _getString = (delegate* unmanaged[Cdecl]<StringName, byte*>)Load("glGetString");
         _getTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, void*, void>)Load("glGetTexImage");
         _getTexParameterfv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, float*, void>)Load("glGetTexParameterfv");
         _getTexParameteriv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void>)Load("glGetTexParameteriv");
@@ -807,18 +807,18 @@ public unsafe partial class GL2
         _namedFramebufferRenderbuffer = (delegate* unmanaged[Cdecl]<uint, FramebufferAttachment, RenderbufferTarget, uint, void>)Load("glNamedFramebufferRenderbuffer");
         _createFramebuffers = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glCreateFramebuffers");
         _getNamedBufferSubData = (delegate* unmanaged[Cdecl]<uint, nint, nint, void*, void>)Load("glGetNamedBufferSubData");
-        _getNamedBufferPointerv = (delegate* unmanaged[Cdecl]<uint, BufferPointerNameARB, void*, void>)Load("glGetNamedBufferPointerv");
-        _getNamedBufferParameteri64v = (delegate* unmanaged[Cdecl]<uint, BufferPNameARB, long*, void>)Load("glGetNamedBufferParameteri64v");
-        _getNamedBufferParameteriv = (delegate* unmanaged[Cdecl]<uint, BufferPNameARB, int*, void>)Load("glGetNamedBufferParameteriv");
+        _getNamedBufferPointerv = (delegate* unmanaged[Cdecl]<uint, BufferPointerName, void**, void>)Load("glGetNamedBufferPointerv");
+        _getNamedBufferParameteri64v = (delegate* unmanaged[Cdecl]<uint, BufferPName, long*, void>)Load("glGetNamedBufferParameteri64v");
+        _getNamedBufferParameteriv = (delegate* unmanaged[Cdecl]<uint, BufferPName, int*, void>)Load("glGetNamedBufferParameteriv");
         _flushMappedNamedBufferRange = (delegate* unmanaged[Cdecl]<uint, nint, nint, void>)Load("glFlushMappedNamedBufferRange");
         _unmapNamedBuffer = (delegate* unmanaged[Cdecl]<uint, byte>)Load("glUnmapNamedBuffer");
-        _mapNamedBufferRange = (delegate* unmanaged[Cdecl]<uint, nint, nint, MapBufferAccessMask, void>)Load("glMapNamedBufferRange");
-        _mapNamedBuffer = (delegate* unmanaged[Cdecl]<uint, BufferAccessARB, void>)Load("glMapNamedBuffer");
+        _mapNamedBufferRange = (delegate* unmanaged[Cdecl]<uint, nint, nint, MapBufferAccessMask, void*>)Load("glMapNamedBufferRange");
+        _mapNamedBuffer = (delegate* unmanaged[Cdecl]<uint, BufferAccess, void*>)Load("glMapNamedBuffer");
         _clearNamedBufferSubData = (delegate* unmanaged[Cdecl]<uint, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void>)Load("glClearNamedBufferSubData");
         _clearNamedBufferData = (delegate* unmanaged[Cdecl]<uint, SizedInternalFormat, PixelFormat, PixelType, void*, void>)Load("glClearNamedBufferData");
         _copyNamedBufferSubData = (delegate* unmanaged[Cdecl]<uint, uint, nint, nint, nint, void>)Load("glCopyNamedBufferSubData");
         _namedBufferSubData = (delegate* unmanaged[Cdecl]<uint, nint, nint, void*, void>)Load("glNamedBufferSubData");
-        _namedBufferData = (delegate* unmanaged[Cdecl]<uint, nint, void*, BufferUsageARB, void>)Load("glNamedBufferData");
+        _namedBufferData = (delegate* unmanaged[Cdecl]<uint, nint, void*, BufferUsage, void>)Load("glNamedBufferData");
         _namedBufferStorage = (delegate* unmanaged[Cdecl]<uint, nint, void*, BufferStorageMask, void>)Load("glNamedBufferStorage");
         _createBuffers = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glCreateBuffers");
         _getTransformFeedbacki64_v = (delegate* unmanaged[Cdecl]<uint, TransformFeedbackPName, uint, long*, void>)Load("glGetTransformFeedbacki64_v");
@@ -832,12 +832,12 @@ public unsafe partial class GL2
         _bindImageTextures = (delegate* unmanaged[Cdecl]<uint, int, uint*, void>)Load("glBindImageTextures");
         _bindSamplers = (delegate* unmanaged[Cdecl]<uint, int, uint*, void>)Load("glBindSamplers");
         _bindTextures = (delegate* unmanaged[Cdecl]<uint, int, uint*, void>)Load("glBindTextures");
-        _bindBuffersRange = (delegate* unmanaged[Cdecl]<BufferTargetARB, uint, int, uint*, nint*, nint*, void>)Load("glBindBuffersRange");
-        _bindBuffersBase = (delegate* unmanaged[Cdecl]<BufferTargetARB, uint, int, uint*, void>)Load("glBindBuffersBase");
+        _bindBuffersRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, uint*, nint*, nint*, void>)Load("glBindBuffersRange");
+        _bindBuffersBase = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, uint*, void>)Load("glBindBuffersBase");
         _clearTexSubImage = (delegate* unmanaged[Cdecl]<uint, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glClearTexSubImage");
         _clearTexImage = (delegate* unmanaged[Cdecl]<uint, int, PixelFormat, PixelType, void*, void>)Load("glClearTexImage");
         _bufferStorage = (delegate* unmanaged[Cdecl]<BufferStorageTarget, nint, void*, BufferStorageMask, void>)Load("glBufferStorage");
-        _getPointerv = (delegate* unmanaged[Cdecl]<GetPointervPName, void*, void>)Load("glGetPointerv");
+        _getPointerv = (delegate* unmanaged[Cdecl]<GetPointervPName, void**, void>)Load("glGetPointerv");
         _getObjectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, int*, char*, void>)Load("glGetObjectPtrLabel");
         _objectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, char*, void>)Load("glObjectPtrLabel");
         _getObjectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, char*, void>)Load("glGetObjectLabel");
@@ -879,7 +879,7 @@ public unsafe partial class GL2
         _copyImageSubData = (delegate* unmanaged[Cdecl]<uint, CopyImageSubDataTarget, int, int, int, int, uint, CopyImageSubDataTarget, int, int, int, int, int, int, int, void>)Load("glCopyImageSubData");
         _dispatchComputeIndirect = (delegate* unmanaged[Cdecl]<nint, void>)Load("glDispatchComputeIndirect");
         _dispatchCompute = (delegate* unmanaged[Cdecl]<uint, uint, uint, void>)Load("glDispatchCompute");
-        _clearBufferSubData = (delegate* unmanaged[Cdecl]<BufferTargetARB, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void>)Load("glClearBufferSubData");
+        _clearBufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void>)Load("glClearBufferSubData");
         _clearBufferData = (delegate* unmanaged[Cdecl]<BufferStorageTarget, SizedInternalFormat, PixelFormat, PixelType, void*, void>)Load("glClearBufferData");
         _drawTransformFeedbackStreamInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, void>)Load("glDrawTransformFeedbackStreamInstanced");
         _drawTransformFeedbackInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, uint, int, void>)Load("glDrawTransformFeedbackInstanced");
@@ -887,7 +887,7 @@ public unsafe partial class GL2
         _texStorage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, void>)Load("glTexStorage2D");
         _texStorage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, void>)Load("glTexStorage1D");
         _memoryBarrier = (delegate* unmanaged[Cdecl]<MemoryBarrierMask, void>)Load("glMemoryBarrier");
-        _bindImageTexture = (delegate* unmanaged[Cdecl]<uint, uint, int, byte, int, BufferAccessARB, InternalFormat, void>)Load("glBindImageTexture");
+        _bindImageTexture = (delegate* unmanaged[Cdecl]<uint, uint, int, byte, int, BufferAccess, InternalFormat, void>)Load("glBindImageTexture");
         _getActiveAtomicCounterBufferiv = (delegate* unmanaged[Cdecl]<uint, uint, AtomicCounterBufferPName, int*, void>)Load("glGetActiveAtomicCounterBufferiv");
         _getInternalformativ = (delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, int*, void>)Load("glGetInternalformativ");
         _drawElementsInstancedBaseVertexBaseInstance = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, uint, void>)Load("glDrawElementsInstancedBaseVertexBaseInstance");
@@ -983,7 +983,7 @@ public unsafe partial class GL2
         _isProgramPipeline = (delegate* unmanaged[Cdecl]<uint, byte>)Load("glIsProgramPipeline");
         _genProgramPipelines = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glGenProgramPipelines");
         _deleteProgramPipelines = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glDeleteProgramPipelines");
-        _createShaderProgramv = (delegate* unmanaged[Cdecl]<ShaderType, int, char*, uint>)Load("glCreateShaderProgramv");
+        _createShaderProgramv = (delegate* unmanaged[Cdecl]<ShaderType, int, char**, uint>)Load("glCreateShaderProgramv");
         _activeShaderProgram = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glActiveShaderProgram");
         _useProgramStages = (delegate* unmanaged[Cdecl]<uint, UseProgramStageMask, uint, void>)Load("glUseProgramStages");
         _programParameteri = (delegate* unmanaged[Cdecl]<uint, ProgramParameterPName, int, void>)Load("glProgramParameteri");
@@ -1045,11 +1045,11 @@ public unsafe partial class GL2
         _uniform4d = (delegate* unmanaged[Cdecl]<int, double, double, double, double, void>)Load("glUniform4d");
         _blendFuncSeparate = (delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void>)Load("glBlendFuncSeparate");
         _multiDrawArrays = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, int*, int, void>)Load("glMultiDrawArrays");
-        _multiDrawElements = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void*, int, void>)Load("glMultiDrawElements");
-        _pointParameterf = (delegate* unmanaged[Cdecl]<PointParameterNameARB, float, void>)Load("glPointParameterf");
-        _pointParameterfv = (delegate* unmanaged[Cdecl]<PointParameterNameARB, float*, void>)Load("glPointParameterfv");
-        _pointParameteri = (delegate* unmanaged[Cdecl]<PointParameterNameARB, int, void>)Load("glPointParameteri");
-        _pointParameteriv = (delegate* unmanaged[Cdecl]<PointParameterNameARB, int*, void>)Load("glPointParameteriv");
+        _multiDrawElements = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, void>)Load("glMultiDrawElements");
+        _pointParameterf = (delegate* unmanaged[Cdecl]<PointParameterName, float, void>)Load("glPointParameterf");
+        _pointParameterfv = (delegate* unmanaged[Cdecl]<PointParameterName, float*, void>)Load("glPointParameterfv");
+        _pointParameteri = (delegate* unmanaged[Cdecl]<PointParameterName, int, void>)Load("glPointParameteri");
+        _pointParameteriv = (delegate* unmanaged[Cdecl]<PointParameterName, int*, void>)Load("glPointParameteriv");
         _uniform3d = (delegate* unmanaged[Cdecl]<int, double, double, double, void>)Load("glUniform3d");
         _uniform2d = (delegate* unmanaged[Cdecl]<int, double, double, void>)Load("glUniform2d");
         _uniform1d = (delegate* unmanaged[Cdecl]<int, double, void>)Load("glUniform1d");
@@ -1098,20 +1098,20 @@ public unsafe partial class GL2
         _getQueryiv = (delegate* unmanaged[Cdecl]<QueryTarget, QueryParameterName, int*, void>)Load("glGetQueryiv");
         _getQueryObjectiv = (delegate* unmanaged[Cdecl]<uint, QueryObjectParameterName, int*, void>)Load("glGetQueryObjectiv");
         _getQueryObjectuiv = (delegate* unmanaged[Cdecl]<uint, QueryObjectParameterName, uint*, void>)Load("glGetQueryObjectuiv");
-        _bindBuffer = (delegate* unmanaged[Cdecl]<BufferTargetARB, uint, void>)Load("glBindBuffer");
+        _bindBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, uint, void>)Load("glBindBuffer");
         _deleteBuffers = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glDeleteBuffers");
         _genBuffers = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glGenBuffers");
         _isBuffer = (delegate* unmanaged[Cdecl]<uint, byte>)Load("glIsBuffer");
-        _bufferData = (delegate* unmanaged[Cdecl]<BufferTargetARB, nint, void*, BufferUsageARB, void>)Load("glBufferData");
-        _bufferSubData = (delegate* unmanaged[Cdecl]<BufferTargetARB, nint, nint, void*, void>)Load("glBufferSubData");
-        _getBufferSubData = (delegate* unmanaged[Cdecl]<BufferTargetARB, nint, nint, void*, void>)Load("glGetBufferSubData");
-        _mapBuffer = (delegate* unmanaged[Cdecl]<BufferTargetARB, BufferAccessARB, void>)Load("glMapBuffer");
-        _unmapBuffer = (delegate* unmanaged[Cdecl]<BufferTargetARB, byte>)Load("glUnmapBuffer");
-        _getBufferParameteriv = (delegate* unmanaged[Cdecl]<BufferTargetARB, BufferPNameARB, int*, void>)Load("glGetBufferParameteriv");
-        _getBufferPointerv = (delegate* unmanaged[Cdecl]<BufferTargetARB, BufferPointerNameARB, void*, void>)Load("glGetBufferPointerv");
+        _bufferData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, void*, BufferUsage, void>)Load("glBufferData");
+        _bufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void>)Load("glBufferSubData");
+        _getBufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void>)Load("glGetBufferSubData");
+        _mapBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, BufferAccess, void*>)Load("glMapBuffer");
+        _unmapBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, byte>)Load("glUnmapBuffer");
+        _getBufferParameteriv = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, int*, void>)Load("glGetBufferParameteriv");
+        _getBufferPointerv = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPointerName, void**, void>)Load("glGetBufferPointerv");
         _blendEquationSeparate = (delegate* unmanaged[Cdecl]<BlendEquationModeEXT, BlendEquationModeEXT, void>)Load("glBlendEquationSeparate");
         _drawBuffers = (delegate* unmanaged[Cdecl]<int, DrawBufferMode*, void>)Load("glDrawBuffers");
-        _stencilOpSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, StencilOp, StencilOp, StencilOp, void>)Load("glStencilOpSeparate");
+        _stencilOpSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, StencilOpEnum, StencilOpEnum, StencilOpEnum, void>)Load("glStencilOpSeparate");
         _stencilFuncSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, StencilFunction, int, uint, void>)Load("glStencilFuncSeparate");
         _stencilMaskSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, uint, void>)Load("glStencilMaskSeparate");
         _attachShader = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glAttachShader");
@@ -1128,7 +1128,7 @@ public unsafe partial class GL2
         _getActiveUniform = (delegate* unmanaged[Cdecl]<uint, uint, int, int*, int*, UniformType*, char*, void>)Load("glGetActiveUniform");
         _getAttachedShaders = (delegate* unmanaged[Cdecl]<uint, int, int*, uint*, void>)Load("glGetAttachedShaders");
         _getAttribLocation = (delegate* unmanaged[Cdecl]<uint, char*, int>)Load("glGetAttribLocation");
-        _getProgramiv = (delegate* unmanaged[Cdecl]<uint, ProgramPropertyARB, int*, void>)Load("glGetProgramiv");
+        _getProgramiv = (delegate* unmanaged[Cdecl]<uint, ProgramProperty, int*, void>)Load("glGetProgramiv");
         _getProgramInfoLog = (delegate* unmanaged[Cdecl]<uint, int, int*, char*, void>)Load("glGetProgramInfoLog");
         _getShaderiv = (delegate* unmanaged[Cdecl]<uint, ShaderParameterName, int*, void>)Load("glGetShaderiv");
         _getShaderInfoLog = (delegate* unmanaged[Cdecl]<uint, int, int*, char*, void>)Load("glGetShaderInfoLog");
@@ -1136,14 +1136,14 @@ public unsafe partial class GL2
         _getUniformLocation = (delegate* unmanaged[Cdecl]<uint, char*, int>)Load("glGetUniformLocation");
         _getUniformfv = (delegate* unmanaged[Cdecl]<uint, int, float*, void>)Load("glGetUniformfv");
         _getUniformiv = (delegate* unmanaged[Cdecl]<uint, int, int*, void>)Load("glGetUniformiv");
-        _getVertexAttribdv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPropertyARB, double*, void>)Load("glGetVertexAttribdv");
-        _getVertexAttribfv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPropertyARB, float*, void>)Load("glGetVertexAttribfv");
-        _getVertexAttribiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPropertyARB, int*, void>)Load("glGetVertexAttribiv");
-        _getVertexAttribPointerv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerPropertyARB, void*, void>)Load("glGetVertexAttribPointerv");
+        _getVertexAttribdv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, double*, void>)Load("glGetVertexAttribdv");
+        _getVertexAttribfv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, float*, void>)Load("glGetVertexAttribfv");
+        _getVertexAttribiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, int*, void>)Load("glGetVertexAttribiv");
+        _getVertexAttribPointerv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerProperty, void**, void>)Load("glGetVertexAttribPointerv");
         _isProgram = (delegate* unmanaged[Cdecl]<uint, byte>)Load("glIsProgram");
         _isShader = (delegate* unmanaged[Cdecl]<uint, byte>)Load("glIsShader");
         _linkProgram = (delegate* unmanaged[Cdecl]<uint, void>)Load("glLinkProgram");
-        _shaderSource = (delegate* unmanaged[Cdecl]<uint, int, char*, int*, void>)Load("glShaderSource");
+        _shaderSource = (delegate* unmanaged[Cdecl]<uint, int, char**, int*, void>)Load("glShaderSource");
         _useProgram = (delegate* unmanaged[Cdecl]<uint, void>)Load("glUseProgram");
         _uniform1f = (delegate* unmanaged[Cdecl]<int, float, void>)Load("glUniform1f");
         _uniform2f = (delegate* unmanaged[Cdecl]<int, float, float, void>)Load("glUniform2f");
@@ -1209,18 +1209,18 @@ public unsafe partial class GL2
         _uniformMatrix3x4fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix3x4fv");
         _uniformMatrix4x3fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix4x3fv");
         _colorMaski = (delegate* unmanaged[Cdecl]<uint, byte, byte, byte, byte, void>)Load("glColorMaski");
-        _getBooleani_v = (delegate* unmanaged[Cdecl]<BufferTargetARB, uint, byte*, void>)Load("glGetBooleani_v");
+        _getBooleani_v = (delegate* unmanaged[Cdecl]<BufferTarget, uint, byte*, void>)Load("glGetBooleani_v");
         _getIntegeri_v = (delegate* unmanaged[Cdecl]<GetPName, uint, int*, void>)Load("glGetIntegeri_v");
         _enablei = (delegate* unmanaged[Cdecl]<EnableCap, uint, void>)Load("glEnablei");
         _disablei = (delegate* unmanaged[Cdecl]<EnableCap, uint, void>)Load("glDisablei");
         _isEnabledi = (delegate* unmanaged[Cdecl]<EnableCap, uint, byte>)Load("glIsEnabledi");
         _beginTransformFeedback = (delegate* unmanaged[Cdecl]<PrimitiveType, void>)Load("glBeginTransformFeedback");
         _endTransformFeedback = (delegate* unmanaged[Cdecl]<void>)Load("glEndTransformFeedback");
-        _bindBufferRange = (delegate* unmanaged[Cdecl]<BufferTargetARB, uint, uint, nint, nint, void>)Load("glBindBufferRange");
-        _bindBufferBase = (delegate* unmanaged[Cdecl]<BufferTargetARB, uint, uint, void>)Load("glBindBufferBase");
-        _transformFeedbackVaryings = (delegate* unmanaged[Cdecl]<uint, int, char*, TransformFeedbackBufferMode, void>)Load("glTransformFeedbackVaryings");
+        _bindBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, uint, nint, nint, void>)Load("glBindBufferRange");
+        _bindBufferBase = (delegate* unmanaged[Cdecl]<BufferTarget, uint, uint, void>)Load("glBindBufferBase");
+        _transformFeedbackVaryings = (delegate* unmanaged[Cdecl]<uint, int, char**, TransformFeedbackBufferMode, void>)Load("glTransformFeedbackVaryings");
         _getTransformFeedbackVarying = (delegate* unmanaged[Cdecl]<uint, uint, int, int*, int*, AttributeType*, char*, void>)Load("glGetTransformFeedbackVarying");
-        _clampColor = (delegate* unmanaged[Cdecl]<ClampColorTargetARB, ClampColorModeARB, void>)Load("glClampColor");
+        _clampColor = (delegate* unmanaged[Cdecl]<ClampColorTarget, ClampColorMode, void>)Load("glClampColor");
         _beginConditionalRender = (delegate* unmanaged[Cdecl]<uint, ConditionalRenderMode, void>)Load("glBeginConditionalRender");
         _endConditionalRender = (delegate* unmanaged[Cdecl]<void>)Load("glEndConditionalRender");
         _vertexAttribIPointer = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, int, void*, void>)Load("glVertexAttribIPointer");
@@ -1265,7 +1265,7 @@ public unsafe partial class GL2
         _clearBufferuiv = (delegate* unmanaged[Cdecl]<Buffer, int, uint*, void>)Load("glClearBufferuiv");
         _clearBufferfv = (delegate* unmanaged[Cdecl]<Buffer, int, float*, void>)Load("glClearBufferfv");
         _clearBufferfi = (delegate* unmanaged[Cdecl]<Buffer, int, float, int, void>)Load("glClearBufferfi");
-        _getStringi = (delegate* unmanaged[Cdecl]<StringName, uint, byte>)Load("glGetStringi");
+        _getStringi = (delegate* unmanaged[Cdecl]<StringName, uint, byte*>)Load("glGetStringi");
         _isRenderbuffer = (delegate* unmanaged[Cdecl]<uint, byte>)Load("glIsRenderbuffer");
         _bindRenderbuffer = (delegate* unmanaged[Cdecl]<RenderbufferTarget, uint, void>)Load("glBindRenderbuffer");
         _deleteRenderbuffers = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glDeleteRenderbuffers");
@@ -1286,8 +1286,8 @@ public unsafe partial class GL2
         _blitFramebuffer = (delegate* unmanaged[Cdecl]<int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void>)Load("glBlitFramebuffer");
         _renderbufferStorageMultisample = (delegate* unmanaged[Cdecl]<RenderbufferTarget, int, InternalFormat, int, int, void>)Load("glRenderbufferStorageMultisample");
         _framebufferTextureLayer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, uint, int, int, void>)Load("glFramebufferTextureLayer");
-        _mapBufferRange = (delegate* unmanaged[Cdecl]<BufferTargetARB, nint, nint, MapBufferAccessMask, void>)Load("glMapBufferRange");
-        _flushMappedBufferRange = (delegate* unmanaged[Cdecl]<BufferTargetARB, nint, nint, void>)Load("glFlushMappedBufferRange");
+        _mapBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, MapBufferAccessMask, void*>)Load("glMapBufferRange");
+        _flushMappedBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void>)Load("glFlushMappedBufferRange");
         _bindVertexArray = (delegate* unmanaged[Cdecl]<uint, void>)Load("glBindVertexArray");
         _deleteVertexArrays = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glDeleteVertexArrays");
         _genVertexArrays = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glGenVertexArrays");
@@ -1297,7 +1297,7 @@ public unsafe partial class GL2
         _texBuffer = (delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, uint, void>)Load("glTexBuffer");
         _primitiveRestartIndex = (delegate* unmanaged[Cdecl]<uint, void>)Load("glPrimitiveRestartIndex");
         _copyBufferSubData = (delegate* unmanaged[Cdecl]<CopyBufferSubDataTarget, CopyBufferSubDataTarget, nint, nint, nint, void>)Load("glCopyBufferSubData");
-        _getUniformIndices = (delegate* unmanaged[Cdecl]<uint, int, char*, uint*, void>)Load("glGetUniformIndices");
+        _getUniformIndices = (delegate* unmanaged[Cdecl]<uint, int, char**, uint*, void>)Load("glGetUniformIndices");
         _getActiveUniformsiv = (delegate* unmanaged[Cdecl]<uint, int, uint*, UniformPName, int*, void>)Load("glGetActiveUniformsiv");
         _getActiveUniformName = (delegate* unmanaged[Cdecl]<uint, uint, int, int*, char*, void>)Load("glGetActiveUniformName");
         _getUniformBlockIndex = (delegate* unmanaged[Cdecl]<uint, char*, uint>)Load("glGetUniformBlockIndex");
@@ -1307,7 +1307,7 @@ public unsafe partial class GL2
         _drawElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void>)Load("glDrawElementsBaseVertex");
         _drawRangeElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, int, void>)Load("glDrawRangeElementsBaseVertex");
         _drawElementsInstancedBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, void>)Load("glDrawElementsInstancedBaseVertex");
-        _multiDrawElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void*, int, int*, void>)Load("glMultiDrawElementsBaseVertex");
+        _multiDrawElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, int*, void>)Load("glMultiDrawElementsBaseVertex");
         _provokingVertex = (delegate* unmanaged[Cdecl]<VertexProvokingMode, void>)Load("glProvokingVertex");
         _fenceSync = (delegate* unmanaged[Cdecl]<SyncCondition, SyncBehaviorFlags, nint>)Load("glFenceSync");
         _isSync = (delegate* unmanaged[Cdecl]<nint, byte>)Load("glIsSync");
@@ -1317,7 +1317,7 @@ public unsafe partial class GL2
         _getInteger64v = (delegate* unmanaged[Cdecl]<GetPName, long*, void>)Load("glGetInteger64v");
         _getSynciv = (delegate* unmanaged[Cdecl]<nint, SyncParameterName, int, int*, int*, void>)Load("glGetSynciv");
         _getInteger64i_v = (delegate* unmanaged[Cdecl]<GetPName, uint, long*, void>)Load("glGetInteger64i_v");
-        _getBufferParameteri64v = (delegate* unmanaged[Cdecl]<BufferTargetARB, BufferPNameARB, long*, void>)Load("glGetBufferParameteri64v");
+        _getBufferParameteri64v = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, long*, void>)Load("glGetBufferParameteri64v");
         _framebufferTexture = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, uint, int, void>)Load("glFramebufferTexture");
         _texImage2DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, byte, void>)Load("glTexImage2DMultisample");
         _texImage3DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, byte, void>)Load("glTexImage3DMultisample");
@@ -1328,4600 +1328,3943 @@ public unsafe partial class GL2
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CullFace(TriangleFace mode)
     {
-        //...
-throw new System.NotImplementedException();
+        _cullFace(mode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FrontFace(FrontFaceDirection mode)
     {
-        //...
-throw new System.NotImplementedException();
+        _frontFace(mode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Hint(HintTarget target, HintMode mode)
     {
-        //...
-throw new System.NotImplementedException();
+        _hint(target, mode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void LineWidth(float width)
     {
-        //...
-throw new System.NotImplementedException();
+        _lineWidth(width);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PointSize(float size)
     {
-        //...
-throw new System.NotImplementedException();
+        _pointSize(size);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PolygonMode(TriangleFace face, PolygonMode mode)
+    public void PolygonMode(TriangleFace face, PolygonModeEnum mode)
     {
-        //...
-throw new System.NotImplementedException();
+        _polygonMode(face, mode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Scissor(int x, int y, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _scissor(x, y, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameterf(TextureTarget target, TextureParameterName pname, float param)
     {
-        //...
-throw new System.NotImplementedException();
+        _texParameterf(target, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameterfv(TextureTarget target, TextureParameterName pname, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _texParameterfv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameteri(TextureTarget target, TextureParameterName pname, int param)
     {
-        //...
-throw new System.NotImplementedException();
+        _texParameteri(target, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameteriv(TextureTarget target, TextureParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _texParameteriv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexImage1D(TextureTarget target, int level, InternalFormat internalformat, int width, int border, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _texImage1D(target, level, internalformat, width, border, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexImage2D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _texImage2D(target, level, internalformat, width, height, border, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawBuffer(DrawBufferMode buf)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawBuffer(buf);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Clear(ClearBufferMask mask)
     {
-        //...
-throw new System.NotImplementedException();
+        _clear(mask);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearColor(float red, float green, float blue, float alpha)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearColor(red, green, blue, alpha);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearStencil(int s)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearStencil(s);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearDepth(double depth)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearDepth(depth);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilMask(uint mask)
     {
-        //...
-throw new System.NotImplementedException();
+        _stencilMask(mask);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ColorMask(byte red, byte green, byte blue, byte alpha)
     {
-        //...
-throw new System.NotImplementedException();
+        _colorMask(red, green, blue, alpha);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthMask(byte flag)
     {
-        //...
-throw new System.NotImplementedException();
+        _depthMask(flag);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Disable(EnableCap cap)
     {
-        //...
-throw new System.NotImplementedException();
+        _disable(cap);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Enable(EnableCap cap)
     {
-        //...
-throw new System.NotImplementedException();
+        _enable(cap);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Finish()
     {
-        //...
-throw new System.NotImplementedException();
+        _finish();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Flush()
     {
-        //...
-throw new System.NotImplementedException();
+        _flush();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendFunc(BlendingFactor sfactor, BlendingFactor dfactor)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendFunc(sfactor, dfactor);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void LogicOp(LogicOp opcode)
+    public void LogicOp(LogicOpEnum opcode)
     {
-        //...
-throw new System.NotImplementedException();
+        _logicOp(opcode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilFunc(StencilFunction func, int @ref, uint mask)
     {
-        //...
-throw new System.NotImplementedException();
+        _stencilFunc(func, @ref, mask);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void StencilOp(StencilOp fail, StencilOp zfail, StencilOp zpass)
+    public void StencilOp(StencilOpEnum fail, StencilOpEnum zfail, StencilOpEnum zpass)
     {
-        //...
-throw new System.NotImplementedException();
+        _stencilOp(fail, zfail, zpass);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthFunc(DepthFunction func)
     {
-        //...
-throw new System.NotImplementedException();
+        _depthFunc(func);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PixelStoref(PixelStoreParameter pname, float param)
     {
-        //...
-throw new System.NotImplementedException();
+        _pixelStoref(pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PixelStorei(PixelStoreParameter pname, int param)
     {
-        //...
-throw new System.NotImplementedException();
+        _pixelStorei(pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadBuffer(ReadBufferMode src)
     {
-        //...
-throw new System.NotImplementedException();
+        _readBuffer(src);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadPixels(int x, int y, int width, int height, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _readPixels(x, y, width, height, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetBooleanv(GetPName pname, byte* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getBooleanv(pname, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetDoublev(GetPName pname, double* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getDoublev(pname, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ErrorCode GetError()
     {
-        //...
-throw new System.NotImplementedException();
+        return _getError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetFloatv(GetPName pname, float* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getFloatv(pname, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetIntegerv(GetPName pname, int* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getIntegerv(pname, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte GetString(StringName name)
+    public byte* GetString(StringName name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getString(name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexImage(TextureTarget target, int level, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTexImage(target, level, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexParameterfv(TextureTarget target, GetTextureParameter pname, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTexParameterfv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexParameteriv(TextureTarget target, GetTextureParameter pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTexParameteriv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexLevelParameterfv(TextureTarget target, int level, GetTextureParameter pname, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTexLevelParameterfv(target, level, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexLevelParameteriv(TextureTarget target, int level, GetTextureParameter pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTexLevelParameteriv(target, level, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsEnabled(EnableCap cap)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isEnabled(cap);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthRange(double n, double f)
     {
-        //...
-throw new System.NotImplementedException();
+        _depthRange(n, f);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Viewport(int x, int y, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _viewport(x, y, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PolygonOffsetClamp(float factor, float units, float clamp)
     {
-        //...
-throw new System.NotImplementedException();
+        _polygonOffsetClamp(factor, units, clamp);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawElementsIndirectCount(PrimitiveType mode, DrawElementsType type, void* indirect, nint drawcount, int maxdrawcount, int stride)
     {
-        //...
-throw new System.NotImplementedException();
+        _multiDrawElementsIndirectCount(mode, type, indirect, drawcount, maxdrawcount, stride);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawArraysIndirectCount(PrimitiveType mode, void* indirect, nint drawcount, int maxdrawcount, int stride)
     {
-        //...
-throw new System.NotImplementedException();
+        _multiDrawArraysIndirectCount(mode, indirect, drawcount, maxdrawcount, stride);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SpecializeShader(uint shader, char* pEntryPoint, uint numSpecializationConstants, uint* pConstantIndex, uint* pConstantValue)
     {
-        //...
-throw new System.NotImplementedException();
+        _specializeShader(shader, pEntryPoint, numSpecializationConstants, pConstantIndex, pConstantValue);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureBarrier()
     {
-        //...
-throw new System.NotImplementedException();
+        _textureBarrier();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadnPixels(int x, int y, int width, int height, PixelFormat format, PixelType type, int bufSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _readnPixels(x, y, width, height, format, type, bufSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnUniformuiv(uint program, int location, int bufSize, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getnUniformuiv(program, location, bufSize, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnUniformiv(uint program, int location, int bufSize, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getnUniformiv(program, location, bufSize, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnUniformfv(uint program, int location, int bufSize, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getnUniformfv(program, location, bufSize, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnUniformdv(uint program, int location, int bufSize, double* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getnUniformdv(program, location, bufSize, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnTexImage(TextureTarget target, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _getnTexImage(target, level, format, type, bufSize, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnCompressedTexImage(TextureTarget target, int lod, int bufSize, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _getnCompressedTexImage(target, lod, bufSize, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GraphicsResetStatus GetGraphicsResetStatus()
     {
-        //...
-throw new System.NotImplementedException();
+        return _getGraphicsResetStatus();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetCompressedTextureSubImage(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int bufSize, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _getCompressedTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, bufSize, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureSubImage(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, int bufSize, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, bufSize, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MemoryBarrierByRegion(MemoryBarrierMask barriers)
     {
-        //...
-throw new System.NotImplementedException();
+        _memoryBarrierByRegion(barriers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryBufferObjectuiv(uint id, uint buffer, QueryObjectParameterName pname, nint offset)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryBufferObjectuiv(id, buffer, pname, offset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryBufferObjectui64v(uint id, uint buffer, QueryObjectParameterName pname, nint offset)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryBufferObjectui64v(id, buffer, pname, offset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryBufferObjectiv(uint id, uint buffer, QueryObjectParameterName pname, nint offset)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryBufferObjectiv(id, buffer, pname, offset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryBufferObjecti64v(uint id, uint buffer, QueryObjectParameterName pname, nint offset)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryBufferObjecti64v(id, buffer, pname, offset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateQueries(QueryTarget target, int n, uint* ids)
     {
-        //...
-throw new System.NotImplementedException();
+        _createQueries(target, n, ids);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateProgramPipelines(int n, uint* pipelines)
     {
-        //...
-throw new System.NotImplementedException();
+        _createProgramPipelines(n, pipelines);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateSamplers(int n, uint* samplers)
     {
-        //...
-throw new System.NotImplementedException();
+        _createSamplers(n, samplers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexArrayIndexed64iv(uint vaobj, uint index, VertexArrayPName pname, long* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexArrayIndexed64iv(vaobj, index, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexArrayIndexediv(uint vaobj, uint index, VertexArrayPName pname, int* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexArrayIndexediv(vaobj, index, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexArrayiv(uint vaobj, VertexArrayPName pname, int* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexArrayiv(vaobj, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayBindingDivisor(uint vaobj, uint bindingindex, uint divisor)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexArrayBindingDivisor(vaobj, bindingindex, divisor);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayAttribLFormat(uint vaobj, uint attribindex, int size, VertexAttribLType type, uint relativeoffset)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexArrayAttribLFormat(vaobj, attribindex, size, type, relativeoffset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayAttribIFormat(uint vaobj, uint attribindex, int size, VertexAttribIType type, uint relativeoffset)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexArrayAttribIFormat(vaobj, attribindex, size, type, relativeoffset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayAttribFormat(uint vaobj, uint attribindex, int size, VertexAttribType type, byte normalized, uint relativeoffset)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexArrayAttribFormat(vaobj, attribindex, size, type, normalized, relativeoffset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayAttribBinding(uint vaobj, uint attribindex, uint bindingindex)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexArrayAttribBinding(vaobj, attribindex, bindingindex);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayVertexBuffers(uint vaobj, uint first, int count, uint* buffers, nint* offsets, int* strides)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexArrayVertexBuffers(vaobj, first, count, buffers, offsets, strides);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayVertexBuffer(uint vaobj, uint bindingindex, uint buffer, nint offset, int stride)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexArrayVertexBuffer(vaobj, bindingindex, buffer, offset, stride);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayElementBuffer(uint vaobj, uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexArrayElementBuffer(vaobj, buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EnableVertexArrayAttrib(uint vaobj, uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        _enableVertexArrayAttrib(vaobj, index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DisableVertexArrayAttrib(uint vaobj, uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        _disableVertexArrayAttrib(vaobj, index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateVertexArrays(int n, uint* arrays)
     {
-        //...
-throw new System.NotImplementedException();
+        _createVertexArrays(n, arrays);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureParameteriv(uint texture, GetTextureParameter pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTextureParameteriv(texture, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureParameterIuiv(uint texture, GetTextureParameter pname, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTextureParameterIuiv(texture, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureParameterIiv(uint texture, GetTextureParameter pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTextureParameterIiv(texture, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureParameterfv(uint texture, GetTextureParameter pname, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTextureParameterfv(texture, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureLevelParameteriv(uint texture, int level, GetTextureParameter pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTextureLevelParameteriv(texture, level, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureLevelParameterfv(uint texture, int level, GetTextureParameter pname, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTextureLevelParameterfv(texture, level, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetCompressedTextureImage(uint texture, int level, int bufSize, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _getCompressedTextureImage(texture, level, bufSize, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureImage(uint texture, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTextureImage(texture, level, format, type, bufSize, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindTextureUnit(uint unit, uint texture)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindTextureUnit(unit, texture);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenerateTextureMipmap(uint texture)
     {
-        //...
-throw new System.NotImplementedException();
+        _generateTextureMipmap(texture);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameteriv(uint texture, TextureParameterName pname, int* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureParameteriv(texture, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameterIuiv(uint texture, TextureParameterName pname, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureParameterIuiv(texture, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameterIiv(uint texture, TextureParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureParameterIiv(texture, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameteri(uint texture, TextureParameterName pname, int param)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureParameteri(texture, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameterfv(uint texture, TextureParameterName pname, float* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureParameterfv(texture, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameterf(uint texture, TextureParameterName pname, float param)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureParameterf(texture, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTextureSubImage3D(uint texture, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, x, y, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTextureSubImage2D(uint texture, int level, int xoffset, int yoffset, int x, int y, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyTextureSubImage2D(texture, level, xoffset, yoffset, x, y, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTextureSubImage1D(uint texture, int level, int xoffset, int x, int y, int width)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyTextureSubImage1D(texture, level, xoffset, x, y, width);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTextureSubImage3D(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, InternalFormat format, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTextureSubImage2D(uint texture, int level, int xoffset, int yoffset, int width, int height, InternalFormat format, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTextureSubImage1D(uint texture, int level, int xoffset, int width, InternalFormat format, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTextureSubImage1D(texture, level, xoffset, width, format, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureSubImage3D(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureSubImage2D(uint texture, int level, int xoffset, int yoffset, int width, int height, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureSubImage1D(uint texture, int level, int xoffset, int width, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureSubImage1D(texture, level, xoffset, width, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureStorage3DMultisample(uint texture, int samples, SizedInternalFormat internalformat, int width, int height, int depth, byte fixedsamplelocations)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureStorage3DMultisample(texture, samples, internalformat, width, height, depth, fixedsamplelocations);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureStorage2DMultisample(uint texture, int samples, SizedInternalFormat internalformat, int width, int height, byte fixedsamplelocations)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureStorage2DMultisample(texture, samples, internalformat, width, height, fixedsamplelocations);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureStorage3D(uint texture, int levels, SizedInternalFormat internalformat, int width, int height, int depth)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureStorage3D(texture, levels, internalformat, width, height, depth);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureStorage2D(uint texture, int levels, SizedInternalFormat internalformat, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureStorage2D(texture, levels, internalformat, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureStorage1D(uint texture, int levels, SizedInternalFormat internalformat, int width)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureStorage1D(texture, levels, internalformat, width);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureBufferRange(uint texture, SizedInternalFormat internalformat, uint buffer, nint offset, nint size)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureBufferRange(texture, internalformat, buffer, offset, size);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureBuffer(uint texture, SizedInternalFormat internalformat, uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureBuffer(texture, internalformat, buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateTextures(TextureTarget target, int n, uint* textures)
     {
-        //...
-throw new System.NotImplementedException();
+        _createTextures(target, n, textures);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedRenderbufferParameteriv(uint renderbuffer, RenderbufferParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getNamedRenderbufferParameteriv(renderbuffer, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedRenderbufferStorageMultisample(uint renderbuffer, int samples, InternalFormat internalformat, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedRenderbufferStorageMultisample(renderbuffer, samples, internalformat, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedRenderbufferStorage(uint renderbuffer, InternalFormat internalformat, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedRenderbufferStorage(renderbuffer, internalformat, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateRenderbuffers(int n, uint* renderbuffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _createRenderbuffers(n, renderbuffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedFramebufferAttachmentParameteriv(uint framebuffer, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getNamedFramebufferAttachmentParameteriv(framebuffer, attachment, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedFramebufferParameteriv(uint framebuffer, GetFramebufferParameter pname, int* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _getNamedFramebufferParameteriv(framebuffer, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public FramebufferStatus CheckNamedFramebufferStatus(uint framebuffer, FramebufferTarget target)
     {
-        //...
-throw new System.NotImplementedException();
+        return _checkNamedFramebufferStatus(framebuffer, target);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlitNamedFramebuffer(uint readFramebuffer, uint drawFramebuffer, int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
     {
-        //...
-throw new System.NotImplementedException();
+        _blitNamedFramebuffer(readFramebuffer, drawFramebuffer, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferfi(uint framebuffer, Buffer buffer, int drawbuffer, float depth, int stencil)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearNamedFramebufferfi(framebuffer, buffer, drawbuffer, depth, stencil);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferfv(uint framebuffer, Buffer buffer, int drawbuffer, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearNamedFramebufferfv(framebuffer, buffer, drawbuffer, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferuiv(uint framebuffer, Buffer buffer, int drawbuffer, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearNamedFramebufferuiv(framebuffer, buffer, drawbuffer, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferiv(uint framebuffer, Buffer buffer, int drawbuffer, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearNamedFramebufferiv(framebuffer, buffer, drawbuffer, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateNamedFramebufferSubData(uint framebuffer, int numAttachments, FramebufferAttachment* attachments, int x, int y, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _invalidateNamedFramebufferSubData(framebuffer, numAttachments, attachments, x, y, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateNamedFramebufferData(uint framebuffer, int numAttachments, FramebufferAttachment* attachments)
     {
-        //...
-throw new System.NotImplementedException();
+        _invalidateNamedFramebufferData(framebuffer, numAttachments, attachments);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferReadBuffer(uint framebuffer, ColorBuffer src)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedFramebufferReadBuffer(framebuffer, src);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferDrawBuffers(uint framebuffer, int n, ColorBuffer* bufs)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedFramebufferDrawBuffers(framebuffer, n, bufs);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferDrawBuffer(uint framebuffer, ColorBuffer buf)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedFramebufferDrawBuffer(framebuffer, buf);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferTextureLayer(uint framebuffer, FramebufferAttachment attachment, uint texture, int level, int layer)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedFramebufferTextureLayer(framebuffer, attachment, texture, level, layer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferTexture(uint framebuffer, FramebufferAttachment attachment, uint texture, int level)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedFramebufferTexture(framebuffer, attachment, texture, level);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferParameteri(uint framebuffer, FramebufferParameterName pname, int param)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedFramebufferParameteri(framebuffer, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferRenderbuffer(uint framebuffer, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, uint renderbuffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedFramebufferRenderbuffer(framebuffer, attachment, renderbuffertarget, renderbuffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateFramebuffers(int n, uint* framebuffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _createFramebuffers(n, framebuffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedBufferSubData(uint buffer, nint offset, nint size, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getNamedBufferSubData(buffer, offset, size, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedBufferPointerv(uint buffer, BufferPointerNameARB pname, void* @params)
+    public void GetNamedBufferPointerv(uint buffer, BufferPointerName pname, void** @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getNamedBufferPointerv(buffer, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedBufferParameteri64v(uint buffer, BufferPNameARB pname, long* @params)
+    public void GetNamedBufferParameteri64v(uint buffer, BufferPName pname, long* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getNamedBufferParameteri64v(buffer, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedBufferParameteriv(uint buffer, BufferPNameARB pname, int* @params)
+    public void GetNamedBufferParameteriv(uint buffer, BufferPName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getNamedBufferParameteriv(buffer, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FlushMappedNamedBufferRange(uint buffer, nint offset, nint length)
     {
-        //...
-throw new System.NotImplementedException();
+        _flushMappedNamedBufferRange(buffer, offset, length);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte UnmapNamedBuffer(uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        return _unmapNamedBuffer(buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MapNamedBufferRange(uint buffer, nint offset, nint length, MapBufferAccessMask access)
+    public void* MapNamedBufferRange(uint buffer, nint offset, nint length, MapBufferAccessMask access)
     {
-        //...
-throw new System.NotImplementedException();
+        return _mapNamedBufferRange(buffer, offset, length, access);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MapNamedBuffer(uint buffer, BufferAccessARB access)
+    public void* MapNamedBuffer(uint buffer, BufferAccess access)
     {
-        //...
-throw new System.NotImplementedException();
+        return _mapNamedBuffer(buffer, access);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedBufferSubData(uint buffer, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearNamedBufferSubData(buffer, internalformat, offset, size, format, type, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedBufferData(uint buffer, SizedInternalFormat internalformat, PixelFormat format, PixelType type, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearNamedBufferData(buffer, internalformat, format, type, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyNamedBufferSubData(uint readBuffer, uint writeBuffer, nint readOffset, nint writeOffset, nint size)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset, size);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedBufferSubData(uint buffer, nint offset, nint size, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedBufferSubData(buffer, offset, size, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedBufferData(uint buffer, nint size, void* data, BufferUsageARB usage)
+    public void NamedBufferData(uint buffer, nint size, void* data, BufferUsage usage)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedBufferData(buffer, size, data, usage);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedBufferStorage(uint buffer, nint size, void* data, BufferStorageMask flags)
     {
-        //...
-throw new System.NotImplementedException();
+        _namedBufferStorage(buffer, size, data, flags);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateBuffers(int n, uint* buffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _createBuffers(n, buffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTransformFeedbacki64_v(uint xfb, TransformFeedbackPName pname, uint index, long* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTransformFeedbacki64_v(xfb, pname, index, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTransformFeedbacki_v(uint xfb, TransformFeedbackPName pname, uint index, int* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTransformFeedbacki_v(xfb, pname, index, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTransformFeedbackiv(uint xfb, TransformFeedbackPName pname, int* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTransformFeedbackiv(xfb, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TransformFeedbackBufferRange(uint xfb, uint index, uint buffer, nint offset, nint size)
     {
-        //...
-throw new System.NotImplementedException();
+        _transformFeedbackBufferRange(xfb, index, buffer, offset, size);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TransformFeedbackBufferBase(uint xfb, uint index, uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _transformFeedbackBufferBase(xfb, index, buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateTransformFeedbacks(int n, uint* ids)
     {
-        //...
-throw new System.NotImplementedException();
+        _createTransformFeedbacks(n, ids);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClipControl(ClipControlOrigin origin, ClipControlDepth depth)
     {
-        //...
-throw new System.NotImplementedException();
+        _clipControl(origin, depth);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindVertexBuffers(uint first, int count, uint* buffers, nint* offsets, int* strides)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindVertexBuffers(first, count, buffers, offsets, strides);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindImageTextures(uint first, int count, uint* textures)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindImageTextures(first, count, textures);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindSamplers(uint first, int count, uint* samplers)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindSamplers(first, count, samplers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindTextures(uint first, int count, uint* textures)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindTextures(first, count, textures);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBuffersRange(BufferTargetARB target, uint first, int count, uint* buffers, nint* offsets, nint* sizes)
+    public void BindBuffersRange(BufferTarget target, uint first, int count, uint* buffers, nint* offsets, nint* sizes)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindBuffersRange(target, first, count, buffers, offsets, sizes);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBuffersBase(BufferTargetARB target, uint first, int count, uint* buffers)
+    public void BindBuffersBase(BufferTarget target, uint first, int count, uint* buffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindBuffersBase(target, first, count, buffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearTexSubImage(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearTexImage(uint texture, int level, PixelFormat format, PixelType type, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearTexImage(texture, level, format, type, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BufferStorage(BufferStorageTarget target, nint size, void* data, BufferStorageMask flags)
     {
-        //...
-throw new System.NotImplementedException();
+        _bufferStorage(target, size, data, flags);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetPointerv(GetPointervPName pname, void* @params)
+    public void GetPointerv(GetPointervPName pname, void** @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getPointerv(pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetObjectPtrLabel(void* ptr, int bufSize, int* length, char* label)
     {
-        //...
-throw new System.NotImplementedException();
+        _getObjectPtrLabel(ptr, bufSize, length, label);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ObjectPtrLabel(void* ptr, int length, char* label)
     {
-        //...
-throw new System.NotImplementedException();
+        _objectPtrLabel(ptr, length, label);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetObjectLabel(ObjectIdentifier identifier, uint name, int bufSize, int* length, char* label)
     {
-        //...
-throw new System.NotImplementedException();
+        _getObjectLabel(identifier, name, bufSize, length, label);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ObjectLabel(ObjectIdentifier identifier, uint name, int length, char* label)
     {
-        //...
-throw new System.NotImplementedException();
+        _objectLabel(identifier, name, length, label);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PopDebugGroup()
     {
-        //...
-throw new System.NotImplementedException();
+        _popDebugGroup();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PushDebugGroup(DebugSource source, uint id, int length, char* message)
     {
-        //...
-throw new System.NotImplementedException();
+        _pushDebugGroup(source, id, length, message);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint GetDebugMessageLog(uint count, int bufSize, DebugSource* sources, DebugType* types, uint* ids, DebugSeverity* severities, int* lengths, char* messageLog)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DebugMessageCallback(DebugProc callback, void* userParam)
     {
-        //...
-throw new System.NotImplementedException();
+        _debugMessageCallback(callback, userParam);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DebugMessageInsert(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, char* buf)
     {
-        //...
-throw new System.NotImplementedException();
+        _debugMessageInsert(source, type, id, severity, length, buf);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DebugMessageControl(DebugSource source, DebugType type, DebugSeverity severity, int count, uint* ids, byte enabled)
     {
-        //...
-throw new System.NotImplementedException();
+        _debugMessageControl(source, type, severity, count, ids, enabled);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexBindingDivisor(uint bindingindex, uint divisor)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexBindingDivisor(bindingindex, divisor);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribBinding(uint attribindex, uint bindingindex)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribBinding(attribindex, bindingindex);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribLFormat(uint attribindex, int size, VertexAttribLType type, uint relativeoffset)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribLFormat(attribindex, size, type, relativeoffset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribIFormat(uint attribindex, int size, VertexAttribIType type, uint relativeoffset)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribIFormat(attribindex, size, type, relativeoffset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribFormat(uint attribindex, int size, VertexAttribType type, byte normalized, uint relativeoffset)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribFormat(attribindex, size, type, normalized, relativeoffset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindVertexBuffer(uint bindingindex, uint buffer, nint offset, int stride)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindVertexBuffer(bindingindex, buffer, offset, stride);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureView(uint texture, TextureTarget target, uint origtexture, SizedInternalFormat internalformat, uint minlevel, uint numlevels, uint minlayer, uint numlayers)
     {
-        //...
-throw new System.NotImplementedException();
+        _textureView(texture, target, origtexture, internalformat, minlevel, numlevels, minlayer, numlayers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexStorage3DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, int depth, byte fixedsamplelocations)
     {
-        //...
-throw new System.NotImplementedException();
+        _texStorage3DMultisample(target, samples, internalformat, width, height, depth, fixedsamplelocations);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexStorage2DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, byte fixedsamplelocations)
     {
-        //...
-throw new System.NotImplementedException();
+        _texStorage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexBufferRange(TextureTarget target, SizedInternalFormat internalformat, uint buffer, nint offset, nint size)
     {
-        //...
-throw new System.NotImplementedException();
+        _texBufferRange(target, internalformat, buffer, offset, size);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ShaderStorageBlockBinding(uint program, uint storageBlockIndex, uint storageBlockBinding)
     {
-        //...
-throw new System.NotImplementedException();
+        _shaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetProgramResourceLocationIndex(uint program, ProgramInterface programInterface, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getProgramResourceLocationIndex(program, programInterface, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetProgramResourceLocation(uint program, ProgramInterface programInterface, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getProgramResourceLocation(program, programInterface, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramResourceiv(uint program, ProgramInterface programInterface, uint index, int propCount, ProgramResourceProperty* props, int count, int* length, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramResourceiv(program, programInterface, index, propCount, props, count, length, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramResourceName(uint program, ProgramInterface programInterface, uint index, int bufSize, int* length, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramResourceName(program, programInterface, index, bufSize, length, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint GetProgramResourceIndex(uint program, ProgramInterface programInterface, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getProgramResourceIndex(program, programInterface, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramInterfaceiv(uint program, ProgramInterface programInterface, ProgramInterfacePName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramInterfaceiv(program, programInterface, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawElementsIndirect(PrimitiveType mode, DrawElementsType type, void* indirect, int drawcount, int stride)
     {
-        //...
-throw new System.NotImplementedException();
+        _multiDrawElementsIndirect(mode, type, indirect, drawcount, stride);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawArraysIndirect(PrimitiveType mode, void* indirect, int drawcount, int stride)
     {
-        //...
-throw new System.NotImplementedException();
+        _multiDrawArraysIndirect(mode, indirect, drawcount, stride);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateSubFramebuffer(FramebufferTarget target, int numAttachments, InvalidateFramebufferAttachment* attachments, int x, int y, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _invalidateSubFramebuffer(target, numAttachments, attachments, x, y, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateFramebuffer(FramebufferTarget target, int numAttachments, InvalidateFramebufferAttachment* attachments)
     {
-        //...
-throw new System.NotImplementedException();
+        _invalidateFramebuffer(target, numAttachments, attachments);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateBufferData(uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _invalidateBufferData(buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateBufferSubData(uint buffer, nint offset, nint length)
     {
-        //...
-throw new System.NotImplementedException();
+        _invalidateBufferSubData(buffer, offset, length);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateTexImage(uint texture, int level)
     {
-        //...
-throw new System.NotImplementedException();
+        _invalidateTexImage(texture, level);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateTexSubImage(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth)
     {
-        //...
-throw new System.NotImplementedException();
+        _invalidateTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetInternalformati64v(TextureTarget target, InternalFormat internalformat, InternalFormatPName pname, int count, long* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getInternalformati64v(target, internalformat, pname, count, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetFramebufferParameteriv(FramebufferTarget target, FramebufferAttachmentParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getFramebufferParameteriv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferParameteri(FramebufferTarget target, FramebufferParameterName pname, int param)
     {
-        //...
-throw new System.NotImplementedException();
+        _framebufferParameteri(target, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyImageSubData(uint srcName, CopyImageSubDataTarget srcTarget, int srcLevel, int srcX, int srcY, int srcZ, uint dstName, CopyImageSubDataTarget dstTarget, int dstLevel, int dstX, int dstY, int dstZ, int srcWidth, int srcHeight, int srcDepth)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyImageSubData(srcName, srcTarget, srcLevel, srcX, srcY, srcZ, dstName, dstTarget, dstLevel, dstX, dstY, dstZ, srcWidth, srcHeight, srcDepth);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DispatchComputeIndirect(nint indirect)
     {
-        //...
-throw new System.NotImplementedException();
+        _dispatchComputeIndirect(indirect);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DispatchCompute(uint num_groups_x, uint num_groups_y, uint num_groups_z)
     {
-        //...
-throw new System.NotImplementedException();
+        _dispatchCompute(num_groups_x, num_groups_y, num_groups_z);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearBufferSubData(BufferTargetARB target, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
+    public void ClearBufferSubData(BufferTarget target, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearBufferSubData(target, internalformat, offset, size, format, type, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferData(BufferStorageTarget target, SizedInternalFormat internalformat, PixelFormat format, PixelType type, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearBufferData(target, internalformat, format, type, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawTransformFeedbackStreamInstanced(PrimitiveType mode, uint id, uint stream, int instancecount)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawTransformFeedbackStreamInstanced(mode, id, stream, instancecount);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawTransformFeedbackInstanced(PrimitiveType mode, uint id, int instancecount)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawTransformFeedbackInstanced(mode, id, instancecount);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexStorage3D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width, int height, int depth)
     {
-        //...
-throw new System.NotImplementedException();
+        _texStorage3D(target, levels, internalformat, width, height, depth);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexStorage2D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _texStorage2D(target, levels, internalformat, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexStorage1D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width)
     {
-        //...
-throw new System.NotImplementedException();
+        _texStorage1D(target, levels, internalformat, width);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MemoryBarrier(MemoryBarrierMask barriers)
     {
-        //...
-throw new System.NotImplementedException();
+        _memoryBarrier(barriers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindImageTexture(uint unit, uint texture, int level, byte layered, int layer, BufferAccessARB access, InternalFormat format)
+    public void BindImageTexture(uint unit, uint texture, int level, byte layered, int layer, BufferAccess access, InternalFormat format)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindImageTexture(unit, texture, level, layered, layer, access, format);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveAtomicCounterBufferiv(uint program, uint bufferIndex, AtomicCounterBufferPName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveAtomicCounterBufferiv(program, bufferIndex, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetInternalformativ(TextureTarget target, InternalFormat internalformat, InternalFormatPName pname, int count, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getInternalformativ(target, internalformat, pname, count, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsInstancedBaseVertexBaseInstance(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, int basevertex, uint baseinstance)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawElementsInstancedBaseVertexBaseInstance(mode, count, type, indices, instancecount, basevertex, baseinstance);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsInstancedBaseInstance(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, uint baseinstance)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawElementsInstancedBaseInstance(mode, count, type, indices, instancecount, baseinstance);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawArraysInstancedBaseInstance(PrimitiveType mode, int first, int count, int instancecount, uint baseinstance)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawArraysInstancedBaseInstance(mode, first, count, instancecount, baseinstance);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetDoublei_v(GetPName target, uint index, double* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getDoublei_v(target, index, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetFloati_v(GetPName target, uint index, float* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getFloati_v(target, index, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthRangeIndexed(uint index, double n, double f)
     {
-        //...
-throw new System.NotImplementedException();
+        _depthRangeIndexed(index, n, f);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthRangeArrayv(uint first, int count, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _depthRangeArrayv(first, count, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ScissorIndexedv(uint index, int* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _scissorIndexedv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ScissorIndexed(uint index, int left, int bottom, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _scissorIndexed(index, left, bottom, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ScissorArrayv(uint first, int count, int* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _scissorArrayv(first, count, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ViewportIndexedfv(uint index, float* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _viewportIndexedfv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ViewportIndexedf(uint index, float x, float y, float w, float h)
     {
-        //...
-throw new System.NotImplementedException();
+        _viewportIndexedf(index, x, y, w, h);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ViewportArrayv(uint first, int count, float* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _viewportArrayv(first, count, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribLdv(uint index, VertexAttribEnum pname, double* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexAttribLdv(index, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribLPointer(uint index, int size, VertexAttribLType type, int stride, void* pointer)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribLPointer(index, size, type, stride, pointer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL4dv(uint index, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribL4dv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL3dv(uint index, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribL3dv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL2dv(uint index, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribL2dv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL1dv(uint index, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribL1dv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL4d(uint index, double x, double y, double z, double w)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribL4d(index, x, y, z, w);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL3d(uint index, double x, double y, double z)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribL3d(index, x, y, z);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL2d(uint index, double x, double y)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribL2d(index, x, y);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL1d(uint index, double x)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribL1d(index, x);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramPipelineInfoLog(uint pipeline, int bufSize, int* length, char* infoLog)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramPipelineInfoLog(pipeline, bufSize, length, infoLog);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ValidateProgramPipeline(uint pipeline)
     {
-        //...
-throw new System.NotImplementedException();
+        _validateProgramPipeline(pipeline);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix4x3dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix4x3dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix3x4dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix3x4dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix4x2dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix4x2dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix2x4dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix2x4dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix3x2dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix3x2dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix2x3dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix2x3dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix4x3fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix4x3fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix3x4fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix3x4fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix4x2fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix4x2fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix2x4fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix2x4fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix3x2fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix3x2fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix2x3fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix2x3fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix4dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix4dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix3dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix3dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix2dv(uint program, int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix2dv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix4fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix4fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix3fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix3fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniformMatrix2fv(uint program, int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniformMatrix2fv(program, location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4uiv(uint program, int location, int count, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform4uiv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4ui(uint program, int location, uint v0, uint v1, uint v2, uint v3)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform4ui(program, location, v0, v1, v2, v3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4dv(uint program, int location, int count, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform4dv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4d(uint program, int location, double v0, double v1, double v2, double v3)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform4d(program, location, v0, v1, v2, v3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4fv(uint program, int location, int count, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform4fv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4f(uint program, int location, float v0, float v1, float v2, float v3)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform4f(program, location, v0, v1, v2, v3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4iv(uint program, int location, int count, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform4iv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4i(uint program, int location, int v0, int v1, int v2, int v3)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform4i(program, location, v0, v1, v2, v3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3uiv(uint program, int location, int count, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform3uiv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3ui(uint program, int location, uint v0, uint v1, uint v2)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform3ui(program, location, v0, v1, v2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3dv(uint program, int location, int count, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform3dv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3d(uint program, int location, double v0, double v1, double v2)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform3d(program, location, v0, v1, v2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3fv(uint program, int location, int count, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform3fv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3f(uint program, int location, float v0, float v1, float v2)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform3f(program, location, v0, v1, v2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3iv(uint program, int location, int count, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform3iv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3i(uint program, int location, int v0, int v1, int v2)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform3i(program, location, v0, v1, v2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2uiv(uint program, int location, int count, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform2uiv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2ui(uint program, int location, uint v0, uint v1)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform2ui(program, location, v0, v1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2dv(uint program, int location, int count, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform2dv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2d(uint program, int location, double v0, double v1)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform2d(program, location, v0, v1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2fv(uint program, int location, int count, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform2fv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2f(uint program, int location, float v0, float v1)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform2f(program, location, v0, v1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2iv(uint program, int location, int count, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform2iv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2i(uint program, int location, int v0, int v1)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform2i(program, location, v0, v1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1uiv(uint program, int location, int count, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform1uiv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1ui(uint program, int location, uint v0)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform1ui(program, location, v0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1dv(uint program, int location, int count, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform1dv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1d(uint program, int location, double v0)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform1d(program, location, v0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1fv(uint program, int location, int count, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform1fv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1f(uint program, int location, float v0)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform1f(program, location, v0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawArrays(PrimitiveType mode, int first, int count)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawArrays(mode, first, count);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElements(PrimitiveType mode, int count, DrawElementsType type, void* indices)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawElements(mode, count, type, indices);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindProgramPipeline(uint pipeline)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindProgramPipeline(pipeline);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PolygonOffset(float factor, float units)
     {
-        //...
-throw new System.NotImplementedException();
+        _polygonOffset(factor, units);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexImage1D(TextureTarget target, int level, InternalFormat internalformat, int x, int y, int width, int border)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyTexImage1D(target, level, internalformat, x, y, width, border);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexImage2D(TextureTarget target, int level, InternalFormat internalformat, int x, int y, int width, int height, int border)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyTexImage2D(target, level, internalformat, x, y, width, height, border);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexSubImage1D(TextureTarget target, int level, int xoffset, int x, int y, int width)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyTexSubImage1D(target, level, xoffset, x, y, width);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int x, int y, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexSubImage1D(TextureTarget target, int level, int xoffset, int width, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _texSubImage1D(target, level, xoffset, width, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int width, int height, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindTexture(TextureTarget target, uint texture)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindTexture(target, texture);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteTextures(int n, uint* textures)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteTextures(n, textures);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenTextures(int n, uint* textures)
     {
-        //...
-throw new System.NotImplementedException();
+        _genTextures(n, textures);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsTexture(uint texture)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isTexture(texture);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1iv(uint program, int location, int count, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform1iv(program, location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1i(uint program, int location, int v0)
     {
-        //...
-throw new System.NotImplementedException();
+        _programUniform1i(program, location, v0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramPipelineiv(uint pipeline, PipelineParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramPipelineiv(pipeline, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsProgramPipeline(uint pipeline)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isProgramPipeline(pipeline);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenProgramPipelines(int n, uint* pipelines)
     {
-        //...
-throw new System.NotImplementedException();
+        _genProgramPipelines(n, pipelines);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteProgramPipelines(int n, uint* pipelines)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteProgramPipelines(n, pipelines);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint CreateShaderProgramv(ShaderType type, int count, char* strings)
+    public uint CreateShaderProgramv(ShaderType type, int count, char** strings)
     {
-        //...
-throw new System.NotImplementedException();
+        return _createShaderProgramv(type, count, strings);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ActiveShaderProgram(uint pipeline, uint program)
     {
-        //...
-throw new System.NotImplementedException();
+        _activeShaderProgram(pipeline, program);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UseProgramStages(uint pipeline, UseProgramStageMask stages, uint program)
     {
-        //...
-throw new System.NotImplementedException();
+        _useProgramStages(pipeline, stages, program);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramParameteri(uint program, ProgramParameterPName pname, int value)
     {
-        //...
-throw new System.NotImplementedException();
+        _programParameteri(program, pname, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramBinary(uint program, Enum binaryFormat, void* binary, int length)
     {
-        //...
-throw new System.NotImplementedException();
+        _programBinary(program, binaryFormat, binary, length);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramBinary(uint program, int bufSize, int* length, Enum* binaryFormat, void* binary)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramBinary(program, bufSize, length, binaryFormat, binary);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearDepthf(float d)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearDepthf(d);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthRangef(float n, float f)
     {
-        //...
-throw new System.NotImplementedException();
+        _depthRangef(n, f);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetShaderPrecisionFormat(ShaderType shadertype, PrecisionType precisiontype, int* range, int* precision)
     {
-        //...
-throw new System.NotImplementedException();
+        _getShaderPrecisionFormat(shadertype, precisiontype, range, precision);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ShaderBinary(int count, uint* shaders, ShaderBinaryFormat binaryFormat, void* binary, int length)
     {
-        //...
-throw new System.NotImplementedException();
+        _shaderBinary(count, shaders, binaryFormat, binary, length);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawRangeElements(PrimitiveType mode, uint start, uint end, int count, DrawElementsType type, void* indices)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawRangeElements(mode, start, end, count, type, indices);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexImage3D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int depth, int border, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _texImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
     {
-        //...
-throw new System.NotImplementedException();
+        _texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ActiveTexture(TextureUnit texture)
     {
-        //...
-throw new System.NotImplementedException();
+        _activeTexture(texture);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SampleCoverage(float value, byte invert)
     {
-        //...
-throw new System.NotImplementedException();
+        _sampleCoverage(value, invert);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexImage3D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int depth, int border, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexImage2D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int border, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexImage1D(TextureTarget target, int level, InternalFormat internalformat, int width, int border, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTexImage1D(target, level, internalformat, width, border, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, InternalFormat format, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int width, int height, InternalFormat format, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexSubImage1D(TextureTarget target, int level, int xoffset, int width, InternalFormat format, int imageSize, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _compressedTexSubImage1D(target, level, xoffset, width, format, imageSize, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetCompressedTexImage(TextureTarget target, int level, void* img)
     {
-        //...
-throw new System.NotImplementedException();
+        _getCompressedTexImage(target, level, img);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReleaseShaderCompiler()
     {
-        //...
-throw new System.NotImplementedException();
+        _releaseShaderCompiler();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryIndexediv(QueryTarget target, uint index, QueryParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryIndexediv(target, index, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndQueryIndexed(QueryTarget target, uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        _endQueryIndexed(target, index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginQueryIndexed(QueryTarget target, uint index, uint id)
     {
-        //...
-throw new System.NotImplementedException();
+        _beginQueryIndexed(target, index, id);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawTransformFeedbackStream(PrimitiveType mode, uint id, uint stream)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawTransformFeedbackStream(mode, id, stream);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawTransformFeedback(PrimitiveType mode, uint id)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawTransformFeedback(mode, id);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ResumeTransformFeedback()
     {
-        //...
-throw new System.NotImplementedException();
+        _resumeTransformFeedback();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PauseTransformFeedback()
     {
-        //...
-throw new System.NotImplementedException();
+        _pauseTransformFeedback();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsTransformFeedback(uint id)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isTransformFeedback(id);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenTransformFeedbacks(int n, uint* ids)
     {
-        //...
-throw new System.NotImplementedException();
+        _genTransformFeedbacks(n, ids);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteTransformFeedbacks(int n, uint* ids)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteTransformFeedbacks(n, ids);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindTransformFeedback(BindTransformFeedbackTarget target, uint id)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindTransformFeedback(target, id);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PatchParameterfv(PatchParameterName pname, float* values)
     {
-        //...
-throw new System.NotImplementedException();
+        _patchParameterfv(pname, values);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PatchParameteri(PatchParameterName pname, int value)
     {
-        //...
-throw new System.NotImplementedException();
+        _patchParameteri(pname, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramStageiv(uint program, ShaderType shadertype, ProgramStagePName pname, int* values)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramStageiv(program, shadertype, pname, values);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformSubroutineuiv(ShaderType shadertype, int location, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getUniformSubroutineuiv(shadertype, location, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformSubroutinesuiv(ShaderType shadertype, int count, uint* indices)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformSubroutinesuiv(shadertype, count, indices);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveSubroutineName(uint program, ShaderType shadertype, uint index, int bufSize, int* length, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveSubroutineName(program, shadertype, index, bufSize, length, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveSubroutineUniformName(uint program, ShaderType shadertype, uint index, int bufSize, int* length, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveSubroutineUniformName(program, shadertype, index, bufSize, length, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveSubroutineUniformiv(uint program, ShaderType shadertype, uint index, SubroutineParameterName pname, int* values)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveSubroutineUniformiv(program, shadertype, index, pname, values);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint GetSubroutineIndex(uint program, ShaderType shadertype, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getSubroutineIndex(program, shadertype, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetSubroutineUniformLocation(uint program, ShaderType shadertype, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getSubroutineUniformLocation(program, shadertype, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformdv(uint program, int location, double* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getUniformdv(program, location, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix4x3dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix4x3dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix4x2dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix4x2dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix3x4dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix3x4dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix3x2dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix3x2dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix2x4dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix2x4dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix2x3dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix2x3dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix4dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix4dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix3dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix3dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix2dv(int location, int count, byte transpose, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix2dv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4dv(int location, int count, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform4dv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3dv(int location, int count, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform3dv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2dv(int location, int count, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform2dv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1dv(int location, int count, double* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform1dv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4d(int location, double x, double y, double z, double w)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform4d(location, x, y, z, w);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendFuncSeparate(BlendingFactor sfactorRGB, BlendingFactor dfactorRGB, BlendingFactor sfactorAlpha, BlendingFactor dfactorAlpha)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawArrays(PrimitiveType mode, int* first, int* count, int drawcount)
     {
-        //...
-throw new System.NotImplementedException();
+        _multiDrawArrays(mode, first, count, drawcount);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MultiDrawElements(PrimitiveType mode, int* count, DrawElementsType type, void* indices, int drawcount)
+    public void MultiDrawElements(PrimitiveType mode, int* count, DrawElementsType type, void** indices, int drawcount)
     {
-        //...
-throw new System.NotImplementedException();
+        _multiDrawElements(mode, count, type, indices, drawcount);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PointParameterf(PointParameterNameARB pname, float param)
+    public void PointParameterf(PointParameterName pname, float param)
     {
-        //...
-throw new System.NotImplementedException();
+        _pointParameterf(pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PointParameterfv(PointParameterNameARB pname, float* @params)
+    public void PointParameterfv(PointParameterName pname, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _pointParameterfv(pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PointParameteri(PointParameterNameARB pname, int param)
+    public void PointParameteri(PointParameterName pname, int param)
     {
-        //...
-throw new System.NotImplementedException();
+        _pointParameteri(pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PointParameteriv(PointParameterNameARB pname, int* @params)
+    public void PointParameteriv(PointParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _pointParameteriv(pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3d(int location, double x, double y, double z)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform3d(location, x, y, z);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2d(int location, double x, double y)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform2d(location, x, y);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1d(int location, double x)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform1d(location, x);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsIndirect(PrimitiveType mode, DrawElementsType type, void* indirect)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawElementsIndirect(mode, type, indirect);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawArraysIndirect(PrimitiveType mode, void* indirect)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawArraysIndirect(mode, indirect);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendFuncSeparatei(uint buf, BlendingFactor srcRGB, BlendingFactor dstRGB, BlendingFactor srcAlpha, BlendingFactor dstAlpha)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendFunci(uint buf, BlendingFactor src, BlendingFactor dst)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendFunci(buf, src, dst);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendEquationSeparatei(uint buf, BlendEquationModeEXT modeRGB, BlendEquationModeEXT modeAlpha)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendEquationSeparatei(buf, modeRGB, modeAlpha);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendEquationi(uint buf, BlendEquationModeEXT mode)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendEquationi(buf, mode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MinSampleShading(float value)
     {
-        //...
-throw new System.NotImplementedException();
+        _minSampleShading(value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribP4uiv(uint index, VertexAttribPointerType type, byte normalized, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribP4uiv(index, type, normalized, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribP4ui(uint index, VertexAttribPointerType type, byte normalized, uint value)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribP4ui(index, type, normalized, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribP3uiv(uint index, VertexAttribPointerType type, byte normalized, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribP3uiv(index, type, normalized, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribP3ui(uint index, VertexAttribPointerType type, byte normalized, uint value)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribP3ui(index, type, normalized, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribP2uiv(uint index, VertexAttribPointerType type, byte normalized, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribP2uiv(index, type, normalized, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribP2ui(uint index, VertexAttribPointerType type, byte normalized, uint value)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribP2ui(index, type, normalized, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribP1uiv(uint index, VertexAttribPointerType type, byte normalized, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribP1uiv(index, type, normalized, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribP1ui(uint index, VertexAttribPointerType type, byte normalized, uint value)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribP1ui(index, type, normalized, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribDivisor(uint index, uint divisor)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribDivisor(index, divisor);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryObjectui64v(uint id, QueryObjectParameterName pname, ulong* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryObjectui64v(id, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryObjecti64v(uint id, QueryObjectParameterName pname, long* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryObjecti64v(id, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void QueryCounter(uint id, QueryCounterTarget target)
     {
-        //...
-throw new System.NotImplementedException();
+        _queryCounter(id, target);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSamplerParameterIuiv(uint sampler, SamplerParameterI pname, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getSamplerParameterIuiv(sampler, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSamplerParameterfv(uint sampler, SamplerParameterF pname, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getSamplerParameterfv(sampler, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSamplerParameterIiv(uint sampler, SamplerParameterI pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getSamplerParameterIiv(sampler, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSamplerParameteriv(uint sampler, SamplerParameterI pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getSamplerParameteriv(sampler, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameterIuiv(uint sampler, SamplerParameterI pname, uint* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _samplerParameterIuiv(sampler, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameterIiv(uint sampler, SamplerParameterI pname, int* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _samplerParameterIiv(sampler, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameterfv(uint sampler, SamplerParameterF pname, float* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _samplerParameterfv(sampler, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameterf(uint sampler, SamplerParameterF pname, float param)
     {
-        //...
-throw new System.NotImplementedException();
+        _samplerParameterf(sampler, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameteriv(uint sampler, SamplerParameterI pname, int* param)
     {
-        //...
-throw new System.NotImplementedException();
+        _samplerParameteriv(sampler, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameteri(uint sampler, SamplerParameterI pname, int param)
     {
-        //...
-throw new System.NotImplementedException();
+        _samplerParameteri(sampler, pname, param);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindSampler(uint unit, uint sampler)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindSampler(unit, sampler);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsSampler(uint sampler)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isSampler(sampler);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteSamplers(int count, uint* samplers)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteSamplers(count, samplers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenSamplers(int count, uint* samplers)
     {
-        //...
-throw new System.NotImplementedException();
+        _genSamplers(count, samplers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetFragDataIndex(uint program, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getFragDataIndex(program, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindFragDataLocationIndexed(uint program, uint colorNumber, uint index, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindFragDataLocationIndexed(program, colorNumber, index, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendColor(float red, float green, float blue, float alpha)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendColor(red, green, blue, alpha);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendEquation(BlendEquationModeEXT mode)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendEquation(mode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenQueries(int n, uint* ids)
     {
-        //...
-throw new System.NotImplementedException();
+        _genQueries(n, ids);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteQueries(int n, uint* ids)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteQueries(n, ids);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsQuery(uint id)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isQuery(id);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginQuery(QueryTarget target, uint id)
     {
-        //...
-throw new System.NotImplementedException();
+        _beginQuery(target, id);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndQuery(QueryTarget target)
     {
-        //...
-throw new System.NotImplementedException();
+        _endQuery(target);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryiv(QueryTarget target, QueryParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryiv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryObjectiv(uint id, QueryObjectParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryObjectiv(id, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryObjectuiv(uint id, QueryObjectParameterName pname, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getQueryObjectuiv(id, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBuffer(BufferTargetARB target, uint buffer)
+    public void BindBuffer(BufferTarget target, uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindBuffer(target, buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteBuffers(int n, uint* buffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteBuffers(n, buffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenBuffers(int n, uint* buffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _genBuffers(n, buffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsBuffer(uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isBuffer(buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BufferData(BufferTargetARB target, nint size, void* data, BufferUsageARB usage)
+    public void BufferData(BufferTarget target, nint size, void* data, BufferUsage usage)
     {
-        //...
-throw new System.NotImplementedException();
+        _bufferData(target, size, data, usage);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BufferSubData(BufferTargetARB target, nint offset, nint size, void* data)
+    public void BufferSubData(BufferTarget target, nint offset, nint size, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _bufferSubData(target, offset, size, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBufferSubData(BufferTargetARB target, nint offset, nint size, void* data)
+    public void GetBufferSubData(BufferTarget target, nint offset, nint size, void* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getBufferSubData(target, offset, size, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MapBuffer(BufferTargetARB target, BufferAccessARB access)
+    public void* MapBuffer(BufferTarget target, BufferAccess access)
     {
-        //...
-throw new System.NotImplementedException();
+        return _mapBuffer(target, access);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte UnmapBuffer(BufferTargetARB target)
+    public byte UnmapBuffer(BufferTarget target)
     {
-        //...
-throw new System.NotImplementedException();
+        return _unmapBuffer(target);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBufferParameteriv(BufferTargetARB target, BufferPNameARB pname, int* @params)
+    public void GetBufferParameteriv(BufferTarget target, BufferPName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getBufferParameteriv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBufferPointerv(BufferTargetARB target, BufferPointerNameARB pname, void* @params)
+    public void GetBufferPointerv(BufferTarget target, BufferPointerName pname, void** @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getBufferPointerv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendEquationSeparate(BlendEquationModeEXT modeRGB, BlendEquationModeEXT modeAlpha)
     {
-        //...
-throw new System.NotImplementedException();
+        _blendEquationSeparate(modeRGB, modeAlpha);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawBuffers(int n, DrawBufferMode* bufs)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawBuffers(n, bufs);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void StencilOpSeparate(TriangleFace face, StencilOp sfail, StencilOp dpfail, StencilOp dppass)
+    public void StencilOpSeparate(TriangleFace face, StencilOpEnum sfail, StencilOpEnum dpfail, StencilOpEnum dppass)
     {
-        //...
-throw new System.NotImplementedException();
+        _stencilOpSeparate(face, sfail, dpfail, dppass);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilFuncSeparate(TriangleFace face, StencilFunction func, int @ref, uint mask)
     {
-        //...
-throw new System.NotImplementedException();
+        _stencilFuncSeparate(face, func, @ref, mask);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilMaskSeparate(TriangleFace face, uint mask)
     {
-        //...
-throw new System.NotImplementedException();
+        _stencilMaskSeparate(face, mask);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AttachShader(uint program, uint shader)
     {
-        //...
-throw new System.NotImplementedException();
+        _attachShader(program, shader);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindAttribLocation(uint program, uint index, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindAttribLocation(program, index, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompileShader(uint shader)
     {
-        //...
-throw new System.NotImplementedException();
+        _compileShader(shader);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint CreateProgram()
     {
-        //...
-throw new System.NotImplementedException();
+        return _createProgram();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint CreateShader(ShaderType type)
     {
-        //...
-throw new System.NotImplementedException();
+        return _createShader(type);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteProgram(uint program)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteProgram(program);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteShader(uint shader)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteShader(shader);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DetachShader(uint program, uint shader)
     {
-        //...
-throw new System.NotImplementedException();
+        _detachShader(program, shader);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DisableVertexAttribArray(uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        _disableVertexAttribArray(index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EnableVertexAttribArray(uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        _enableVertexAttribArray(index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveAttrib(uint program, uint index, int bufSize, int* length, int* size, AttributeType* type, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveAttrib(program, index, bufSize, length, size, type, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniform(uint program, uint index, int bufSize, int* length, int* size, UniformType* type, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveUniform(program, index, bufSize, length, size, type, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetAttachedShaders(uint program, int maxCount, int* count, uint* shaders)
     {
-        //...
-throw new System.NotImplementedException();
+        _getAttachedShaders(program, maxCount, count, shaders);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAttribLocation(uint program, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getAttribLocation(program, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramiv(uint program, ProgramPropertyARB pname, int* @params)
+    public void GetProgramiv(uint program, ProgramProperty pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramiv(program, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramInfoLog(uint program, int bufSize, int* length, char* infoLog)
     {
-        //...
-throw new System.NotImplementedException();
+        _getProgramInfoLog(program, bufSize, length, infoLog);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetShaderiv(uint shader, ShaderParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getShaderiv(shader, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetShaderInfoLog(uint shader, int bufSize, int* length, char* infoLog)
     {
-        //...
-throw new System.NotImplementedException();
+        _getShaderInfoLog(shader, bufSize, length, infoLog);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetShaderSource(uint shader, int bufSize, int* length, char* source)
     {
-        //...
-throw new System.NotImplementedException();
+        _getShaderSource(shader, bufSize, length, source);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetUniformLocation(uint program, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getUniformLocation(program, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformfv(uint program, int location, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getUniformfv(program, location, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformiv(uint program, int location, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getUniformiv(program, location, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribdv(uint index, VertexAttribPropertyARB pname, double* @params)
+    public void GetVertexAttribdv(uint index, VertexAttribProperty pname, double* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexAttribdv(index, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribfv(uint index, VertexAttribPropertyARB pname, float* @params)
+    public void GetVertexAttribfv(uint index, VertexAttribProperty pname, float* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexAttribfv(index, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribiv(uint index, VertexAttribPropertyARB pname, int* @params)
+    public void GetVertexAttribiv(uint index, VertexAttribProperty pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexAttribiv(index, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribPointerv(uint index, VertexAttribPointerPropertyARB pname, void* pointer)
+    public void GetVertexAttribPointerv(uint index, VertexAttribPointerProperty pname, void** pointer)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexAttribPointerv(index, pname, pointer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsProgram(uint program)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isProgram(program);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsShader(uint shader)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isShader(shader);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void LinkProgram(uint program)
     {
-        //...
-throw new System.NotImplementedException();
+        _linkProgram(program);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ShaderSource(uint shader, int count, char* @string, int* length)
+    public void ShaderSource(uint shader, int count, char** @string, int* length)
     {
-        //...
-throw new System.NotImplementedException();
+        _shaderSource(shader, count, @string, length);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UseProgram(uint program)
     {
-        //...
-throw new System.NotImplementedException();
+        _useProgram(program);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1f(int location, float v0)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform1f(location, v0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2f(int location, float v0, float v1)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform2f(location, v0, v1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3f(int location, float v0, float v1, float v2)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform3f(location, v0, v1, v2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4f(int location, float v0, float v1, float v2, float v3)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform4f(location, v0, v1, v2, v3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1i(int location, int v0)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform1i(location, v0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2i(int location, int v0, int v1)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform2i(location, v0, v1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3i(int location, int v0, int v1, int v2)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform3i(location, v0, v1, v2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4i(int location, int v0, int v1, int v2, int v3)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform4i(location, v0, v1, v2, v3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1fv(int location, int count, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform1fv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2fv(int location, int count, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform2fv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3fv(int location, int count, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform3fv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4fv(int location, int count, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform4fv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1iv(int location, int count, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform1iv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2iv(int location, int count, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform2iv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3iv(int location, int count, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform3iv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4iv(int location, int count, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform4iv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix2fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix2fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix3fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix3fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix4fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix4fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ValidateProgram(uint program)
     {
-        //...
-throw new System.NotImplementedException();
+        _validateProgram(program);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1d(uint index, double x)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib1d(index, x);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1dv(uint index, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib1dv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1f(uint index, float x)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib1f(index, x);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1fv(uint index, float* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib1fv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1s(uint index, short x)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib1s(index, x);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1sv(uint index, short* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib1sv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2d(uint index, double x, double y)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib2d(index, x, y);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2dv(uint index, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib2dv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2f(uint index, float x, float y)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib2f(index, x, y);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2fv(uint index, float* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib2fv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2s(uint index, short x, short y)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib2s(index, x, y);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2sv(uint index, short* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib2sv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3d(uint index, double x, double y, double z)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib3d(index, x, y, z);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3dv(uint index, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib3dv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3f(uint index, float x, float y, float z)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib3f(index, x, y, z);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3fv(uint index, float* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib3fv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3s(uint index, short x, short y, short z)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib3s(index, x, y, z);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3sv(uint index, short* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib3sv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nbv(uint index, char* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4Nbv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Niv(uint index, int* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4Niv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nsv(uint index, short* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4Nsv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nub(uint index, byte x, byte y, byte z, byte w)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4Nub(index, x, y, z, w);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nubv(uint index, byte* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4Nubv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nuiv(uint index, uint* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4Nuiv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nusv(uint index, ushort* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4Nusv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4bv(uint index, char* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4bv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4d(uint index, double x, double y, double z, double w)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4d(index, x, y, z, w);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4dv(uint index, double* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4dv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4f(uint index, float x, float y, float z, float w)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4f(index, x, y, z, w);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4fv(uint index, float* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4fv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4iv(uint index, int* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4iv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4s(uint index, short x, short y, short z, short w)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4s(index, x, y, z, w);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4sv(uint index, short* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4sv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4ubv(uint index, byte* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4ubv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4uiv(uint index, uint* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4uiv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4usv(uint index, ushort* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttrib4usv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribPointer(uint index, int size, VertexAttribPointerType type, byte normalized, int stride, void* pointer)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribPointer(index, size, type, normalized, stride, pointer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix2x3fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix2x3fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix3x2fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix3x2fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix2x4fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix2x4fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix4x2fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix4x2fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix3x4fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix3x4fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix4x3fv(int location, int count, byte transpose, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformMatrix4x3fv(location, count, transpose, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ColorMaski(uint index, byte r, byte g, byte b, byte a)
     {
-        //...
-throw new System.NotImplementedException();
+        _colorMaski(index, r, g, b, a);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBooleani_v(BufferTargetARB target, uint index, byte* data)
+    public void GetBooleani_v(BufferTarget target, uint index, byte* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getBooleani_v(target, index, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetIntegeri_v(GetPName target, uint index, int* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getIntegeri_v(target, index, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Enablei(EnableCap target, uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        _enablei(target, index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Disablei(EnableCap target, uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        _disablei(target, index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsEnabledi(EnableCap target, uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isEnabledi(target, index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginTransformFeedback(PrimitiveType primitiveMode)
     {
-        //...
-throw new System.NotImplementedException();
+        _beginTransformFeedback(primitiveMode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndTransformFeedback()
     {
-        //...
-throw new System.NotImplementedException();
+        _endTransformFeedback();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBufferRange(BufferTargetARB target, uint index, uint buffer, nint offset, nint size)
+    public void BindBufferRange(BufferTarget target, uint index, uint buffer, nint offset, nint size)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindBufferRange(target, index, buffer, offset, size);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBufferBase(BufferTargetARB target, uint index, uint buffer)
+    public void BindBufferBase(BufferTarget target, uint index, uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindBufferBase(target, index, buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TransformFeedbackVaryings(uint program, int count, char* varyings, TransformFeedbackBufferMode bufferMode)
+    public void TransformFeedbackVaryings(uint program, int count, char** varyings, TransformFeedbackBufferMode bufferMode)
     {
-        //...
-throw new System.NotImplementedException();
+        _transformFeedbackVaryings(program, count, varyings, bufferMode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTransformFeedbackVarying(uint program, uint index, int bufSize, int* length, int* size, AttributeType* type, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTransformFeedbackVarying(program, index, bufSize, length, size, type, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClampColor(ClampColorTargetARB target, ClampColorModeARB clamp)
+    public void ClampColor(ClampColorTarget target, ClampColorMode clamp)
     {
-        //...
-throw new System.NotImplementedException();
+        _clampColor(target, clamp);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginConditionalRender(uint id, ConditionalRenderMode mode)
     {
-        //...
-throw new System.NotImplementedException();
+        _beginConditionalRender(id, mode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndConditionalRender()
     {
-        //...
-throw new System.NotImplementedException();
+        _endConditionalRender();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribIPointer(uint index, int size, VertexAttribIType type, int stride, void* pointer)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribIPointer(index, size, type, stride, pointer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribIiv(uint index, VertexAttribEnum pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexAttribIiv(index, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribIuiv(uint index, VertexAttribEnum pname, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getVertexAttribIuiv(index, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI1i(uint index, int x)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI1i(index, x);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI2i(uint index, int x, int y)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI2i(index, x, y);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3i(uint index, int x, int y, int z)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI3i(index, x, y, z);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4i(uint index, int x, int y, int z, int w)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI4i(index, x, y, z, w);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI1ui(uint index, uint x)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI1ui(index, x);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI2ui(uint index, uint x, uint y)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI2ui(index, x, y);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3ui(uint index, uint x, uint y, uint z)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI3ui(index, x, y, z);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4ui(uint index, uint x, uint y, uint z, uint w)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI4ui(index, x, y, z, w);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI1iv(uint index, int* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI1iv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI2iv(uint index, int* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI2iv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3iv(uint index, int* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI3iv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4iv(uint index, int* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI4iv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI1uiv(uint index, uint* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI1uiv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI2uiv(uint index, uint* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI2uiv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3uiv(uint index, uint* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI3uiv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4uiv(uint index, uint* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI4uiv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4bv(uint index, char* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI4bv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4sv(uint index, short* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI4sv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4ubv(uint index, byte* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI4ubv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4usv(uint index, ushort* v)
     {
-        //...
-throw new System.NotImplementedException();
+        _vertexAttribI4usv(index, v);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformuiv(uint program, int location, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getUniformuiv(program, location, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindFragDataLocation(uint program, uint color, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindFragDataLocation(program, color, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetFragDataLocation(uint program, char* name)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getFragDataLocation(program, name);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1ui(int location, uint v0)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform1ui(location, v0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2ui(int location, uint v0, uint v1)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform2ui(location, v0, v1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3ui(int location, uint v0, uint v1, uint v2)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform3ui(location, v0, v1, v2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4ui(int location, uint v0, uint v1, uint v2, uint v3)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform4ui(location, v0, v1, v2, v3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1uiv(int location, int count, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform1uiv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2uiv(int location, int count, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform2uiv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3uiv(int location, int count, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform3uiv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4uiv(int location, int count, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniform4uiv(location, count, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameterIiv(TextureTarget target, TextureParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _texParameterIiv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameterIuiv(TextureTarget target, TextureParameterName pname, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _texParameterIuiv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexParameterIiv(TextureTarget target, GetTextureParameter pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTexParameterIiv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexParameterIuiv(TextureTarget target, GetTextureParameter pname, uint* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getTexParameterIuiv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferiv(Buffer buffer, int drawbuffer, int* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearBufferiv(buffer, drawbuffer, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferuiv(Buffer buffer, int drawbuffer, uint* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearBufferuiv(buffer, drawbuffer, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferfv(Buffer buffer, int drawbuffer, float* value)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearBufferfv(buffer, drawbuffer, value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferfi(Buffer buffer, int drawbuffer, float depth, int stencil)
     {
-        //...
-throw new System.NotImplementedException();
+        _clearBufferfi(buffer, drawbuffer, depth, stencil);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte GetStringi(StringName name, uint index)
+    public byte* GetStringi(StringName name, uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getStringi(name, index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsRenderbuffer(uint renderbuffer)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isRenderbuffer(renderbuffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindRenderbuffer(RenderbufferTarget target, uint renderbuffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindRenderbuffer(target, renderbuffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteRenderbuffers(int n, uint* renderbuffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteRenderbuffers(n, renderbuffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenRenderbuffers(int n, uint* renderbuffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _genRenderbuffers(n, renderbuffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RenderbufferStorage(RenderbufferTarget target, InternalFormat internalformat, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _renderbufferStorage(target, internalformat, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetRenderbufferParameteriv(RenderbufferTarget target, RenderbufferParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getRenderbufferParameteriv(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsFramebuffer(uint framebuffer)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isFramebuffer(framebuffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindFramebuffer(FramebufferTarget target, uint framebuffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindFramebuffer(target, framebuffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteFramebuffers(int n, uint* framebuffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteFramebuffers(n, framebuffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenFramebuffers(int n, uint* framebuffers)
     {
-        //...
-throw new System.NotImplementedException();
+        _genFramebuffers(n, framebuffers);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public FramebufferStatus CheckFramebufferStatus(FramebufferTarget target)
     {
-        //...
-throw new System.NotImplementedException();
+        return _checkFramebufferStatus(target);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTexture1D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, uint texture, int level)
     {
-        //...
-throw new System.NotImplementedException();
+        _framebufferTexture1D(target, attachment, textarget, texture, level);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTexture2D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, uint texture, int level)
     {
-        //...
-throw new System.NotImplementedException();
+        _framebufferTexture2D(target, attachment, textarget, texture, level);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTexture3D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, uint texture, int level, int zoffset)
     {
-        //...
-throw new System.NotImplementedException();
+        _framebufferTexture3D(target, attachment, textarget, texture, level, zoffset);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferRenderbuffer(FramebufferTarget target, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, uint renderbuffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetFramebufferAttachmentParameteriv(FramebufferTarget target, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getFramebufferAttachmentParameteriv(target, attachment, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenerateMipmap(TextureTarget target)
     {
-        //...
-throw new System.NotImplementedException();
+        _generateMipmap(target);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
     {
-        //...
-throw new System.NotImplementedException();
+        _blitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RenderbufferStorageMultisample(RenderbufferTarget target, int samples, InternalFormat internalformat, int width, int height)
     {
-        //...
-throw new System.NotImplementedException();
+        _renderbufferStorageMultisample(target, samples, internalformat, width, height);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTextureLayer(FramebufferTarget target, FramebufferAttachment attachment, uint texture, int level, int layer)
     {
-        //...
-throw new System.NotImplementedException();
+        _framebufferTextureLayer(target, attachment, texture, level, layer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MapBufferRange(BufferTargetARB target, nint offset, nint length, MapBufferAccessMask access)
+    public void* MapBufferRange(BufferTarget target, nint offset, nint length, MapBufferAccessMask access)
     {
-        //...
-throw new System.NotImplementedException();
+        return _mapBufferRange(target, offset, length, access);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FlushMappedBufferRange(BufferTargetARB target, nint offset, nint length)
+    public void FlushMappedBufferRange(BufferTarget target, nint offset, nint length)
     {
-        //...
-throw new System.NotImplementedException();
+        _flushMappedBufferRange(target, offset, length);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindVertexArray(uint array)
     {
-        //...
-throw new System.NotImplementedException();
+        _bindVertexArray(array);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteVertexArrays(int n, uint* arrays)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteVertexArrays(n, arrays);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenVertexArrays(int n, uint* arrays)
     {
-        //...
-throw new System.NotImplementedException();
+        _genVertexArrays(n, arrays);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsVertexArray(uint array)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isVertexArray(array);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawArraysInstanced(PrimitiveType mode, int first, int count, int instancecount)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawArraysInstanced(mode, first, count, instancecount);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsInstanced(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawElementsInstanced(mode, count, type, indices, instancecount);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexBuffer(TextureTarget target, SizedInternalFormat internalformat, uint buffer)
     {
-        //...
-throw new System.NotImplementedException();
+        _texBuffer(target, internalformat, buffer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PrimitiveRestartIndex(uint index)
     {
-        //...
-throw new System.NotImplementedException();
+        _primitiveRestartIndex(index);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyBufferSubData(CopyBufferSubDataTarget readTarget, CopyBufferSubDataTarget writeTarget, nint readOffset, nint writeOffset, nint size)
     {
-        //...
-throw new System.NotImplementedException();
+        _copyBufferSubData(readTarget, writeTarget, readOffset, writeOffset, size);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetUniformIndices(uint program, int uniformCount, char* uniformNames, uint* uniformIndices)
+    public void GetUniformIndices(uint program, int uniformCount, char** uniformNames, uint* uniformIndices)
     {
-        //...
-throw new System.NotImplementedException();
+        _getUniformIndices(program, uniformCount, uniformNames, uniformIndices);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniformsiv(uint program, int uniformCount, uint* uniformIndices, UniformPName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveUniformsiv(program, uniformCount, uniformIndices, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniformName(uint program, uint uniformIndex, int bufSize, int* length, char* uniformName)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveUniformName(program, uniformIndex, bufSize, length, uniformName);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint GetUniformBlockIndex(uint program, char* uniformBlockName)
     {
-        //...
-throw new System.NotImplementedException();
+        return _getUniformBlockIndex(program, uniformBlockName);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniformBlockiv(uint program, uint uniformBlockIndex, UniformBlockPName pname, int* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveUniformBlockiv(program, uniformBlockIndex, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniformBlockName(uint program, uint uniformBlockIndex, int bufSize, int* length, char* uniformBlockName)
     {
-        //...
-throw new System.NotImplementedException();
+        _getActiveUniformBlockName(program, uniformBlockIndex, bufSize, length, uniformBlockName);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformBlockBinding(uint program, uint uniformBlockIndex, uint uniformBlockBinding)
     {
-        //...
-throw new System.NotImplementedException();
+        _uniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsBaseVertex(PrimitiveType mode, int count, DrawElementsType type, void* indices, int basevertex)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawElementsBaseVertex(mode, count, type, indices, basevertex);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawRangeElementsBaseVertex(PrimitiveType mode, uint start, uint end, int count, DrawElementsType type, void* indices, int basevertex)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawRangeElementsBaseVertex(mode, start, end, count, type, indices, basevertex);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsInstancedBaseVertex(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, int basevertex)
     {
-        //...
-throw new System.NotImplementedException();
+        _drawElementsInstancedBaseVertex(mode, count, type, indices, instancecount, basevertex);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MultiDrawElementsBaseVertex(PrimitiveType mode, int* count, DrawElementsType type, void* indices, int drawcount, int* basevertex)
+    public void MultiDrawElementsBaseVertex(PrimitiveType mode, int* count, DrawElementsType type, void** indices, int drawcount, int* basevertex)
     {
-        //...
-throw new System.NotImplementedException();
+        _multiDrawElementsBaseVertex(mode, count, type, indices, drawcount, basevertex);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProvokingVertex(VertexProvokingMode mode)
     {
-        //...
-throw new System.NotImplementedException();
+        _provokingVertex(mode);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public nint FenceSync(SyncCondition condition, SyncBehaviorFlags flags)
     {
-        //...
-throw new System.NotImplementedException();
+        return _fenceSync(condition, flags);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte IsSync(nint sync)
     {
-        //...
-throw new System.NotImplementedException();
+        return _isSync(sync);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteSync(nint sync)
     {
-        //...
-throw new System.NotImplementedException();
+        _deleteSync(sync);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public SyncStatus ClientWaitSync(nint sync, SyncObjectMask flags, ulong timeout)
     {
-        //...
-throw new System.NotImplementedException();
+        return _clientWaitSync(sync, flags, timeout);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WaitSync(nint sync, SyncBehaviorFlags flags, ulong timeout)
     {
-        //...
-throw new System.NotImplementedException();
+        _waitSync(sync, flags, timeout);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetInteger64v(GetPName pname, long* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getInteger64v(pname, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSynciv(nint sync, SyncParameterName pname, int count, int* length, int* values)
     {
-        //...
-throw new System.NotImplementedException();
+        _getSynciv(sync, pname, count, length, values);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetInteger64i_v(GetPName target, uint index, long* data)
     {
-        //...
-throw new System.NotImplementedException();
+        _getInteger64i_v(target, index, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBufferParameteri64v(BufferTargetARB target, BufferPNameARB pname, long* @params)
+    public void GetBufferParameteri64v(BufferTarget target, BufferPName pname, long* @params)
     {
-        //...
-throw new System.NotImplementedException();
+        _getBufferParameteri64v(target, pname, @params);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTexture(FramebufferTarget target, FramebufferAttachment attachment, uint texture, int level)
     {
-        //...
-throw new System.NotImplementedException();
+        _framebufferTexture(target, attachment, texture, level);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexImage2DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, byte fixedsamplelocations)
     {
-        //...
-throw new System.NotImplementedException();
+        _texImage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexImage3DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, int depth, byte fixedsamplelocations)
     {
-        //...
-throw new System.NotImplementedException();
+        _texImage3DMultisample(target, samples, internalformat, width, height, depth, fixedsamplelocations);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetMultisamplefv(GetMultisamplePNameNV pname, uint index, float* val)
     {
-        //...
-throw new System.NotImplementedException();
+        _getMultisamplefv(pname, index, val);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SampleMaski(uint maskNumber, uint mask)
     {
-        //...
-throw new System.NotImplementedException();
+        _sampleMaski(maskNumber, mask);
     }
 
 }

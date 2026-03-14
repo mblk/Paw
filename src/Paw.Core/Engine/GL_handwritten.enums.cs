@@ -1,6 +1,6 @@
 ﻿namespace Paw.Core.Engine;
 
-public unsafe partial class GL
+public unsafe partial class GL_handwritten
 {
     // Important: enum type must match GL function signature (e.g. uint, int, etc) !
 

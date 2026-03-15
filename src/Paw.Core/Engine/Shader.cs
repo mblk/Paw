@@ -107,7 +107,7 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform(location, value);
+            _gl.Uniform1i(location, value);
         }
     }
 
@@ -116,7 +116,7 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform(location, value);
+            _gl.Uniform1f(location, value);
         }
     }
 
@@ -125,7 +125,7 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform(location, value);
+            _gl.Uniform2f(location, value.X, value.Y);
         }
     }
 
@@ -134,16 +134,17 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform(location, value);
+            _gl.Uniform3f(location, value.X, value.Y, value.Z); // TODO try *v variants ?
         }
     }
 
-    public void SetUniform(string name, Matrix4x4 value, bool transpose = false)
+    public unsafe void SetUniform(string name, Matrix4x4 value, bool transpose = false)
     {
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform(location, value, transpose);
+            float* p = (float*)&value;
+            _gl.UniformMatrix4fv(location, 1, transpose, p);
         }
     }
 

@@ -1329,3942 +1329,4640 @@ public unsafe partial class GL
     public void CullFace(TriangleFace mode)
     {
         _cullFace(mode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FrontFace(FrontFaceDirection mode)
     {
         _frontFace(mode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Hint(HintTarget target, HintMode mode)
     {
         _hint(target, mode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void LineWidth(float width)
     {
         _lineWidth(width);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PointSize(float size)
     {
         _pointSize(size);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PolygonMode(TriangleFace face, PolygonModeEnum mode)
     {
         _polygonMode(face, mode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Scissor(int x, int y, int width, int height)
     {
         _scissor(x, y, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameterf(TextureTarget target, TextureParameterName pname, float param)
     {
         _texParameterf(target, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameterfv(TextureTarget target, TextureParameterName pname, float* @params)
     {
         _texParameterfv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameteri(TextureTarget target, TextureParameterName pname, int param)
     {
         _texParameteri(target, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameteriv(TextureTarget target, TextureParameterName pname, int* @params)
     {
         _texParameteriv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexImage1D(TextureTarget target, int level, InternalFormat internalformat, int width, int border, PixelFormat format, PixelType type, void* pixels)
     {
         _texImage1D(target, level, internalformat, width, border, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexImage2D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, void* pixels)
     {
         _texImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawBuffer(DrawBufferMode buf)
     {
         _drawBuffer(buf);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Clear(ClearBufferMask mask)
     {
         _clear(mask);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearColor(float red, float green, float blue, float alpha)
     {
         _clearColor(red, green, blue, alpha);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearStencil(int s)
     {
         _clearStencil(s);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearDepth(double depth)
     {
         _clearDepth(depth);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilMask(uint mask)
     {
         _stencilMask(mask);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ColorMask(byte red, byte green, byte blue, byte alpha)
+    public void ColorMask(bool red, bool green, bool blue, bool alpha)
     {
-        _colorMask(red, green, blue, alpha);
+        _colorMask(((red) ? (byte)1 : (byte)0), ((green) ? (byte)1 : (byte)0), ((blue) ? (byte)1 : (byte)0), ((alpha) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DepthMask(byte flag)
+    public void DepthMask(bool flag)
     {
-        _depthMask(flag);
+        _depthMask(((flag) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Disable(EnableCap cap)
     {
         _disable(cap);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Enable(EnableCap cap)
     {
         _enable(cap);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Finish()
     {
         _finish();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Flush()
     {
         _flush();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendFunc(BlendingFactor sfactor, BlendingFactor dfactor)
     {
         _blendFunc(sfactor, dfactor);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void LogicOp(LogicOpEnum opcode)
     {
         _logicOp(opcode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilFunc(StencilFunction func, int @ref, uint mask)
     {
         _stencilFunc(func, @ref, mask);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilOp(StencilOpEnum fail, StencilOpEnum zfail, StencilOpEnum zpass)
     {
         _stencilOp(fail, zfail, zpass);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthFunc(DepthFunction func)
     {
         _depthFunc(func);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PixelStoref(PixelStoreParameter pname, float param)
     {
         _pixelStoref(pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PixelStorei(PixelStoreParameter pname, int param)
     {
         _pixelStorei(pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadBuffer(ReadBufferMode src)
     {
         _readBuffer(src);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadPixels(int x, int y, int width, int height, PixelFormat format, PixelType type, void* pixels)
     {
         _readPixels(x, y, width, height, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetBooleanv(GetPName pname, byte* data)
     {
         _getBooleanv(pname, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetDoublev(GetPName pname, double* data)
     {
         _getDoublev(pname, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ErrorCode GetError()
     {
-        return _getError();
+        var result = _getError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetFloatv(GetPName pname, float* data)
     {
         _getFloatv(pname, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetIntegerv(GetPName pname, int* data)
     {
         _getIntegerv(pname, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte* GetString(StringName name)
     {
-        return _getString(name);
+        var result = _getString(name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexImage(TextureTarget target, int level, PixelFormat format, PixelType type, void* pixels)
     {
         _getTexImage(target, level, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexParameterfv(TextureTarget target, GetTextureParameter pname, float* @params)
     {
         _getTexParameterfv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexParameteriv(TextureTarget target, GetTextureParameter pname, int* @params)
     {
         _getTexParameteriv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexLevelParameterfv(TextureTarget target, int level, GetTextureParameter pname, float* @params)
     {
         _getTexLevelParameterfv(target, level, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexLevelParameteriv(TextureTarget target, int level, GetTextureParameter pname, int* @params)
     {
         _getTexLevelParameteriv(target, level, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsEnabled(EnableCap cap)
+    public bool IsEnabled(EnableCap cap)
     {
-        return _isEnabled(cap);
+        var result = _isEnabled(cap);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthRange(double n, double f)
     {
         _depthRange(n, f);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Viewport(int x, int y, int width, int height)
     {
         _viewport(x, y, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PolygonOffsetClamp(float factor, float units, float clamp)
     {
         _polygonOffsetClamp(factor, units, clamp);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawElementsIndirectCount(PrimitiveType mode, DrawElementsType type, void* indirect, nint drawcount, int maxdrawcount, int stride)
     {
         _multiDrawElementsIndirectCount(mode, type, indirect, drawcount, maxdrawcount, stride);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawArraysIndirectCount(PrimitiveType mode, void* indirect, nint drawcount, int maxdrawcount, int stride)
     {
         _multiDrawArraysIndirectCount(mode, indirect, drawcount, maxdrawcount, stride);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SpecializeShader(uint shader, char* pEntryPoint, uint numSpecializationConstants, uint* pConstantIndex, uint* pConstantValue)
     {
         _specializeShader(shader, pEntryPoint, numSpecializationConstants, pConstantIndex, pConstantValue);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureBarrier()
     {
         _textureBarrier();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReadnPixels(int x, int y, int width, int height, PixelFormat format, PixelType type, int bufSize, void* data)
     {
         _readnPixels(x, y, width, height, format, type, bufSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnUniformuiv(uint program, int location, int bufSize, uint* @params)
     {
         _getnUniformuiv(program, location, bufSize, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnUniformiv(uint program, int location, int bufSize, int* @params)
     {
         _getnUniformiv(program, location, bufSize, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnUniformfv(uint program, int location, int bufSize, float* @params)
     {
         _getnUniformfv(program, location, bufSize, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnUniformdv(uint program, int location, int bufSize, double* @params)
     {
         _getnUniformdv(program, location, bufSize, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnTexImage(TextureTarget target, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
     {
         _getnTexImage(target, level, format, type, bufSize, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetnCompressedTexImage(TextureTarget target, int lod, int bufSize, void* pixels)
     {
         _getnCompressedTexImage(target, lod, bufSize, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GraphicsResetStatus GetGraphicsResetStatus()
     {
-        return _getGraphicsResetStatus();
+        var result = _getGraphicsResetStatus();
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetCompressedTextureSubImage(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int bufSize, void* pixels)
     {
         _getCompressedTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, bufSize, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureSubImage(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, int bufSize, void* pixels)
     {
         _getTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, bufSize, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MemoryBarrierByRegion(MemoryBarrierMask barriers)
     {
         _memoryBarrierByRegion(barriers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryBufferObjectuiv(uint id, uint buffer, QueryObjectParameterName pname, nint offset)
     {
         _getQueryBufferObjectuiv(id, buffer, pname, offset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryBufferObjectui64v(uint id, uint buffer, QueryObjectParameterName pname, nint offset)
     {
         _getQueryBufferObjectui64v(id, buffer, pname, offset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryBufferObjectiv(uint id, uint buffer, QueryObjectParameterName pname, nint offset)
     {
         _getQueryBufferObjectiv(id, buffer, pname, offset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryBufferObjecti64v(uint id, uint buffer, QueryObjectParameterName pname, nint offset)
     {
         _getQueryBufferObjecti64v(id, buffer, pname, offset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateQueries(QueryTarget target, int n, uint* ids)
     {
         _createQueries(target, n, ids);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateProgramPipelines(int n, uint* pipelines)
     {
         _createProgramPipelines(n, pipelines);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateSamplers(int n, uint* samplers)
     {
         _createSamplers(n, samplers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexArrayIndexed64iv(uint vaobj, uint index, VertexArrayPName pname, long* param)
     {
         _getVertexArrayIndexed64iv(vaobj, index, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexArrayIndexediv(uint vaobj, uint index, VertexArrayPName pname, int* param)
     {
         _getVertexArrayIndexediv(vaobj, index, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexArrayiv(uint vaobj, VertexArrayPName pname, int* param)
     {
         _getVertexArrayiv(vaobj, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayBindingDivisor(uint vaobj, uint bindingindex, uint divisor)
     {
         _vertexArrayBindingDivisor(vaobj, bindingindex, divisor);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayAttribLFormat(uint vaobj, uint attribindex, int size, VertexAttribLType type, uint relativeoffset)
     {
         _vertexArrayAttribLFormat(vaobj, attribindex, size, type, relativeoffset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayAttribIFormat(uint vaobj, uint attribindex, int size, VertexAttribIType type, uint relativeoffset)
     {
         _vertexArrayAttribIFormat(vaobj, attribindex, size, type, relativeoffset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayAttribFormat(uint vaobj, uint attribindex, int size, VertexAttribType type, byte normalized, uint relativeoffset)
+    public void VertexArrayAttribFormat(uint vaobj, uint attribindex, int size, VertexAttribType type, bool normalized, uint relativeoffset)
     {
-        _vertexArrayAttribFormat(vaobj, attribindex, size, type, normalized, relativeoffset);
+        _vertexArrayAttribFormat(vaobj, attribindex, size, type, ((normalized) ? (byte)1 : (byte)0), relativeoffset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayAttribBinding(uint vaobj, uint attribindex, uint bindingindex)
     {
         _vertexArrayAttribBinding(vaobj, attribindex, bindingindex);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayVertexBuffers(uint vaobj, uint first, int count, uint* buffers, nint* offsets, int* strides)
     {
         _vertexArrayVertexBuffers(vaobj, first, count, buffers, offsets, strides);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayVertexBuffer(uint vaobj, uint bindingindex, uint buffer, nint offset, int stride)
     {
         _vertexArrayVertexBuffer(vaobj, bindingindex, buffer, offset, stride);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexArrayElementBuffer(uint vaobj, uint buffer)
     {
         _vertexArrayElementBuffer(vaobj, buffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EnableVertexArrayAttrib(uint vaobj, uint index)
     {
         _enableVertexArrayAttrib(vaobj, index);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DisableVertexArrayAttrib(uint vaobj, uint index)
     {
         _disableVertexArrayAttrib(vaobj, index);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateVertexArrays(int n, uint* arrays)
     {
         _createVertexArrays(n, arrays);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureParameteriv(uint texture, GetTextureParameter pname, int* @params)
     {
         _getTextureParameteriv(texture, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureParameterIuiv(uint texture, GetTextureParameter pname, uint* @params)
     {
         _getTextureParameterIuiv(texture, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureParameterIiv(uint texture, GetTextureParameter pname, int* @params)
     {
         _getTextureParameterIiv(texture, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureParameterfv(uint texture, GetTextureParameter pname, float* @params)
     {
         _getTextureParameterfv(texture, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureLevelParameteriv(uint texture, int level, GetTextureParameter pname, int* @params)
     {
         _getTextureLevelParameteriv(texture, level, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureLevelParameterfv(uint texture, int level, GetTextureParameter pname, float* @params)
     {
         _getTextureLevelParameterfv(texture, level, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetCompressedTextureImage(uint texture, int level, int bufSize, void* pixels)
     {
         _getCompressedTextureImage(texture, level, bufSize, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTextureImage(uint texture, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
     {
         _getTextureImage(texture, level, format, type, bufSize, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindTextureUnit(uint unit, uint texture)
     {
         _bindTextureUnit(unit, texture);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenerateTextureMipmap(uint texture)
     {
         _generateTextureMipmap(texture);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameteriv(uint texture, TextureParameterName pname, int* param)
     {
         _textureParameteriv(texture, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameterIuiv(uint texture, TextureParameterName pname, uint* @params)
     {
         _textureParameterIuiv(texture, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameterIiv(uint texture, TextureParameterName pname, int* @params)
     {
         _textureParameterIiv(texture, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameteri(uint texture, TextureParameterName pname, int param)
     {
         _textureParameteri(texture, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameterfv(uint texture, TextureParameterName pname, float* param)
     {
         _textureParameterfv(texture, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureParameterf(uint texture, TextureParameterName pname, float param)
     {
         _textureParameterf(texture, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTextureSubImage3D(uint texture, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
     {
         _copyTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, x, y, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTextureSubImage2D(uint texture, int level, int xoffset, int yoffset, int x, int y, int width, int height)
     {
         _copyTextureSubImage2D(texture, level, xoffset, yoffset, x, y, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTextureSubImage1D(uint texture, int level, int xoffset, int x, int y, int width)
     {
         _copyTextureSubImage1D(texture, level, xoffset, x, y, width);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTextureSubImage3D(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, InternalFormat format, int imageSize, void* data)
     {
         _compressedTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTextureSubImage2D(uint texture, int level, int xoffset, int yoffset, int width, int height, InternalFormat format, int imageSize, void* data)
     {
         _compressedTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTextureSubImage1D(uint texture, int level, int xoffset, int width, InternalFormat format, int imageSize, void* data)
     {
         _compressedTextureSubImage1D(texture, level, xoffset, width, format, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureSubImage3D(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
     {
         _textureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureSubImage2D(uint texture, int level, int xoffset, int yoffset, int width, int height, PixelFormat format, PixelType type, void* pixels)
     {
         _textureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureSubImage1D(uint texture, int level, int xoffset, int width, PixelFormat format, PixelType type, void* pixels)
     {
         _textureSubImage1D(texture, level, xoffset, width, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureStorage3DMultisample(uint texture, int samples, SizedInternalFormat internalformat, int width, int height, int depth, byte fixedsamplelocations)
+    public void TextureStorage3DMultisample(uint texture, int samples, SizedInternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
     {
-        _textureStorage3DMultisample(texture, samples, internalformat, width, height, depth, fixedsamplelocations);
+        _textureStorage3DMultisample(texture, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureStorage2DMultisample(uint texture, int samples, SizedInternalFormat internalformat, int width, int height, byte fixedsamplelocations)
+    public void TextureStorage2DMultisample(uint texture, int samples, SizedInternalFormat internalformat, int width, int height, bool fixedsamplelocations)
     {
-        _textureStorage2DMultisample(texture, samples, internalformat, width, height, fixedsamplelocations);
+        _textureStorage2DMultisample(texture, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureStorage3D(uint texture, int levels, SizedInternalFormat internalformat, int width, int height, int depth)
     {
         _textureStorage3D(texture, levels, internalformat, width, height, depth);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureStorage2D(uint texture, int levels, SizedInternalFormat internalformat, int width, int height)
     {
         _textureStorage2D(texture, levels, internalformat, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureStorage1D(uint texture, int levels, SizedInternalFormat internalformat, int width)
     {
         _textureStorage1D(texture, levels, internalformat, width);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureBufferRange(uint texture, SizedInternalFormat internalformat, uint buffer, nint offset, nint size)
     {
         _textureBufferRange(texture, internalformat, buffer, offset, size);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureBuffer(uint texture, SizedInternalFormat internalformat, uint buffer)
     {
         _textureBuffer(texture, internalformat, buffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateTextures(TextureTarget target, int n, uint* textures)
     {
         _createTextures(target, n, textures);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedRenderbufferParameteriv(uint renderbuffer, RenderbufferParameterName pname, int* @params)
     {
         _getNamedRenderbufferParameteriv(renderbuffer, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedRenderbufferStorageMultisample(uint renderbuffer, int samples, InternalFormat internalformat, int width, int height)
     {
         _namedRenderbufferStorageMultisample(renderbuffer, samples, internalformat, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedRenderbufferStorage(uint renderbuffer, InternalFormat internalformat, int width, int height)
     {
         _namedRenderbufferStorage(renderbuffer, internalformat, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateRenderbuffers(int n, uint* renderbuffers)
     {
         _createRenderbuffers(n, renderbuffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedFramebufferAttachmentParameteriv(uint framebuffer, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
     {
         _getNamedFramebufferAttachmentParameteriv(framebuffer, attachment, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedFramebufferParameteriv(uint framebuffer, GetFramebufferParameter pname, int* param)
     {
         _getNamedFramebufferParameteriv(framebuffer, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public FramebufferStatus CheckNamedFramebufferStatus(uint framebuffer, FramebufferTarget target)
     {
-        return _checkNamedFramebufferStatus(framebuffer, target);
+        var result = _checkNamedFramebufferStatus(framebuffer, target);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlitNamedFramebuffer(uint readFramebuffer, uint drawFramebuffer, int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
     {
         _blitNamedFramebuffer(readFramebuffer, drawFramebuffer, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferfi(uint framebuffer, Buffer buffer, int drawbuffer, float depth, int stencil)
     {
         _clearNamedFramebufferfi(framebuffer, buffer, drawbuffer, depth, stencil);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferfv(uint framebuffer, Buffer buffer, int drawbuffer, float* value)
     {
         _clearNamedFramebufferfv(framebuffer, buffer, drawbuffer, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferuiv(uint framebuffer, Buffer buffer, int drawbuffer, uint* value)
     {
         _clearNamedFramebufferuiv(framebuffer, buffer, drawbuffer, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferiv(uint framebuffer, Buffer buffer, int drawbuffer, int* value)
     {
         _clearNamedFramebufferiv(framebuffer, buffer, drawbuffer, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateNamedFramebufferSubData(uint framebuffer, int numAttachments, FramebufferAttachment* attachments, int x, int y, int width, int height)
     {
         _invalidateNamedFramebufferSubData(framebuffer, numAttachments, attachments, x, y, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateNamedFramebufferData(uint framebuffer, int numAttachments, FramebufferAttachment* attachments)
     {
         _invalidateNamedFramebufferData(framebuffer, numAttachments, attachments);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferReadBuffer(uint framebuffer, ColorBuffer src)
     {
         _namedFramebufferReadBuffer(framebuffer, src);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferDrawBuffers(uint framebuffer, int n, ColorBuffer* bufs)
     {
         _namedFramebufferDrawBuffers(framebuffer, n, bufs);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferDrawBuffer(uint framebuffer, ColorBuffer buf)
     {
         _namedFramebufferDrawBuffer(framebuffer, buf);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferTextureLayer(uint framebuffer, FramebufferAttachment attachment, uint texture, int level, int layer)
     {
         _namedFramebufferTextureLayer(framebuffer, attachment, texture, level, layer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferTexture(uint framebuffer, FramebufferAttachment attachment, uint texture, int level)
     {
         _namedFramebufferTexture(framebuffer, attachment, texture, level);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferParameteri(uint framebuffer, FramebufferParameterName pname, int param)
     {
         _namedFramebufferParameteri(framebuffer, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedFramebufferRenderbuffer(uint framebuffer, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, uint renderbuffer)
     {
         _namedFramebufferRenderbuffer(framebuffer, attachment, renderbuffertarget, renderbuffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateFramebuffers(int n, uint* framebuffers)
     {
         _createFramebuffers(n, framebuffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedBufferSubData(uint buffer, nint offset, nint size, void* data)
     {
         _getNamedBufferSubData(buffer, offset, size, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedBufferPointerv(uint buffer, BufferPointerName pname, void** @params)
     {
         _getNamedBufferPointerv(buffer, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedBufferParameteri64v(uint buffer, BufferPName pname, long* @params)
     {
         _getNamedBufferParameteri64v(buffer, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNamedBufferParameteriv(uint buffer, BufferPName pname, int* @params)
     {
         _getNamedBufferParameteriv(buffer, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FlushMappedNamedBufferRange(uint buffer, nint offset, nint length)
     {
         _flushMappedNamedBufferRange(buffer, offset, length);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte UnmapNamedBuffer(uint buffer)
+    public bool UnmapNamedBuffer(uint buffer)
     {
-        return _unmapNamedBuffer(buffer);
+        var result = _unmapNamedBuffer(buffer);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void* MapNamedBufferRange(uint buffer, nint offset, nint length, MapBufferAccessMask access)
     {
-        return _mapNamedBufferRange(buffer, offset, length, access);
+        var result = _mapNamedBufferRange(buffer, offset, length, access);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void* MapNamedBuffer(uint buffer, BufferAccess access)
     {
-        return _mapNamedBuffer(buffer, access);
+        var result = _mapNamedBuffer(buffer, access);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedBufferSubData(uint buffer, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
     {
         _clearNamedBufferSubData(buffer, internalformat, offset, size, format, type, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedBufferData(uint buffer, SizedInternalFormat internalformat, PixelFormat format, PixelType type, void* data)
     {
         _clearNamedBufferData(buffer, internalformat, format, type, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyNamedBufferSubData(uint readBuffer, uint writeBuffer, nint readOffset, nint writeOffset, nint size)
     {
         _copyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset, size);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedBufferSubData(uint buffer, nint offset, nint size, void* data)
     {
         _namedBufferSubData(buffer, offset, size, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedBufferData(uint buffer, nint size, void* data, BufferUsage usage)
     {
         _namedBufferData(buffer, size, data, usage);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void NamedBufferStorage(uint buffer, nint size, void* data, BufferStorageMask flags)
     {
         _namedBufferStorage(buffer, size, data, flags);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateBuffers(int n, uint* buffers)
     {
         _createBuffers(n, buffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTransformFeedbacki64_v(uint xfb, TransformFeedbackPName pname, uint index, long* param)
     {
         _getTransformFeedbacki64_v(xfb, pname, index, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTransformFeedbacki_v(uint xfb, TransformFeedbackPName pname, uint index, int* param)
     {
         _getTransformFeedbacki_v(xfb, pname, index, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTransformFeedbackiv(uint xfb, TransformFeedbackPName pname, int* param)
     {
         _getTransformFeedbackiv(xfb, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TransformFeedbackBufferRange(uint xfb, uint index, uint buffer, nint offset, nint size)
     {
         _transformFeedbackBufferRange(xfb, index, buffer, offset, size);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TransformFeedbackBufferBase(uint xfb, uint index, uint buffer)
     {
         _transformFeedbackBufferBase(xfb, index, buffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CreateTransformFeedbacks(int n, uint* ids)
     {
         _createTransformFeedbacks(n, ids);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClipControl(ClipControlOrigin origin, ClipControlDepth depth)
     {
         _clipControl(origin, depth);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindVertexBuffers(uint first, int count, uint* buffers, nint* offsets, int* strides)
     {
         _bindVertexBuffers(first, count, buffers, offsets, strides);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindImageTextures(uint first, int count, uint* textures)
     {
         _bindImageTextures(first, count, textures);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindSamplers(uint first, int count, uint* samplers)
     {
         _bindSamplers(first, count, samplers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindTextures(uint first, int count, uint* textures)
     {
         _bindTextures(first, count, textures);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindBuffersRange(BufferTarget target, uint first, int count, uint* buffers, nint* offsets, nint* sizes)
     {
         _bindBuffersRange(target, first, count, buffers, offsets, sizes);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindBuffersBase(BufferTarget target, uint first, int count, uint* buffers)
     {
         _bindBuffersBase(target, first, count, buffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearTexSubImage(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* data)
     {
         _clearTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearTexImage(uint texture, int level, PixelFormat format, PixelType type, void* data)
     {
         _clearTexImage(texture, level, format, type, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BufferStorage(BufferStorageTarget target, nint size, void* data, BufferStorageMask flags)
     {
         _bufferStorage(target, size, data, flags);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetPointerv(GetPointervPName pname, void** @params)
     {
         _getPointerv(pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetObjectPtrLabel(void* ptr, int bufSize, int* length, char* label)
     {
         _getObjectPtrLabel(ptr, bufSize, length, label);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ObjectPtrLabel(void* ptr, int length, char* label)
     {
         _objectPtrLabel(ptr, length, label);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetObjectLabel(ObjectIdentifier identifier, uint name, int bufSize, int* length, char* label)
     {
         _getObjectLabel(identifier, name, bufSize, length, label);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ObjectLabel(ObjectIdentifier identifier, uint name, int length, char* label)
     {
         _objectLabel(identifier, name, length, label);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PopDebugGroup()
     {
         _popDebugGroup();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PushDebugGroup(DebugSource source, uint id, int length, char* message)
     {
         _pushDebugGroup(source, id, length, message);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint GetDebugMessageLog(uint count, int bufSize, DebugSource* sources, DebugType* types, uint* ids, DebugSeverity* severities, int* lengths, char* messageLog)
     {
-        return _getDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
+        var result = _getDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DebugMessageCallback(DebugProc callback, void* userParam)
     {
         _debugMessageCallback(callback, userParam);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DebugMessageInsert(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, char* buf)
     {
         _debugMessageInsert(source, type, id, severity, length, buf);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DebugMessageControl(DebugSource source, DebugType type, DebugSeverity severity, int count, uint* ids, byte enabled)
+    public void DebugMessageControl(DebugSource source, DebugType type, DebugSeverity severity, int count, uint* ids, bool enabled)
     {
-        _debugMessageControl(source, type, severity, count, ids, enabled);
+        _debugMessageControl(source, type, severity, count, ids, ((enabled) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexBindingDivisor(uint bindingindex, uint divisor)
     {
         _vertexBindingDivisor(bindingindex, divisor);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribBinding(uint attribindex, uint bindingindex)
     {
         _vertexAttribBinding(attribindex, bindingindex);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribLFormat(uint attribindex, int size, VertexAttribLType type, uint relativeoffset)
     {
         _vertexAttribLFormat(attribindex, size, type, relativeoffset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribIFormat(uint attribindex, int size, VertexAttribIType type, uint relativeoffset)
     {
         _vertexAttribIFormat(attribindex, size, type, relativeoffset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribFormat(uint attribindex, int size, VertexAttribType type, byte normalized, uint relativeoffset)
+    public void VertexAttribFormat(uint attribindex, int size, VertexAttribType type, bool normalized, uint relativeoffset)
     {
-        _vertexAttribFormat(attribindex, size, type, normalized, relativeoffset);
+        _vertexAttribFormat(attribindex, size, type, ((normalized) ? (byte)1 : (byte)0), relativeoffset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindVertexBuffer(uint bindingindex, uint buffer, nint offset, int stride)
     {
         _bindVertexBuffer(bindingindex, buffer, offset, stride);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TextureView(uint texture, TextureTarget target, uint origtexture, SizedInternalFormat internalformat, uint minlevel, uint numlevels, uint minlayer, uint numlayers)
     {
         _textureView(texture, target, origtexture, internalformat, minlevel, numlevels, minlayer, numlayers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexStorage3DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, int depth, byte fixedsamplelocations)
+    public void TexStorage3DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
     {
-        _texStorage3DMultisample(target, samples, internalformat, width, height, depth, fixedsamplelocations);
+        _texStorage3DMultisample(target, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexStorage2DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, byte fixedsamplelocations)
+    public void TexStorage2DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, bool fixedsamplelocations)
     {
-        _texStorage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
+        _texStorage2DMultisample(target, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexBufferRange(TextureTarget target, SizedInternalFormat internalformat, uint buffer, nint offset, nint size)
     {
         _texBufferRange(target, internalformat, buffer, offset, size);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ShaderStorageBlockBinding(uint program, uint storageBlockIndex, uint storageBlockBinding)
     {
         _shaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetProgramResourceLocationIndex(uint program, ProgramInterface programInterface, char* name)
     {
-        return _getProgramResourceLocationIndex(program, programInterface, name);
+        var result = _getProgramResourceLocationIndex(program, programInterface, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetProgramResourceLocation(uint program, ProgramInterface programInterface, char* name)
     {
-        return _getProgramResourceLocation(program, programInterface, name);
+        var result = _getProgramResourceLocation(program, programInterface, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramResourceiv(uint program, ProgramInterface programInterface, uint index, int propCount, ProgramResourceProperty* props, int count, int* length, int* @params)
     {
         _getProgramResourceiv(program, programInterface, index, propCount, props, count, length, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramResourceName(uint program, ProgramInterface programInterface, uint index, int bufSize, int* length, char* name)
     {
         _getProgramResourceName(program, programInterface, index, bufSize, length, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint GetProgramResourceIndex(uint program, ProgramInterface programInterface, char* name)
     {
-        return _getProgramResourceIndex(program, programInterface, name);
+        var result = _getProgramResourceIndex(program, programInterface, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramInterfaceiv(uint program, ProgramInterface programInterface, ProgramInterfacePName pname, int* @params)
     {
         _getProgramInterfaceiv(program, programInterface, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawElementsIndirect(PrimitiveType mode, DrawElementsType type, void* indirect, int drawcount, int stride)
     {
         _multiDrawElementsIndirect(mode, type, indirect, drawcount, stride);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawArraysIndirect(PrimitiveType mode, void* indirect, int drawcount, int stride)
     {
         _multiDrawArraysIndirect(mode, indirect, drawcount, stride);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateSubFramebuffer(FramebufferTarget target, int numAttachments, InvalidateFramebufferAttachment* attachments, int x, int y, int width, int height)
     {
         _invalidateSubFramebuffer(target, numAttachments, attachments, x, y, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateFramebuffer(FramebufferTarget target, int numAttachments, InvalidateFramebufferAttachment* attachments)
     {
         _invalidateFramebuffer(target, numAttachments, attachments);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateBufferData(uint buffer)
     {
         _invalidateBufferData(buffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateBufferSubData(uint buffer, nint offset, nint length)
     {
         _invalidateBufferSubData(buffer, offset, length);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateTexImage(uint texture, int level)
     {
         _invalidateTexImage(texture, level);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void InvalidateTexSubImage(uint texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth)
     {
         _invalidateTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetInternalformati64v(TextureTarget target, InternalFormat internalformat, InternalFormatPName pname, int count, long* @params)
     {
         _getInternalformati64v(target, internalformat, pname, count, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetFramebufferParameteriv(FramebufferTarget target, FramebufferAttachmentParameterName pname, int* @params)
     {
         _getFramebufferParameteriv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferParameteri(FramebufferTarget target, FramebufferParameterName pname, int param)
     {
         _framebufferParameteri(target, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyImageSubData(uint srcName, CopyImageSubDataTarget srcTarget, int srcLevel, int srcX, int srcY, int srcZ, uint dstName, CopyImageSubDataTarget dstTarget, int dstLevel, int dstX, int dstY, int dstZ, int srcWidth, int srcHeight, int srcDepth)
     {
         _copyImageSubData(srcName, srcTarget, srcLevel, srcX, srcY, srcZ, dstName, dstTarget, dstLevel, dstX, dstY, dstZ, srcWidth, srcHeight, srcDepth);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DispatchComputeIndirect(nint indirect)
     {
         _dispatchComputeIndirect(indirect);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DispatchCompute(uint num_groups_x, uint num_groups_y, uint num_groups_z)
     {
         _dispatchCompute(num_groups_x, num_groups_y, num_groups_z);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferSubData(BufferTarget target, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
     {
         _clearBufferSubData(target, internalformat, offset, size, format, type, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferData(BufferStorageTarget target, SizedInternalFormat internalformat, PixelFormat format, PixelType type, void* data)
     {
         _clearBufferData(target, internalformat, format, type, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawTransformFeedbackStreamInstanced(PrimitiveType mode, uint id, uint stream, int instancecount)
     {
         _drawTransformFeedbackStreamInstanced(mode, id, stream, instancecount);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawTransformFeedbackInstanced(PrimitiveType mode, uint id, int instancecount)
     {
         _drawTransformFeedbackInstanced(mode, id, instancecount);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexStorage3D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width, int height, int depth)
     {
         _texStorage3D(target, levels, internalformat, width, height, depth);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexStorage2D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width, int height)
     {
         _texStorage2D(target, levels, internalformat, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexStorage1D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width)
     {
         _texStorage1D(target, levels, internalformat, width);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MemoryBarrier(MemoryBarrierMask barriers)
     {
         _memoryBarrier(barriers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindImageTexture(uint unit, uint texture, int level, byte layered, int layer, BufferAccess access, InternalFormat format)
+    public void BindImageTexture(uint unit, uint texture, int level, bool layered, int layer, BufferAccess access, InternalFormat format)
     {
-        _bindImageTexture(unit, texture, level, layered, layer, access, format);
+        _bindImageTexture(unit, texture, level, ((layered) ? (byte)1 : (byte)0), layer, access, format);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveAtomicCounterBufferiv(uint program, uint bufferIndex, AtomicCounterBufferPName pname, int* @params)
     {
         _getActiveAtomicCounterBufferiv(program, bufferIndex, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetInternalformativ(TextureTarget target, InternalFormat internalformat, InternalFormatPName pname, int count, int* @params)
     {
         _getInternalformativ(target, internalformat, pname, count, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsInstancedBaseVertexBaseInstance(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, int basevertex, uint baseinstance)
     {
         _drawElementsInstancedBaseVertexBaseInstance(mode, count, type, indices, instancecount, basevertex, baseinstance);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsInstancedBaseInstance(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, uint baseinstance)
     {
         _drawElementsInstancedBaseInstance(mode, count, type, indices, instancecount, baseinstance);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawArraysInstancedBaseInstance(PrimitiveType mode, int first, int count, int instancecount, uint baseinstance)
     {
         _drawArraysInstancedBaseInstance(mode, first, count, instancecount, baseinstance);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetDoublei_v(GetPName target, uint index, double* data)
     {
         _getDoublei_v(target, index, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetFloati_v(GetPName target, uint index, float* data)
     {
         _getFloati_v(target, index, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthRangeIndexed(uint index, double n, double f)
     {
         _depthRangeIndexed(index, n, f);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthRangeArrayv(uint first, int count, double* v)
     {
         _depthRangeArrayv(first, count, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ScissorIndexedv(uint index, int* v)
     {
         _scissorIndexedv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ScissorIndexed(uint index, int left, int bottom, int width, int height)
     {
         _scissorIndexed(index, left, bottom, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ScissorArrayv(uint first, int count, int* v)
     {
         _scissorArrayv(first, count, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ViewportIndexedfv(uint index, float* v)
     {
         _viewportIndexedfv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ViewportIndexedf(uint index, float x, float y, float w, float h)
     {
         _viewportIndexedf(index, x, y, w, h);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ViewportArrayv(uint first, int count, float* v)
     {
         _viewportArrayv(first, count, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribLdv(uint index, VertexAttribEnum pname, double* @params)
     {
         _getVertexAttribLdv(index, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribLPointer(uint index, int size, VertexAttribLType type, int stride, void* pointer)
     {
         _vertexAttribLPointer(index, size, type, stride, pointer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL4dv(uint index, double* v)
     {
         _vertexAttribL4dv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL3dv(uint index, double* v)
     {
         _vertexAttribL3dv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL2dv(uint index, double* v)
     {
         _vertexAttribL2dv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL1dv(uint index, double* v)
     {
         _vertexAttribL1dv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL4d(uint index, double x, double y, double z, double w)
     {
         _vertexAttribL4d(index, x, y, z, w);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL3d(uint index, double x, double y, double z)
     {
         _vertexAttribL3d(index, x, y, z);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL2d(uint index, double x, double y)
     {
         _vertexAttribL2d(index, x, y);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribL1d(uint index, double x)
     {
         _vertexAttribL1d(index, x);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramPipelineInfoLog(uint pipeline, int bufSize, int* length, char* infoLog)
     {
         _getProgramPipelineInfoLog(pipeline, bufSize, length, infoLog);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ValidateProgramPipeline(uint pipeline)
     {
         _validateProgramPipeline(pipeline);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4x3dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix4x3dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix4x3dv(program, location, count, transpose, value);
+        _programUniformMatrix4x3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3x4dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix3x4dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix3x4dv(program, location, count, transpose, value);
+        _programUniformMatrix3x4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4x2dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix4x2dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix4x2dv(program, location, count, transpose, value);
+        _programUniformMatrix4x2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2x4dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix2x4dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix2x4dv(program, location, count, transpose, value);
+        _programUniformMatrix2x4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3x2dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix3x2dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix3x2dv(program, location, count, transpose, value);
+        _programUniformMatrix3x2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2x3dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix2x3dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix2x3dv(program, location, count, transpose, value);
+        _programUniformMatrix2x3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4x3fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix4x3fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix4x3fv(program, location, count, transpose, value);
+        _programUniformMatrix4x3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3x4fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix3x4fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix3x4fv(program, location, count, transpose, value);
+        _programUniformMatrix3x4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4x2fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix4x2fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix4x2fv(program, location, count, transpose, value);
+        _programUniformMatrix4x2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2x4fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix2x4fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix2x4fv(program, location, count, transpose, value);
+        _programUniformMatrix2x4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3x2fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix3x2fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix3x2fv(program, location, count, transpose, value);
+        _programUniformMatrix3x2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2x3fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix2x3fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix2x3fv(program, location, count, transpose, value);
+        _programUniformMatrix2x3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix4dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix4dv(program, location, count, transpose, value);
+        _programUniformMatrix4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix3dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix3dv(program, location, count, transpose, value);
+        _programUniformMatrix3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2dv(uint program, int location, int count, byte transpose, double* value)
+    public void ProgramUniformMatrix2dv(uint program, int location, int count, bool transpose, double* value)
     {
-        _programUniformMatrix2dv(program, location, count, transpose, value);
+        _programUniformMatrix2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix4fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix4fv(program, location, count, transpose, value);
+        _programUniformMatrix4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix3fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix3fv(program, location, count, transpose, value);
+        _programUniformMatrix3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2fv(uint program, int location, int count, byte transpose, float* value)
+    public void ProgramUniformMatrix2fv(uint program, int location, int count, bool transpose, float* value)
     {
-        _programUniformMatrix2fv(program, location, count, transpose, value);
+        _programUniformMatrix2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4uiv(uint program, int location, int count, uint* value)
     {
         _programUniform4uiv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4ui(uint program, int location, uint v0, uint v1, uint v2, uint v3)
     {
         _programUniform4ui(program, location, v0, v1, v2, v3);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4dv(uint program, int location, int count, double* value)
     {
         _programUniform4dv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4d(uint program, int location, double v0, double v1, double v2, double v3)
     {
         _programUniform4d(program, location, v0, v1, v2, v3);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4fv(uint program, int location, int count, float* value)
     {
         _programUniform4fv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4f(uint program, int location, float v0, float v1, float v2, float v3)
     {
         _programUniform4f(program, location, v0, v1, v2, v3);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4iv(uint program, int location, int count, int* value)
     {
         _programUniform4iv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform4i(uint program, int location, int v0, int v1, int v2, int v3)
     {
         _programUniform4i(program, location, v0, v1, v2, v3);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3uiv(uint program, int location, int count, uint* value)
     {
         _programUniform3uiv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3ui(uint program, int location, uint v0, uint v1, uint v2)
     {
         _programUniform3ui(program, location, v0, v1, v2);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3dv(uint program, int location, int count, double* value)
     {
         _programUniform3dv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3d(uint program, int location, double v0, double v1, double v2)
     {
         _programUniform3d(program, location, v0, v1, v2);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3fv(uint program, int location, int count, float* value)
     {
         _programUniform3fv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3f(uint program, int location, float v0, float v1, float v2)
     {
         _programUniform3f(program, location, v0, v1, v2);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3iv(uint program, int location, int count, int* value)
     {
         _programUniform3iv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform3i(uint program, int location, int v0, int v1, int v2)
     {
         _programUniform3i(program, location, v0, v1, v2);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2uiv(uint program, int location, int count, uint* value)
     {
         _programUniform2uiv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2ui(uint program, int location, uint v0, uint v1)
     {
         _programUniform2ui(program, location, v0, v1);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2dv(uint program, int location, int count, double* value)
     {
         _programUniform2dv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2d(uint program, int location, double v0, double v1)
     {
         _programUniform2d(program, location, v0, v1);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2fv(uint program, int location, int count, float* value)
     {
         _programUniform2fv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2f(uint program, int location, float v0, float v1)
     {
         _programUniform2f(program, location, v0, v1);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2iv(uint program, int location, int count, int* value)
     {
         _programUniform2iv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform2i(uint program, int location, int v0, int v1)
     {
         _programUniform2i(program, location, v0, v1);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1uiv(uint program, int location, int count, uint* value)
     {
         _programUniform1uiv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1ui(uint program, int location, uint v0)
     {
         _programUniform1ui(program, location, v0);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1dv(uint program, int location, int count, double* value)
     {
         _programUniform1dv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1d(uint program, int location, double v0)
     {
         _programUniform1d(program, location, v0);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1fv(uint program, int location, int count, float* value)
     {
         _programUniform1fv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1f(uint program, int location, float v0)
     {
         _programUniform1f(program, location, v0);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawArrays(PrimitiveType mode, int first, int count)
     {
         _drawArrays(mode, first, count);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElements(PrimitiveType mode, int count, DrawElementsType type, void* indices)
     {
         _drawElements(mode, count, type, indices);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindProgramPipeline(uint pipeline)
     {
         _bindProgramPipeline(pipeline);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PolygonOffset(float factor, float units)
     {
         _polygonOffset(factor, units);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexImage1D(TextureTarget target, int level, InternalFormat internalformat, int x, int y, int width, int border)
     {
         _copyTexImage1D(target, level, internalformat, x, y, width, border);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexImage2D(TextureTarget target, int level, InternalFormat internalformat, int x, int y, int width, int height, int border)
     {
         _copyTexImage2D(target, level, internalformat, x, y, width, height, border);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexSubImage1D(TextureTarget target, int level, int xoffset, int x, int y, int width)
     {
         _copyTexSubImage1D(target, level, xoffset, x, y, width);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int x, int y, int width, int height)
     {
         _copyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexSubImage1D(TextureTarget target, int level, int xoffset, int width, PixelFormat format, PixelType type, void* pixels)
     {
         _texSubImage1D(target, level, xoffset, width, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int width, int height, PixelFormat format, PixelType type, void* pixels)
     {
         _texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindTexture(TextureTarget target, uint texture)
     {
         _bindTexture(target, texture);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteTextures(int n, uint* textures)
     {
         _deleteTextures(n, textures);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenTextures(int n, uint* textures)
     {
         _genTextures(n, textures);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsTexture(uint texture)
+    public bool IsTexture(uint texture)
     {
-        return _isTexture(texture);
+        var result = _isTexture(texture);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1iv(uint program, int location, int count, int* value)
     {
         _programUniform1iv(program, location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramUniform1i(uint program, int location, int v0)
     {
         _programUniform1i(program, location, v0);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramPipelineiv(uint pipeline, PipelineParameterName pname, int* @params)
     {
         _getProgramPipelineiv(pipeline, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsProgramPipeline(uint pipeline)
+    public bool IsProgramPipeline(uint pipeline)
     {
-        return _isProgramPipeline(pipeline);
+        var result = _isProgramPipeline(pipeline);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenProgramPipelines(int n, uint* pipelines)
     {
         _genProgramPipelines(n, pipelines);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteProgramPipelines(int n, uint* pipelines)
     {
         _deleteProgramPipelines(n, pipelines);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint CreateShaderProgramv(ShaderType type, int count, char** strings)
     {
-        return _createShaderProgramv(type, count, strings);
+        var result = _createShaderProgramv(type, count, strings);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ActiveShaderProgram(uint pipeline, uint program)
     {
         _activeShaderProgram(pipeline, program);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UseProgramStages(uint pipeline, UseProgramStageMask stages, uint program)
     {
         _useProgramStages(pipeline, stages, program);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramParameteri(uint program, ProgramParameterPName pname, int value)
     {
         _programParameteri(program, pname, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProgramBinary(uint program, Enum binaryFormat, void* binary, int length)
     {
         _programBinary(program, binaryFormat, binary, length);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramBinary(uint program, int bufSize, int* length, Enum* binaryFormat, void* binary)
     {
         _getProgramBinary(program, bufSize, length, binaryFormat, binary);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearDepthf(float d)
     {
         _clearDepthf(d);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DepthRangef(float n, float f)
     {
         _depthRangef(n, f);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetShaderPrecisionFormat(ShaderType shadertype, PrecisionType precisiontype, int* range, int* precision)
     {
         _getShaderPrecisionFormat(shadertype, precisiontype, range, precision);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ShaderBinary(int count, uint* shaders, ShaderBinaryFormat binaryFormat, void* binary, int length)
     {
         _shaderBinary(count, shaders, binaryFormat, binary, length);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawRangeElements(PrimitiveType mode, uint start, uint end, int count, DrawElementsType type, void* indices)
     {
         _drawRangeElements(mode, start, end, count, type, indices);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexImage3D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int depth, int border, PixelFormat format, PixelType type, void* pixels)
     {
         _texImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
     {
         _texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
     {
         _copyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ActiveTexture(TextureUnit texture)
     {
         _activeTexture(texture);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SampleCoverage(float value, byte invert)
+    public void SampleCoverage(float value, bool invert)
     {
-        _sampleCoverage(value, invert);
+        _sampleCoverage(value, ((invert) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexImage3D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int depth, int border, int imageSize, void* data)
     {
         _compressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexImage2D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int border, int imageSize, void* data)
     {
         _compressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexImage1D(TextureTarget target, int level, InternalFormat internalformat, int width, int border, int imageSize, void* data)
     {
         _compressedTexImage1D(target, level, internalformat, width, border, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, InternalFormat format, int imageSize, void* data)
     {
         _compressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int width, int height, InternalFormat format, int imageSize, void* data)
     {
         _compressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompressedTexSubImage1D(TextureTarget target, int level, int xoffset, int width, InternalFormat format, int imageSize, void* data)
     {
         _compressedTexSubImage1D(target, level, xoffset, width, format, imageSize, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetCompressedTexImage(TextureTarget target, int level, void* img)
     {
         _getCompressedTexImage(target, level, img);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ReleaseShaderCompiler()
     {
         _releaseShaderCompiler();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryIndexediv(QueryTarget target, uint index, QueryParameterName pname, int* @params)
     {
         _getQueryIndexediv(target, index, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndQueryIndexed(QueryTarget target, uint index)
     {
         _endQueryIndexed(target, index);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginQueryIndexed(QueryTarget target, uint index, uint id)
     {
         _beginQueryIndexed(target, index, id);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawTransformFeedbackStream(PrimitiveType mode, uint id, uint stream)
     {
         _drawTransformFeedbackStream(mode, id, stream);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawTransformFeedback(PrimitiveType mode, uint id)
     {
         _drawTransformFeedback(mode, id);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ResumeTransformFeedback()
     {
         _resumeTransformFeedback();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PauseTransformFeedback()
     {
         _pauseTransformFeedback();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsTransformFeedback(uint id)
+    public bool IsTransformFeedback(uint id)
     {
-        return _isTransformFeedback(id);
+        var result = _isTransformFeedback(id);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenTransformFeedbacks(int n, uint* ids)
     {
         _genTransformFeedbacks(n, ids);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteTransformFeedbacks(int n, uint* ids)
     {
         _deleteTransformFeedbacks(n, ids);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindTransformFeedback(BindTransformFeedbackTarget target, uint id)
     {
         _bindTransformFeedback(target, id);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PatchParameterfv(PatchParameterName pname, float* values)
     {
         _patchParameterfv(pname, values);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PatchParameteri(PatchParameterName pname, int value)
     {
         _patchParameteri(pname, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramStageiv(uint program, ShaderType shadertype, ProgramStagePName pname, int* values)
     {
         _getProgramStageiv(program, shadertype, pname, values);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformSubroutineuiv(ShaderType shadertype, int location, uint* @params)
     {
         _getUniformSubroutineuiv(shadertype, location, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformSubroutinesuiv(ShaderType shadertype, int count, uint* indices)
     {
         _uniformSubroutinesuiv(shadertype, count, indices);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveSubroutineName(uint program, ShaderType shadertype, uint index, int bufSize, int* length, char* name)
     {
         _getActiveSubroutineName(program, shadertype, index, bufSize, length, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveSubroutineUniformName(uint program, ShaderType shadertype, uint index, int bufSize, int* length, char* name)
     {
         _getActiveSubroutineUniformName(program, shadertype, index, bufSize, length, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveSubroutineUniformiv(uint program, ShaderType shadertype, uint index, SubroutineParameterName pname, int* values)
     {
         _getActiveSubroutineUniformiv(program, shadertype, index, pname, values);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint GetSubroutineIndex(uint program, ShaderType shadertype, char* name)
     {
-        return _getSubroutineIndex(program, shadertype, name);
+        var result = _getSubroutineIndex(program, shadertype, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetSubroutineUniformLocation(uint program, ShaderType shadertype, char* name)
     {
-        return _getSubroutineUniformLocation(program, shadertype, name);
+        var result = _getSubroutineUniformLocation(program, shadertype, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformdv(uint program, int location, double* @params)
     {
         _getUniformdv(program, location, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4x3dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix4x3dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix4x3dv(location, count, transpose, value);
+        _uniformMatrix4x3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4x2dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix4x2dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix4x2dv(location, count, transpose, value);
+        _uniformMatrix4x2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3x4dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix3x4dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix3x4dv(location, count, transpose, value);
+        _uniformMatrix3x4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3x2dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix3x2dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix3x2dv(location, count, transpose, value);
+        _uniformMatrix3x2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2x4dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix2x4dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix2x4dv(location, count, transpose, value);
+        _uniformMatrix2x4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2x3dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix2x3dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix2x3dv(location, count, transpose, value);
+        _uniformMatrix2x3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix4dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix4dv(location, count, transpose, value);
+        _uniformMatrix4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix3dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix3dv(location, count, transpose, value);
+        _uniformMatrix3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2dv(int location, int count, byte transpose, double* value)
+    public void UniformMatrix2dv(int location, int count, bool transpose, double* value)
     {
-        _uniformMatrix2dv(location, count, transpose, value);
+        _uniformMatrix2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4dv(int location, int count, double* value)
     {
         _uniform4dv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3dv(int location, int count, double* value)
     {
         _uniform3dv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2dv(int location, int count, double* value)
     {
         _uniform2dv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1dv(int location, int count, double* value)
     {
         _uniform1dv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4d(int location, double x, double y, double z, double w)
     {
         _uniform4d(location, x, y, z, w);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendFuncSeparate(BlendingFactor sfactorRGB, BlendingFactor dfactorRGB, BlendingFactor sfactorAlpha, BlendingFactor dfactorAlpha)
     {
         _blendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawArrays(PrimitiveType mode, int* first, int* count, int drawcount)
     {
         _multiDrawArrays(mode, first, count, drawcount);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawElements(PrimitiveType mode, int* count, DrawElementsType type, void** indices, int drawcount)
     {
         _multiDrawElements(mode, count, type, indices, drawcount);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PointParameterf(PointParameterName pname, float param)
     {
         _pointParameterf(pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PointParameterfv(PointParameterName pname, float* @params)
     {
         _pointParameterfv(pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PointParameteri(PointParameterName pname, int param)
     {
         _pointParameteri(pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PointParameteriv(PointParameterName pname, int* @params)
     {
         _pointParameteriv(pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3d(int location, double x, double y, double z)
     {
         _uniform3d(location, x, y, z);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2d(int location, double x, double y)
     {
         _uniform2d(location, x, y);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1d(int location, double x)
     {
         _uniform1d(location, x);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsIndirect(PrimitiveType mode, DrawElementsType type, void* indirect)
     {
         _drawElementsIndirect(mode, type, indirect);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawArraysIndirect(PrimitiveType mode, void* indirect)
     {
         _drawArraysIndirect(mode, indirect);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendFuncSeparatei(uint buf, BlendingFactor srcRGB, BlendingFactor dstRGB, BlendingFactor srcAlpha, BlendingFactor dstAlpha)
     {
         _blendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendFunci(uint buf, BlendingFactor src, BlendingFactor dst)
     {
         _blendFunci(buf, src, dst);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendEquationSeparatei(uint buf, BlendEquationModeEXT modeRGB, BlendEquationModeEXT modeAlpha)
     {
         _blendEquationSeparatei(buf, modeRGB, modeAlpha);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendEquationi(uint buf, BlendEquationModeEXT mode)
     {
         _blendEquationi(buf, mode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MinSampleShading(float value)
     {
         _minSampleShading(value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP4uiv(uint index, VertexAttribPointerType type, byte normalized, uint* value)
+    public void VertexAttribP4uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
     {
-        _vertexAttribP4uiv(index, type, normalized, value);
+        _vertexAttribP4uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP4ui(uint index, VertexAttribPointerType type, byte normalized, uint value)
+    public void VertexAttribP4ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
     {
-        _vertexAttribP4ui(index, type, normalized, value);
+        _vertexAttribP4ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP3uiv(uint index, VertexAttribPointerType type, byte normalized, uint* value)
+    public void VertexAttribP3uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
     {
-        _vertexAttribP3uiv(index, type, normalized, value);
+        _vertexAttribP3uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP3ui(uint index, VertexAttribPointerType type, byte normalized, uint value)
+    public void VertexAttribP3ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
     {
-        _vertexAttribP3ui(index, type, normalized, value);
+        _vertexAttribP3ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP2uiv(uint index, VertexAttribPointerType type, byte normalized, uint* value)
+    public void VertexAttribP2uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
     {
-        _vertexAttribP2uiv(index, type, normalized, value);
+        _vertexAttribP2uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP2ui(uint index, VertexAttribPointerType type, byte normalized, uint value)
+    public void VertexAttribP2ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
     {
-        _vertexAttribP2ui(index, type, normalized, value);
+        _vertexAttribP2ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP1uiv(uint index, VertexAttribPointerType type, byte normalized, uint* value)
+    public void VertexAttribP1uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
     {
-        _vertexAttribP1uiv(index, type, normalized, value);
+        _vertexAttribP1uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP1ui(uint index, VertexAttribPointerType type, byte normalized, uint value)
+    public void VertexAttribP1ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
     {
-        _vertexAttribP1ui(index, type, normalized, value);
+        _vertexAttribP1ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribDivisor(uint index, uint divisor)
     {
         _vertexAttribDivisor(index, divisor);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryObjectui64v(uint id, QueryObjectParameterName pname, ulong* @params)
     {
         _getQueryObjectui64v(id, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryObjecti64v(uint id, QueryObjectParameterName pname, long* @params)
     {
         _getQueryObjecti64v(id, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void QueryCounter(uint id, QueryCounterTarget target)
     {
         _queryCounter(id, target);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSamplerParameterIuiv(uint sampler, SamplerParameterI pname, uint* @params)
     {
         _getSamplerParameterIuiv(sampler, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSamplerParameterfv(uint sampler, SamplerParameterF pname, float* @params)
     {
         _getSamplerParameterfv(sampler, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSamplerParameterIiv(uint sampler, SamplerParameterI pname, int* @params)
     {
         _getSamplerParameterIiv(sampler, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSamplerParameteriv(uint sampler, SamplerParameterI pname, int* @params)
     {
         _getSamplerParameteriv(sampler, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameterIuiv(uint sampler, SamplerParameterI pname, uint* param)
     {
         _samplerParameterIuiv(sampler, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameterIiv(uint sampler, SamplerParameterI pname, int* param)
     {
         _samplerParameterIiv(sampler, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameterfv(uint sampler, SamplerParameterF pname, float* param)
     {
         _samplerParameterfv(sampler, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameterf(uint sampler, SamplerParameterF pname, float param)
     {
         _samplerParameterf(sampler, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameteriv(uint sampler, SamplerParameterI pname, int* param)
     {
         _samplerParameteriv(sampler, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SamplerParameteri(uint sampler, SamplerParameterI pname, int param)
     {
         _samplerParameteri(sampler, pname, param);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindSampler(uint unit, uint sampler)
     {
         _bindSampler(unit, sampler);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsSampler(uint sampler)
+    public bool IsSampler(uint sampler)
     {
-        return _isSampler(sampler);
+        var result = _isSampler(sampler);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteSamplers(int count, uint* samplers)
     {
         _deleteSamplers(count, samplers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenSamplers(int count, uint* samplers)
     {
         _genSamplers(count, samplers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetFragDataIndex(uint program, char* name)
     {
-        return _getFragDataIndex(program, name);
+        var result = _getFragDataIndex(program, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindFragDataLocationIndexed(uint program, uint colorNumber, uint index, char* name)
     {
         _bindFragDataLocationIndexed(program, colorNumber, index, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendColor(float red, float green, float blue, float alpha)
     {
         _blendColor(red, green, blue, alpha);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendEquation(BlendEquationModeEXT mode)
     {
         _blendEquation(mode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenQueries(int n, uint* ids)
     {
         _genQueries(n, ids);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteQueries(int n, uint* ids)
     {
         _deleteQueries(n, ids);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsQuery(uint id)
+    public bool IsQuery(uint id)
     {
-        return _isQuery(id);
+        var result = _isQuery(id);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginQuery(QueryTarget target, uint id)
     {
         _beginQuery(target, id);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndQuery(QueryTarget target)
     {
         _endQuery(target);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryiv(QueryTarget target, QueryParameterName pname, int* @params)
     {
         _getQueryiv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryObjectiv(uint id, QueryObjectParameterName pname, int* @params)
     {
         _getQueryObjectiv(id, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetQueryObjectuiv(uint id, QueryObjectParameterName pname, uint* @params)
     {
         _getQueryObjectuiv(id, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindBuffer(BufferTarget target, uint buffer)
     {
         _bindBuffer(target, buffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteBuffers(int n, uint* buffers)
     {
         _deleteBuffers(n, buffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenBuffers(int n, uint* buffers)
     {
         _genBuffers(n, buffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsBuffer(uint buffer)
+    public bool IsBuffer(uint buffer)
     {
-        return _isBuffer(buffer);
+        var result = _isBuffer(buffer);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BufferData(BufferTarget target, nint size, void* data, BufferUsage usage)
     {
         _bufferData(target, size, data, usage);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BufferSubData(BufferTarget target, nint offset, nint size, void* data)
     {
         _bufferSubData(target, offset, size, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetBufferSubData(BufferTarget target, nint offset, nint size, void* data)
     {
         _getBufferSubData(target, offset, size, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void* MapBuffer(BufferTarget target, BufferAccess access)
     {
-        return _mapBuffer(target, access);
+        var result = _mapBuffer(target, access);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte UnmapBuffer(BufferTarget target)
+    public bool UnmapBuffer(BufferTarget target)
     {
-        return _unmapBuffer(target);
+        var result = _unmapBuffer(target);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetBufferParameteriv(BufferTarget target, BufferPName pname, int* @params)
     {
         _getBufferParameteriv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetBufferPointerv(BufferTarget target, BufferPointerName pname, void** @params)
     {
         _getBufferPointerv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlendEquationSeparate(BlendEquationModeEXT modeRGB, BlendEquationModeEXT modeAlpha)
     {
         _blendEquationSeparate(modeRGB, modeAlpha);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawBuffers(int n, DrawBufferMode* bufs)
     {
         _drawBuffers(n, bufs);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilOpSeparate(TriangleFace face, StencilOpEnum sfail, StencilOpEnum dpfail, StencilOpEnum dppass)
     {
         _stencilOpSeparate(face, sfail, dpfail, dppass);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilFuncSeparate(TriangleFace face, StencilFunction func, int @ref, uint mask)
     {
         _stencilFuncSeparate(face, func, @ref, mask);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void StencilMaskSeparate(TriangleFace face, uint mask)
     {
         _stencilMaskSeparate(face, mask);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AttachShader(uint program, uint shader)
     {
         _attachShader(program, shader);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindAttribLocation(uint program, uint index, char* name)
     {
         _bindAttribLocation(program, index, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CompileShader(uint shader)
     {
         _compileShader(shader);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint CreateProgram()
     {
-        return _createProgram();
+        var result = _createProgram();
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint CreateShader(ShaderType type)
     {
-        return _createShader(type);
+        var result = _createShader(type);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteProgram(uint program)
     {
         _deleteProgram(program);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteShader(uint shader)
     {
         _deleteShader(shader);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DetachShader(uint program, uint shader)
     {
         _detachShader(program, shader);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DisableVertexAttribArray(uint index)
     {
         _disableVertexAttribArray(index);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EnableVertexAttribArray(uint index)
     {
         _enableVertexAttribArray(index);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveAttrib(uint program, uint index, int bufSize, int* length, int* size, AttributeType* type, char* name)
     {
         _getActiveAttrib(program, index, bufSize, length, size, type, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniform(uint program, uint index, int bufSize, int* length, int* size, UniformType* type, char* name)
     {
         _getActiveUniform(program, index, bufSize, length, size, type, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetAttachedShaders(uint program, int maxCount, int* count, uint* shaders)
     {
         _getAttachedShaders(program, maxCount, count, shaders);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAttribLocation(uint program, char* name)
     {
-        return _getAttribLocation(program, name);
+        var result = _getAttribLocation(program, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramiv(uint program, ProgramProperty pname, int* @params)
     {
         _getProgramiv(program, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetProgramInfoLog(uint program, int bufSize, int* length, char* infoLog)
     {
         _getProgramInfoLog(program, bufSize, length, infoLog);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetShaderiv(uint shader, ShaderParameterName pname, int* @params)
     {
         _getShaderiv(shader, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetShaderInfoLog(uint shader, int bufSize, int* length, char* infoLog)
     {
         _getShaderInfoLog(shader, bufSize, length, infoLog);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetShaderSource(uint shader, int bufSize, int* length, char* source)
     {
         _getShaderSource(shader, bufSize, length, source);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetUniformLocation(uint program, char* name)
     {
-        return _getUniformLocation(program, name);
+        var result = _getUniformLocation(program, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformfv(uint program, int location, float* @params)
     {
         _getUniformfv(program, location, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformiv(uint program, int location, int* @params)
     {
         _getUniformiv(program, location, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribdv(uint index, VertexAttribProperty pname, double* @params)
     {
         _getVertexAttribdv(index, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribfv(uint index, VertexAttribProperty pname, float* @params)
     {
         _getVertexAttribfv(index, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribiv(uint index, VertexAttribProperty pname, int* @params)
     {
         _getVertexAttribiv(index, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribPointerv(uint index, VertexAttribPointerProperty pname, void** pointer)
     {
         _getVertexAttribPointerv(index, pname, pointer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsProgram(uint program)
+    public bool IsProgram(uint program)
     {
-        return _isProgram(program);
+        var result = _isProgram(program);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsShader(uint shader)
+    public bool IsShader(uint shader)
     {
-        return _isShader(shader);
+        var result = _isShader(shader);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void LinkProgram(uint program)
     {
         _linkProgram(program);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ShaderSource(uint shader, int count, char** @string, int* length)
     {
         _shaderSource(shader, count, @string, length);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UseProgram(uint program)
     {
         _useProgram(program);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1f(int location, float v0)
     {
         _uniform1f(location, v0);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2f(int location, float v0, float v1)
     {
         _uniform2f(location, v0, v1);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3f(int location, float v0, float v1, float v2)
     {
         _uniform3f(location, v0, v1, v2);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4f(int location, float v0, float v1, float v2, float v3)
     {
         _uniform4f(location, v0, v1, v2, v3);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1i(int location, int v0)
     {
         _uniform1i(location, v0);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2i(int location, int v0, int v1)
     {
         _uniform2i(location, v0, v1);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3i(int location, int v0, int v1, int v2)
     {
         _uniform3i(location, v0, v1, v2);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4i(int location, int v0, int v1, int v2, int v3)
     {
         _uniform4i(location, v0, v1, v2, v3);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1fv(int location, int count, float* value)
     {
         _uniform1fv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2fv(int location, int count, float* value)
     {
         _uniform2fv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3fv(int location, int count, float* value)
     {
         _uniform3fv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4fv(int location, int count, float* value)
     {
         _uniform4fv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1iv(int location, int count, int* value)
     {
         _uniform1iv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2iv(int location, int count, int* value)
     {
         _uniform2iv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3iv(int location, int count, int* value)
     {
         _uniform3iv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4iv(int location, int count, int* value)
     {
         _uniform4iv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix2fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix2fv(location, count, transpose, value);
+        _uniformMatrix2fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix3fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix3fv(location, count, transpose, value);
+        _uniformMatrix3fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix4fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix4fv(location, count, transpose, value);
+        _uniformMatrix4fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ValidateProgram(uint program)
     {
         _validateProgram(program);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1d(uint index, double x)
     {
         _vertexAttrib1d(index, x);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1dv(uint index, double* v)
     {
         _vertexAttrib1dv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1f(uint index, float x)
     {
         _vertexAttrib1f(index, x);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1fv(uint index, float* v)
     {
         _vertexAttrib1fv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1s(uint index, short x)
     {
         _vertexAttrib1s(index, x);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib1sv(uint index, short* v)
     {
         _vertexAttrib1sv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2d(uint index, double x, double y)
     {
         _vertexAttrib2d(index, x, y);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2dv(uint index, double* v)
     {
         _vertexAttrib2dv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2f(uint index, float x, float y)
     {
         _vertexAttrib2f(index, x, y);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2fv(uint index, float* v)
     {
         _vertexAttrib2fv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2s(uint index, short x, short y)
     {
         _vertexAttrib2s(index, x, y);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib2sv(uint index, short* v)
     {
         _vertexAttrib2sv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3d(uint index, double x, double y, double z)
     {
         _vertexAttrib3d(index, x, y, z);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3dv(uint index, double* v)
     {
         _vertexAttrib3dv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3f(uint index, float x, float y, float z)
     {
         _vertexAttrib3f(index, x, y, z);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3fv(uint index, float* v)
     {
         _vertexAttrib3fv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3s(uint index, short x, short y, short z)
     {
         _vertexAttrib3s(index, x, y, z);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib3sv(uint index, short* v)
     {
         _vertexAttrib3sv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nbv(uint index, char* v)
     {
         _vertexAttrib4Nbv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Niv(uint index, int* v)
     {
         _vertexAttrib4Niv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nsv(uint index, short* v)
     {
         _vertexAttrib4Nsv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nub(uint index, byte x, byte y, byte z, byte w)
     {
         _vertexAttrib4Nub(index, x, y, z, w);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nubv(uint index, byte* v)
     {
         _vertexAttrib4Nubv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nuiv(uint index, uint* v)
     {
         _vertexAttrib4Nuiv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nusv(uint index, ushort* v)
     {
         _vertexAttrib4Nusv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4bv(uint index, char* v)
     {
         _vertexAttrib4bv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4d(uint index, double x, double y, double z, double w)
     {
         _vertexAttrib4d(index, x, y, z, w);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4dv(uint index, double* v)
     {
         _vertexAttrib4dv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4f(uint index, float x, float y, float z, float w)
     {
         _vertexAttrib4f(index, x, y, z, w);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4fv(uint index, float* v)
     {
         _vertexAttrib4fv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4iv(uint index, int* v)
     {
         _vertexAttrib4iv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4s(uint index, short x, short y, short z, short w)
     {
         _vertexAttrib4s(index, x, y, z, w);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4sv(uint index, short* v)
     {
         _vertexAttrib4sv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4ubv(uint index, byte* v)
     {
         _vertexAttrib4ubv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4uiv(uint index, uint* v)
     {
         _vertexAttrib4uiv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4usv(uint index, ushort* v)
     {
         _vertexAttrib4usv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribPointer(uint index, int size, VertexAttribPointerType type, byte normalized, int stride, void* pointer)
+    public void VertexAttribPointer(uint index, int size, VertexAttribPointerType type, bool normalized, int stride, void* pointer)
     {
-        _vertexAttribPointer(index, size, type, normalized, stride, pointer);
+        _vertexAttribPointer(index, size, type, ((normalized) ? (byte)1 : (byte)0), stride, pointer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2x3fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix2x3fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix2x3fv(location, count, transpose, value);
+        _uniformMatrix2x3fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3x2fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix3x2fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix3x2fv(location, count, transpose, value);
+        _uniformMatrix3x2fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2x4fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix2x4fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix2x4fv(location, count, transpose, value);
+        _uniformMatrix2x4fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4x2fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix4x2fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix4x2fv(location, count, transpose, value);
+        _uniformMatrix4x2fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3x4fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix3x4fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix3x4fv(location, count, transpose, value);
+        _uniformMatrix3x4fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4x3fv(int location, int count, byte transpose, float* value)
+    public void UniformMatrix4x3fv(int location, int count, bool transpose, float* value)
     {
-        _uniformMatrix4x3fv(location, count, transpose, value);
+        _uniformMatrix4x3fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ColorMaski(uint index, byte r, byte g, byte b, byte a)
+    public void ColorMaski(uint index, bool r, bool g, bool b, bool a)
     {
-        _colorMaski(index, r, g, b, a);
+        _colorMaski(index, ((r) ? (byte)1 : (byte)0), ((g) ? (byte)1 : (byte)0), ((b) ? (byte)1 : (byte)0), ((a) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetBooleani_v(BufferTarget target, uint index, byte* data)
     {
         _getBooleani_v(target, index, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetIntegeri_v(GetPName target, uint index, int* data)
     {
         _getIntegeri_v(target, index, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Enablei(EnableCap target, uint index)
     {
         _enablei(target, index);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Disablei(EnableCap target, uint index)
     {
         _disablei(target, index);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsEnabledi(EnableCap target, uint index)
+    public bool IsEnabledi(EnableCap target, uint index)
     {
-        return _isEnabledi(target, index);
+        var result = _isEnabledi(target, index);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginTransformFeedback(PrimitiveType primitiveMode)
     {
         _beginTransformFeedback(primitiveMode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndTransformFeedback()
     {
         _endTransformFeedback();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindBufferRange(BufferTarget target, uint index, uint buffer, nint offset, nint size)
     {
         _bindBufferRange(target, index, buffer, offset, size);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindBufferBase(BufferTarget target, uint index, uint buffer)
     {
         _bindBufferBase(target, index, buffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TransformFeedbackVaryings(uint program, int count, char** varyings, TransformFeedbackBufferMode bufferMode)
     {
         _transformFeedbackVaryings(program, count, varyings, bufferMode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTransformFeedbackVarying(uint program, uint index, int bufSize, int* length, int* size, AttributeType* type, char* name)
     {
         _getTransformFeedbackVarying(program, index, bufSize, length, size, type, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClampColor(ClampColorTarget target, ClampColorMode clamp)
     {
         _clampColor(target, clamp);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BeginConditionalRender(uint id, ConditionalRenderMode mode)
     {
         _beginConditionalRender(id, mode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void EndConditionalRender()
     {
         _endConditionalRender();
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribIPointer(uint index, int size, VertexAttribIType type, int stride, void* pointer)
     {
         _vertexAttribIPointer(index, size, type, stride, pointer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribIiv(uint index, VertexAttribEnum pname, int* @params)
     {
         _getVertexAttribIiv(index, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetVertexAttribIuiv(uint index, VertexAttribEnum pname, uint* @params)
     {
         _getVertexAttribIuiv(index, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI1i(uint index, int x)
     {
         _vertexAttribI1i(index, x);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI2i(uint index, int x, int y)
     {
         _vertexAttribI2i(index, x, y);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3i(uint index, int x, int y, int z)
     {
         _vertexAttribI3i(index, x, y, z);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4i(uint index, int x, int y, int z, int w)
     {
         _vertexAttribI4i(index, x, y, z, w);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI1ui(uint index, uint x)
     {
         _vertexAttribI1ui(index, x);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI2ui(uint index, uint x, uint y)
     {
         _vertexAttribI2ui(index, x, y);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3ui(uint index, uint x, uint y, uint z)
     {
         _vertexAttribI3ui(index, x, y, z);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4ui(uint index, uint x, uint y, uint z, uint w)
     {
         _vertexAttribI4ui(index, x, y, z, w);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI1iv(uint index, int* v)
     {
         _vertexAttribI1iv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI2iv(uint index, int* v)
     {
         _vertexAttribI2iv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3iv(uint index, int* v)
     {
         _vertexAttribI3iv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4iv(uint index, int* v)
     {
         _vertexAttribI4iv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI1uiv(uint index, uint* v)
     {
         _vertexAttribI1uiv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI2uiv(uint index, uint* v)
     {
         _vertexAttribI2uiv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3uiv(uint index, uint* v)
     {
         _vertexAttribI3uiv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4uiv(uint index, uint* v)
     {
         _vertexAttribI4uiv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4bv(uint index, char* v)
     {
         _vertexAttribI4bv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4sv(uint index, short* v)
     {
         _vertexAttribI4sv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4ubv(uint index, byte* v)
     {
         _vertexAttribI4ubv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4usv(uint index, ushort* v)
     {
         _vertexAttribI4usv(index, v);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformuiv(uint program, int location, uint* @params)
     {
         _getUniformuiv(program, location, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindFragDataLocation(uint program, uint color, char* name)
     {
         _bindFragDataLocation(program, color, name);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetFragDataLocation(uint program, char* name)
     {
-        return _getFragDataLocation(program, name);
+        var result = _getFragDataLocation(program, name);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1ui(int location, uint v0)
     {
         _uniform1ui(location, v0);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2ui(int location, uint v0, uint v1)
     {
         _uniform2ui(location, v0, v1);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3ui(int location, uint v0, uint v1, uint v2)
     {
         _uniform3ui(location, v0, v1, v2);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4ui(int location, uint v0, uint v1, uint v2, uint v3)
     {
         _uniform4ui(location, v0, v1, v2, v3);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform1uiv(int location, int count, uint* value)
     {
         _uniform1uiv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform2uiv(int location, int count, uint* value)
     {
         _uniform2uiv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3uiv(int location, int count, uint* value)
     {
         _uniform3uiv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform4uiv(int location, int count, uint* value)
     {
         _uniform4uiv(location, count, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameterIiv(TextureTarget target, TextureParameterName pname, int* @params)
     {
         _texParameterIiv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexParameterIuiv(TextureTarget target, TextureParameterName pname, uint* @params)
     {
         _texParameterIuiv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexParameterIiv(TextureTarget target, GetTextureParameter pname, int* @params)
     {
         _getTexParameterIiv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetTexParameterIuiv(TextureTarget target, GetTextureParameter pname, uint* @params)
     {
         _getTexParameterIuiv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferiv(Buffer buffer, int drawbuffer, int* value)
     {
         _clearBufferiv(buffer, drawbuffer, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferuiv(Buffer buffer, int drawbuffer, uint* value)
     {
         _clearBufferuiv(buffer, drawbuffer, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferfv(Buffer buffer, int drawbuffer, float* value)
     {
         _clearBufferfv(buffer, drawbuffer, value);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearBufferfi(Buffer buffer, int drawbuffer, float depth, int stencil)
     {
         _clearBufferfi(buffer, drawbuffer, depth, stencil);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte* GetStringi(StringName name, uint index)
     {
-        return _getStringi(name, index);
+        var result = _getStringi(name, index);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsRenderbuffer(uint renderbuffer)
+    public bool IsRenderbuffer(uint renderbuffer)
     {
-        return _isRenderbuffer(renderbuffer);
+        var result = _isRenderbuffer(renderbuffer);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindRenderbuffer(RenderbufferTarget target, uint renderbuffer)
     {
         _bindRenderbuffer(target, renderbuffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteRenderbuffers(int n, uint* renderbuffers)
     {
         _deleteRenderbuffers(n, renderbuffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenRenderbuffers(int n, uint* renderbuffers)
     {
         _genRenderbuffers(n, renderbuffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RenderbufferStorage(RenderbufferTarget target, InternalFormat internalformat, int width, int height)
     {
         _renderbufferStorage(target, internalformat, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetRenderbufferParameteriv(RenderbufferTarget target, RenderbufferParameterName pname, int* @params)
     {
         _getRenderbufferParameteriv(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsFramebuffer(uint framebuffer)
+    public bool IsFramebuffer(uint framebuffer)
     {
-        return _isFramebuffer(framebuffer);
+        var result = _isFramebuffer(framebuffer);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindFramebuffer(FramebufferTarget target, uint framebuffer)
     {
         _bindFramebuffer(target, framebuffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteFramebuffers(int n, uint* framebuffers)
     {
         _deleteFramebuffers(n, framebuffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenFramebuffers(int n, uint* framebuffers)
     {
         _genFramebuffers(n, framebuffers);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public FramebufferStatus CheckFramebufferStatus(FramebufferTarget target)
     {
-        return _checkFramebufferStatus(target);
+        var result = _checkFramebufferStatus(target);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTexture1D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, uint texture, int level)
     {
         _framebufferTexture1D(target, attachment, textarget, texture, level);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTexture2D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, uint texture, int level)
     {
         _framebufferTexture2D(target, attachment, textarget, texture, level);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTexture3D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, uint texture, int level, int zoffset)
     {
         _framebufferTexture3D(target, attachment, textarget, texture, level, zoffset);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferRenderbuffer(FramebufferTarget target, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, uint renderbuffer)
     {
         _framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetFramebufferAttachmentParameteriv(FramebufferTarget target, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
     {
         _getFramebufferAttachmentParameteriv(target, attachment, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenerateMipmap(TextureTarget target)
     {
         _generateMipmap(target);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
     {
         _blitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RenderbufferStorageMultisample(RenderbufferTarget target, int samples, InternalFormat internalformat, int width, int height)
     {
         _renderbufferStorageMultisample(target, samples, internalformat, width, height);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTextureLayer(FramebufferTarget target, FramebufferAttachment attachment, uint texture, int level, int layer)
     {
         _framebufferTextureLayer(target, attachment, texture, level, layer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void* MapBufferRange(BufferTarget target, nint offset, nint length, MapBufferAccessMask access)
     {
-        return _mapBufferRange(target, offset, length, access);
+        var result = _mapBufferRange(target, offset, length, access);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FlushMappedBufferRange(BufferTarget target, nint offset, nint length)
     {
         _flushMappedBufferRange(target, offset, length);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void BindVertexArray(uint array)
     {
         _bindVertexArray(array);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteVertexArrays(int n, uint* arrays)
     {
         _deleteVertexArrays(n, arrays);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GenVertexArrays(int n, uint* arrays)
     {
         _genVertexArrays(n, arrays);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsVertexArray(uint array)
+    public bool IsVertexArray(uint array)
     {
-        return _isVertexArray(array);
+        var result = _isVertexArray(array);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawArraysInstanced(PrimitiveType mode, int first, int count, int instancecount)
     {
         _drawArraysInstanced(mode, first, count, instancecount);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsInstanced(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount)
     {
         _drawElementsInstanced(mode, count, type, indices, instancecount);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TexBuffer(TextureTarget target, SizedInternalFormat internalformat, uint buffer)
     {
         _texBuffer(target, internalformat, buffer);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void PrimitiveRestartIndex(uint index)
     {
         _primitiveRestartIndex(index);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyBufferSubData(CopyBufferSubDataTarget readTarget, CopyBufferSubDataTarget writeTarget, nint readOffset, nint writeOffset, nint size)
     {
         _copyBufferSubData(readTarget, writeTarget, readOffset, writeOffset, size);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformIndices(uint program, int uniformCount, char** uniformNames, uint* uniformIndices)
     {
         _getUniformIndices(program, uniformCount, uniformNames, uniformIndices);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniformsiv(uint program, int uniformCount, uint* uniformIndices, UniformPName pname, int* @params)
     {
         _getActiveUniformsiv(program, uniformCount, uniformIndices, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniformName(uint program, uint uniformIndex, int bufSize, int* length, char* uniformName)
     {
         _getActiveUniformName(program, uniformIndex, bufSize, length, uniformName);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint GetUniformBlockIndex(uint program, char* uniformBlockName)
     {
-        return _getUniformBlockIndex(program, uniformBlockName);
+        var result = _getUniformBlockIndex(program, uniformBlockName);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniformBlockiv(uint program, uint uniformBlockIndex, UniformBlockPName pname, int* @params)
     {
         _getActiveUniformBlockiv(program, uniformBlockIndex, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveUniformBlockName(uint program, uint uniformBlockIndex, int bufSize, int* length, char* uniformBlockName)
     {
         _getActiveUniformBlockName(program, uniformBlockIndex, bufSize, length, uniformBlockName);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformBlockBinding(uint program, uint uniformBlockIndex, uint uniformBlockBinding)
     {
         _uniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsBaseVertex(PrimitiveType mode, int count, DrawElementsType type, void* indices, int basevertex)
     {
         _drawElementsBaseVertex(mode, count, type, indices, basevertex);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawRangeElementsBaseVertex(PrimitiveType mode, uint start, uint end, int count, DrawElementsType type, void* indices, int basevertex)
     {
         _drawRangeElementsBaseVertex(mode, start, end, count, type, indices, basevertex);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DrawElementsInstancedBaseVertex(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, int basevertex)
     {
         _drawElementsInstancedBaseVertex(mode, count, type, indices, instancecount, basevertex);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawElementsBaseVertex(PrimitiveType mode, int* count, DrawElementsType type, void** indices, int drawcount, int* basevertex)
     {
         _multiDrawElementsBaseVertex(mode, count, type, indices, drawcount, basevertex);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ProvokingVertex(VertexProvokingMode mode)
     {
         _provokingVertex(mode);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public nint FenceSync(SyncCondition condition, SyncBehaviorFlags flags)
     {
-        return _fenceSync(condition, flags);
+        var result = _fenceSync(condition, flags);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte IsSync(nint sync)
+    public bool IsSync(nint sync)
     {
-        return _isSync(sync);
+        var result = _isSync(sync);
+        CheckError();
+        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeleteSync(nint sync)
     {
         _deleteSync(sync);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public SyncStatus ClientWaitSync(nint sync, SyncObjectMask flags, ulong timeout)
     {
-        return _clientWaitSync(sync, flags, timeout);
+        var result = _clientWaitSync(sync, flags, timeout);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WaitSync(nint sync, SyncBehaviorFlags flags, ulong timeout)
     {
         _waitSync(sync, flags, timeout);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetInteger64v(GetPName pname, long* data)
     {
         _getInteger64v(pname, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetSynciv(nint sync, SyncParameterName pname, int count, int* length, int* values)
     {
         _getSynciv(sync, pname, count, length, values);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetInteger64i_v(GetPName target, uint index, long* data)
     {
         _getInteger64i_v(target, index, data);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetBufferParameteri64v(BufferTarget target, BufferPName pname, long* @params)
     {
         _getBufferParameteri64v(target, pname, @params);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FramebufferTexture(FramebufferTarget target, FramebufferAttachment attachment, uint texture, int level)
     {
         _framebufferTexture(target, attachment, texture, level);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexImage2DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, byte fixedsamplelocations)
+    public void TexImage2DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, bool fixedsamplelocations)
     {
-        _texImage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
+        _texImage2DMultisample(target, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexImage3DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, int depth, byte fixedsamplelocations)
+    public void TexImage3DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
     {
-        _texImage3DMultisample(target, samples, internalformat, width, height, depth, fixedsamplelocations);
+        _texImage3DMultisample(target, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetMultisamplefv(GetMultisamplePNameNV pname, uint index, float* val)
     {
         _getMultisamplefv(pname, index, val);
+        CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SampleMaski(uint maskNumber, uint mask)
     {
         _sampleMaski(maskNumber, mask);
+        CheckError();
     }
 
 }

@@ -13,6 +13,7 @@ internal record GlSpec(IReadOnlyDictionary<string, string> Types,
                              string? Alias);
     internal record CommandSpec(string Name,
                                 string? Group,
+                                string? Kind,
                                 string? ReturnType,
                                 string? Alias,
                                 string? VecEquiv,

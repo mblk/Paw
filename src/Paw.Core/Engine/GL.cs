@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -14,8 +13,7 @@ public sealed unsafe partial class GL
 
     private readonly Func<string, nint> _loader;
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void DebugProc(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, sbyte* message, void* userParam);
+    private DebugProc? _debugProc;
 
     public GL(Func<string, nint> loader)
     {
@@ -23,8 +21,8 @@ public sealed unsafe partial class GL
 
         LoadFunctions();
         VerifyLoaded();
+        EnableDebugOutput();
         PrintInfos();
-        //EnableDebugOutput();
     }
 
     private nint Load(string name)
@@ -53,7 +51,7 @@ public sealed unsafe partial class GL
                 Debugger.Break();
             }
 
-            throw new Exception("GL error(s) detected.");
+            throw new Exception("GL error(s) detected");
         }
     }
 
@@ -72,20 +70,23 @@ public sealed unsafe partial class GL
         }
     }
 
-    //[Conditional("DEBUG")]
-    //private void EnableDebugOutput()
-    //{
-    //    Enable(EnableCap.DEBUG_OUTPUT);
-    //    Enable(EnableCap.DEBUG_OUTPUT_SYNCHRONOUS);
+    [Conditional("DEBUG")]
+    private void EnableDebugOutput()
+    {
+        Enable(EnableCap.DEBUG_OUTPUT);
+        Enable(EnableCap.DEBUG_OUTPUT_SYNCHRONOUS);
 
-    //    DebugMessageCallback(DebugCallback, nint.Zero);
+        // Keep Reference to prevent GC
+        _debugProc = DebugCallback;
 
-    //    // Enable all messages
-    //    DebugMessageControl(DebugSource.DONT_CARE, DebugType.DONT_CARE, DebugSeverity.DONT_CARE, 0, null, true);
+        DebugMessageCallback(_debugProc, (void*)0);
 
-    //    // Disable notification severity messages
-    //    DebugMessageControl(DebugSource.DONT_CARE, DebugType.DONT_CARE, DebugSeverity.NOTIFICATION, 0, null, false);
-    //}
+        // Enable all messages
+        DebugMessageControl(DebugSource.DONT_CARE, DebugType.DONT_CARE, DebugSeverity.DONT_CARE, 0, null, true);
+
+        // Disable notification severity messages
+        DebugMessageControl(DebugSource.DONT_CARE, DebugType.DONT_CARE, DebugSeverity.DEBUG_SEVERITY_NOTIFICATION, 0, null, false);
+    }
 
     private void DebugCallback(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, sbyte* message, void* userParam)
     {
@@ -105,7 +106,16 @@ public sealed unsafe partial class GL
 
     // ------------------------------------------------------------------------
 
+    //
+    // Handwritten types
+    //
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DebugProc(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, sbyte* message, void* userParam);
+
+    //
     // Handwritten mappings for strings, etc
+    //
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string GetString2(StringName name)
@@ -127,10 +137,10 @@ public sealed unsafe partial class GL
         CheckError();
     }
 
-    public int GetUniformLocation(uint program, scoped ReadOnlySpan<byte> name) // TODO what does "scoped" mean here?
+    private int GetUniformLocation(uint program, scoped ReadOnlySpan<byte> name) // TODO what does "scoped" mean here?
     {
 #if DEBUG
-        if (name.Length < 1) throw new ArgumentException("Name must not be empty.", nameof(name));
+        if (name.Length < 1) throw new ArgumentException("Name must not be empty", nameof(name));
 #endif
 
         ReadOnlySpan<byte> terminatedName = name;
@@ -164,7 +174,7 @@ public sealed unsafe partial class GL
     public int GetUniformLocation(uint program, string name)
     {
 #if DEBUG
-        if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name must not be empty.", nameof(name));
+        if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name must not be empty", nameof(name));
 #endif
 
         int len = Encoding.UTF8.GetByteCount(name);
@@ -178,60 +188,6 @@ public sealed unsafe partial class GL
 
         return GetUniformLocation(program, buffer);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform(int location, int value)
-    {
-        _uniform1i(location, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform(int location, float value)
-    {
-        _uniform1f(location, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform(int location, Vector2 value)
-    {
-        _uniform2f(location, value.X, value.Y);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform(int location, Vector3 value)
-    {
-        _uniform3f(location, value.X, value.Y, value.Z);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform(int location, Vector4 value)
-    {
-        _uniform4f(location, value.X, value.Y, value.Z, value.W);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform(int location, Matrix4x4 value, bool transpose = false)
-    {
-        float* p = (float*)&value;
-        _uniformMatrix4fv(location, 1, BoolToByte(transpose), p);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform(int location, Matrix3x2 value, bool transpose = false)
-    {
-        float* p = (float*)&value;
-        _uniformMatrix3x2fv(location, 1, BoolToByte(transpose), p);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte BoolToByte(bool v) => v ? (byte)1 : (byte)0;
 
     public void ShaderSource(uint shader, string source)
     {

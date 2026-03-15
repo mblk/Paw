@@ -166,7 +166,9 @@ internal class GlBindingGenerator
 
             var paramTypes = new List<string>();
             var paramNames = new List<string>();
-            var paramTypesAndNames = new List<(string,string)>();
+            //var paramTypesAndNames = new List<(string,string)>();
+            var mappedParamTypesAndNamesAndConverters = new List<(string Type, string Name, Func<string, string> Converter)>();
+
             foreach (var paramSpec in commandSpec.Params)
             {
                 string? mappedGroupName = !string.IsNullOrWhiteSpace(paramSpec.Group)
@@ -175,22 +177,52 @@ internal class GlBindingGenerator
 
                 (string paramType, TypeMapping paramTypeMapping) = ResolveType(paramSpec.Type, mappedGroupName, "void");
 
+                string mappedParamType;
+                Func<string, string> paramConverter;
+
+                if (paramSpec.PointerCount != 0)
+                {
+                    paramTypeMapping = TypeMapping.None; // disable mapping for pointers
+                }
+
+                switch (paramTypeMapping)
+                {
+                    case TypeMapping.None:
+                    {
+                        mappedParamType = paramType;
+                        paramConverter = (s) => s;
+                        break;
+                    }
+
+                    case TypeMapping.ByteToBool:
+                    {
+                        mappedParamType = "bool";
+                        paramConverter = (s) => $"(({s}) ? (byte)1 : (byte)0)";
+                        break;
+                    }
+
+                    default: throw new NotImplementedException("Unknown TypeMapping");
+                }
+
                 for(int i=0; i<paramSpec.PointerCount; i++)
                 {
                     paramType += "*";
+                    mappedParamType += "*";
                 }
 
                 string paramName = SanitizeParameterName(paramSpec.Name);
 
                 paramTypes.Add(paramType);
                 paramNames.Add(paramName);
-                paramTypesAndNames.Add((paramType, paramName));
+                //paramTypesAndNames.Add((paramType, paramName));
+                mappedParamTypesAndNamesAndConverters.Add((mappedParamType, paramName, paramConverter));
             }
 
             var genericArgs = new List<string>();
             genericArgs.AddRange(paramTypes);
             genericArgs.Add(returnType);
 
+            // generate delegate and load
             // TODO try making it readonly
             // private delegate* unmanaged[Cdecl]<int, uint*, void> _genBuffers;
             // _genBuffers = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glGenBuffers");
@@ -202,11 +234,37 @@ internal class GlBindingGenerator
             delegates.Add(delegateDefinition);
             loads.Add(delegateLoad);
 
-            /// <summary>
-            /// generate buffer object names
-            /// </summary>
-            /// <param name="n"></param>
-            /// <param name="buffers"></param>
+            // map return type
+            string mappedReturnType;
+            Func<string,string> returnValueConverter;
+
+            if (commandSpec.Kind != null && string.Equals(commandSpec.Kind, "string", StringComparison.OrdinalIgnoreCase))
+            {
+                // TODO only 3x in xml, what about other strings?
+                // TODO
+                Console.WriteLine($"TODO map return type to string: {commandSpec.Name}");
+            }
+
+            switch (returnTypeMapping)
+            {
+                case TypeMapping.None:
+                {
+                    mappedReturnType = returnType;
+                    returnValueConverter = (s) => s;
+                    break;
+                }
+
+                case TypeMapping.ByteToBool:
+                {
+                    mappedReturnType = "bool";
+                    returnValueConverter = (s) => $"(({s}) == (byte)1)";
+                    break;
+                }
+
+                default: throw new NotImplementedException("Unknown TypeMapping");
+            }
+
+            // generate the wrapper
             //[MethodImpl(MethodImplOptions.AggressiveInlining)]
             //public void GenBuffers(int n, uint* buffers)
             //{
@@ -219,31 +277,45 @@ internal class GlBindingGenerator
             wrapper.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
 
             wrapper.Append(_indent);
-            wrapper.Append($"public {returnType} {GetWrapperName(commandSpec.Name)}(");
-            wrapper.Append(String.Join(", ", paramTypesAndNames.Select(x => $"{x.Item1} {x.Item2}")));
+            wrapper.Append($"public {mappedReturnType} {GetWrapperName(commandSpec.Name)}(");
+            wrapper.Append(String.Join(", ", mappedParamTypesAndNamesAndConverters.Select(x => $"{x.Type} {x.Name}")));
             wrapper.AppendLine(")");
 
             wrapper.Append(_indent);
             wrapper.AppendLine("{");
 
+            // call delegate
             wrapper.Append(_indent);
             wrapper.Append(_indent);
-
-            if (returnType != "void")
+            if (mappedReturnType != "void")
             {
-                wrapper.Append("return ");
+                wrapper.Append("var result = ");
             }
             wrapper.Append($"{delegateName}(");
-            wrapper.Append(String.Join(", ", paramNames));
+            wrapper.Append(String.Join(", ", mappedParamTypesAndNamesAndConverters.Select(x => $"{x.Converter(x.Name)}")));
             wrapper.AppendLine(");");
+
+            // check error
+            if (delegateName != "_getError")
+            {
+                wrapper.Append(_indent);
+                wrapper.Append(_indent);
+                wrapper.AppendLine("CheckError();");
+            }
+
+            // return
+            if (mappedReturnType != "void")
+            {
+                wrapper.Append(_indent);
+                wrapper.Append(_indent);
+                wrapper.AppendLine($"return {returnValueConverter("result")};");
+            }
 
             wrapper.Append(_indent);
             wrapper.AppendLine("}");
 
             wrappers.Add(wrapper.ToString());
         }
-
-
 
         // -------------------------------------------
 

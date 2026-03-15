@@ -17,6 +17,7 @@ internal record GlSpec(IReadOnlyDictionary<string, string> Types,
                                 string? ReturnType,
                                 string? Alias,
                                 string? VecEquiv,
+                                string? Class,
                                 int PointerCount,
                                 IReadOnlyList<ParamSpec> Params);
     internal record ParamSpec(string Name,

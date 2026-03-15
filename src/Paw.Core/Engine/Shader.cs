@@ -61,7 +61,7 @@ public sealed class Shader : Asset, IDisposable
     private readonly GL _gl;
     private readonly string _name;
 
-    private uint _program;
+    private GL.ProgramId _program;
 
     public string Name => _name;
 
@@ -74,19 +74,19 @@ public sealed class Shader : Asset, IDisposable
 
     public void Dispose()
     {
-        if (_program != 0)
+        if (_program != default)
         {
             _gl.DeleteProgram(_program);
-            _program = 0;
+            _program = default;
         }
     }
 
     public void Reload(string vsSource, string fsSource)
     {
-        if (_program != 0)
+        if (_program != default)
         {
             _gl.DeleteProgram(_program);
-            _program = 0;
+            _program = default;
         }
 
         _program = CompileProgram(vsSource, fsSource);
@@ -99,7 +99,7 @@ public sealed class Shader : Asset, IDisposable
 
     public void Unuse()
     {
-        _gl.UseProgram(0);
+        _gl.UseProgram(default);
     }
 
     public void SetUniform(string name, int value)
@@ -152,11 +152,12 @@ public sealed class Shader : Asset, IDisposable
 
 
 
-    private uint CompileProgram(string vsSource, string fsSource)
+    private GL.ProgramId CompileProgram(string vsSource, string fsSource)
     {
         Console.WriteLine($"Compiling shader '{_name}' ...");
 
-        uint vs = 0, fs = 0, p = 0;
+        GL.ShaderId vs = default, fs = default;
+        GL.ProgramId p = default;
 
         try
         {
@@ -182,18 +183,21 @@ public sealed class Shader : Asset, IDisposable
         {
             Console.WriteLine($"Error in Shader '{_name}': {e.Message}");
 
-            if (p != 0) _gl.DeleteProgram(p);
+            if (p != default)
+            {
+                _gl.DeleteProgram(p);
+            }
 
-            return 0;
+            return default;
         }
         finally
         {
-            if (vs != 0) _gl.DeleteShader(vs);
-            if (fs != 0) _gl.DeleteShader(fs);
+            if (vs != default) _gl.DeleteShader(vs);
+            if (fs != default) _gl.DeleteShader(fs);
         }
     }
 
-    private void CheckShader(uint shader, string label)
+    private void CheckShader(GL.ShaderId shader, string label)
     {
         int status = _gl.GetShaderI(shader, GL.ShaderParameterName.COMPILE_STATUS);
         if (status == 0)
@@ -203,7 +207,7 @@ public sealed class Shader : Asset, IDisposable
         }
     }
 
-    private void CheckProgram(uint prog)
+    private void CheckProgram(GL.ProgramId prog)
     {
         int status = _gl.GetProgramI(prog, GL.ProgramProperty.LINK_STATUS);
         if (status == 0)

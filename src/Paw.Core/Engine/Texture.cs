@@ -34,13 +34,13 @@ public class TextureLoader : AssetLoader<Texture>
 public unsafe class Texture : Asset, IDisposable
 {
     private readonly GL _gl;
-    private readonly uint _id;
+    private readonly GL.TextureId _id;
 
     public Texture(GL gl, int width, int height, ReadOnlySpan<byte> data)
     {
         _gl = gl;
 
-        uint texId = 0;
+        GL.TextureId texId = default;
         _gl.GenTextures(1, &texId);
         _id = texId;
 
@@ -59,12 +59,12 @@ public unsafe class Texture : Asset, IDisposable
 
         _gl.GenerateMipmap(GL.TextureTarget.TEXTURE_2D);
 
-        _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, 0);
+        _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, default);
     }
 
     public void Dispose()
     {
-        uint texId = _id;
+        GL.TextureId texId = _id;
         _gl.DeleteTextures(1, &texId);
     }
 
@@ -77,7 +77,7 @@ public unsafe class Texture : Asset, IDisposable
     public void Unbind(int unit)
     {
         _gl.ActiveTexture(GL.TextureUnit.TEXTURE0 + (uint)unit);
-        _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, 0);
+        _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, default);
     }
 }
 

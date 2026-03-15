@@ -11,6 +11,18 @@ public sealed unsafe partial class GL
     public const int MajorVersion = 4;
     public const int MinorVersion = 6;
 
+    public readonly record struct ProgramId(uint Id);
+    public readonly record struct ShaderId(uint Id);
+    public readonly record struct TextureId(uint Id);
+    public readonly record struct BufferId(uint Id);
+    public readonly record struct VertexArrayId(uint Id);
+    public readonly record struct RenderBufferId(uint Id);
+    public readonly record struct FrameBufferId(uint Id);
+    public readonly record struct QueryId(uint Id);
+    public readonly record struct ProgramPipelineId(uint Id);
+    public readonly record struct SamplerId(uint Id);
+    public readonly record struct TransformFeedbackId(uint Id);
+
     private readonly Func<string, nint> _loader;
 
     private DebugProc? _debugProc;
@@ -56,7 +68,7 @@ public sealed unsafe partial class GL
     }
 
     [Conditional("DEBUG")]
-    private void VerifyLoaded() // TODO might not work correctly with AOT
+    private void VerifyLoaded()
     {
         var type = typeof(GL);
         foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
@@ -98,10 +110,10 @@ public sealed unsafe partial class GL
     private void PrintInfos()
     {
         Console.WriteLine("OpenGL initialized:");
-        Console.WriteLine($"  Version:    {GetString2(StringName.VERSION)}");
-        Console.WriteLine($"  Vendor:     {GetString2(StringName.VENDOR)}");
-        Console.WriteLine($"  Renderer:   {GetString2(StringName.RENDERER)}");
-        Console.WriteLine($"  SL Version: {GetString2(StringName.SHADING_LANGUAGE_VERSION)}");
+        Console.WriteLine($"  Version:    {GetString(StringName.VERSION)}");
+        Console.WriteLine($"  Vendor:     {GetString(StringName.VENDOR)}");
+        Console.WriteLine($"  Renderer:   {GetString(StringName.RENDERER)}");
+        Console.WriteLine($"  SL Version: {GetString(StringName.SHADING_LANGUAGE_VERSION)}");
     }
 
     // ------------------------------------------------------------------------
@@ -117,16 +129,6 @@ public sealed unsafe partial class GL
     // Handwritten mappings for strings, etc
     //
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string GetString2(StringName name)
-    {
-        byte* ptr = _getString(name);
-        CheckError();
-        return ptr != (byte*)0
-            ? Marshal.PtrToStringAnsi((nint)ptr)!
-            : string.Empty;
-    }
-
     public void ObjectLabel(ObjectIdentifier identifier, uint name, string label)
     {
         byte[] bytes = Encoding.UTF8.GetBytes(label);
@@ -137,7 +139,7 @@ public sealed unsafe partial class GL
         CheckError();
     }
 
-    private int GetUniformLocation(uint program, scoped ReadOnlySpan<byte> name) // TODO what does "scoped" mean here?
+    private int GetUniformLocation(ProgramId program, scoped ReadOnlySpan<byte> name) // TODO what does "scoped" mean here?
     {
 #if DEBUG
         if (name.Length < 1) throw new ArgumentException("Name must not be empty", nameof(name));
@@ -171,7 +173,7 @@ public sealed unsafe partial class GL
         }
     }
 
-    public int GetUniformLocation(uint program, string name)
+    public int GetUniformLocation(ProgramId program, string name)
     {
 #if DEBUG
         if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name must not be empty", nameof(name));
@@ -189,7 +191,7 @@ public sealed unsafe partial class GL
         return GetUniformLocation(program, buffer);
     }
 
-    public void ShaderSource(uint shader, string source)
+    public void ShaderSource(ShaderId shader, string source)
     {
         byte[] bytes = Encoding.UTF8.GetBytes(source);
 
@@ -204,25 +206,27 @@ public sealed unsafe partial class GL
         CheckError();
     }
 
-    public int GetShaderI(uint shader, ShaderParameterName pname)
+    public int GetShaderI(ShaderId shader, ShaderParameterName pname)
     {
         int value = 0;
         GetShaderiv(shader, pname, &value);
         return value;
     }
 
-    public int GetProgramI(uint program, ProgramProperty prop)
+    public int GetProgramI(ProgramId program, ProgramProperty prop)
     {
         int value = 0;
         GetProgramiv(program, prop, &value);
         return value;
     }
 
-    public string GetShaderInfoLog(uint shader)
+    public string GetShaderInfoLog(ShaderId shader)
     {
         int len = GetShaderI(shader, ShaderParameterName.INFO_LOG_LENGTH);
         if (len < 1)
+        {
             return String.Empty;
+        }
 
         Span<byte> buffer = len < 256
             ? stackalloc byte[len]
@@ -238,11 +242,13 @@ public sealed unsafe partial class GL
         return infoLog;
     }
 
-    public string GetProgramInfoLog(uint program)
+    public string GetProgramInfoLog(ProgramId program)
     {
         int len = GetProgramI(program, ProgramProperty.INFO_LOG_LENGTH);
         if (len < 1)
+        {
             return String.Empty;
+        }
 
         Span<byte> buffer = len < 256
             ? stackalloc byte[len]

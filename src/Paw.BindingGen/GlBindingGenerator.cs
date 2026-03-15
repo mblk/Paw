@@ -34,9 +34,6 @@ internal class GlBindingGenerator
 
         File.WriteAllText(enumsCodeFile.FullName, enumsCode);
         File.WriteAllText(commandsCodeFile.FullName, commandsCode);
-
-        //
-        Console.WriteLine($"...");
     }
 
     private IReadOnlyDictionary<string, string> ResolveNamingCollisions(IReadOnlyList<string> enumNames, IReadOnlyList<string> commandNames)
@@ -157,16 +154,25 @@ internal class GlBindingGenerator
             var commandSpec = _spec.Commands[commandName];
 
             string delegateName = GetDelegateName(commandSpec.Name);
-            (string returnType, TypeMapping returnTypeMapping) = ResolveType(commandSpec.ReturnType, commandSpec.Group, "void");
+            (string returnType, TypeMapping returnTypeMapping) = ResolveType(commandSpec.ReturnType, commandSpec.Group, commandSpec.Kind, commandSpec.Class, "void");
 
-            for (int i = 0; i < commandSpec.PointerCount; i++)
+            if (returnType == "nint")
             {
-                returnType += "*";
+                for (int i = 1; i < commandSpec.PointerCount; i++)
+                {
+                    returnType += "*";
+                }
+            }
+            else
+            {
+                for (int i = 0; i < commandSpec.PointerCount; i++)
+                {
+                    returnType += "*";
+                }
             }
 
             var paramTypes = new List<string>();
             var paramNames = new List<string>();
-            //var paramTypesAndNames = new List<(string,string)>();
             var mappedParamTypesAndNamesAndConverters = new List<(string Type, string Name, Func<string, string> Converter)>();
 
             foreach (var paramSpec in commandSpec.Params)
@@ -175,7 +181,7 @@ internal class GlBindingGenerator
                     ? enumGroupMappings[paramSpec.Group]
                     : null;
 
-                (string paramType, TypeMapping paramTypeMapping) = ResolveType(paramSpec.Type, mappedGroupName, "void");
+                (string paramType, TypeMapping paramTypeMapping) = ResolveType(paramSpec.Type, mappedGroupName, null, paramSpec.Class, "void");
 
                 string mappedParamType;
                 Func<string, string> paramConverter;
@@ -201,20 +207,25 @@ internal class GlBindingGenerator
                         break;
                     }
 
+                    case TypeMapping.PtrToString:
+                    {
+                        throw new NotImplementedException("PtrToString param");
+                        //break;
+                    }    
+
                     default: throw new NotImplementedException("Unknown TypeMapping");
                 }
 
                 for(int i=0; i<paramSpec.PointerCount; i++)
                 {
-                    paramType += "*";
-                    mappedParamType += "*";
+                    paramType += "*"; // TODO -1 for nint
+                    mappedParamType += "*"; // TODO -1 for nint
                 }
 
                 string paramName = SanitizeParameterName(paramSpec.Name);
 
                 paramTypes.Add(paramType);
                 paramNames.Add(paramName);
-                //paramTypesAndNames.Add((paramType, paramName));
                 mappedParamTypesAndNamesAndConverters.Add((mappedParamType, paramName, paramConverter));
             }
 
@@ -238,13 +249,6 @@ internal class GlBindingGenerator
             string mappedReturnType;
             Func<string,string> returnValueConverter;
 
-            if (commandSpec.Kind != null && string.Equals(commandSpec.Kind, "string", StringComparison.OrdinalIgnoreCase))
-            {
-                // TODO only 3x in xml, what about other strings?
-                // TODO
-                Console.WriteLine($"TODO map return type to string: {commandSpec.Name}");
-            }
-
             switch (returnTypeMapping)
             {
                 case TypeMapping.None:
@@ -260,6 +264,13 @@ internal class GlBindingGenerator
                     returnValueConverter = (s) => $"(({s}) == (byte)1)";
                     break;
                 }
+
+                case TypeMapping.PtrToString:
+                {
+                    mappedReturnType = "string?";
+                    returnValueConverter = (s) => $"Marshal.PtrToStringAnsi({s})";
+                    break;
+                }    
 
                 default: throw new NotImplementedException("Unknown TypeMapping");
             }
@@ -323,6 +334,7 @@ internal class GlBindingGenerator
         WriteFileStart(sb);
 
         sb.AppendLine("using System.Runtime.CompilerServices;");
+        sb.AppendLine("using System.Runtime.InteropServices;");
         sb.AppendLine();
 
         WriteNamespace(sb);
@@ -416,25 +428,54 @@ internal class GlBindingGenerator
     {
         None,
         ByteToBool,
+        PtrToString,
     }
 
-    private (string, TypeMapping) ResolveType(string? glType, string? group, string noneType)
+    private static (string, TypeMapping) ResolveType(string? glType, string? group, string? kind, string? @class, string noneType)
     {
         // Enum?
         if (!string.IsNullOrWhiteSpace(group))
-        {
             return (group, TypeMapping.None);
-        }
 
         // None?
         if (string.IsNullOrWhiteSpace(glType))
             return (noneType, TypeMapping.None);
 
+        // Id with class?
+        if (glType == "GLuint" && !String.IsNullOrWhiteSpace(@class))
+        {
+            string? classType = @class switch
+            {
+                "program" => "ProgramId",
+                "shader" => "ShaderId",
+                "texture" => "TextureId",
+                "buffer" => "BufferId",
+                "vertex array" => "VertexArrayId",
+                "renderbuffer" => "RenderBufferId",
+                "framebuffer" => "FrameBufferId",
+                "query" => "QueryId",
+                "program pipeline" => "ProgramPipelineId",
+                "sampler" => "SamplerId",
+                "transform feedback" => "TransformFeedbackId",
+                _ => throw new NotImplementedException($"Unknown type class '{@class}'"),
+            };
+
+            return (classType, TypeMapping.None);
+        }
+
+        // Convert boolean?
         if (glType == "GLboolean")
         {
             return ("byte", TypeMapping.ByteToBool);
         }
 
+        // Convert string?
+        if (glType == "GLubyte" && kind == "String")
+        {
+            return ("nint", TypeMapping.PtrToString);
+        }
+
+        // Simple mapping
         string mappedType = glType switch
         {
             "GLenum" => _fallbackEnumGroupName,
@@ -462,7 +503,7 @@ internal class GlBindingGenerator
 
             "GLDEBUGPROC" => "DebugProc", // special case
 
-            _ => "unknown",
+            _ => throw new NotImplementedException($"Unknown gl type '{glType}'"),
         };
 
         return (mappedType, TypeMapping.None);

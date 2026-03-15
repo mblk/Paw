@@ -19,21 +19,21 @@ public unsafe class BufferObject : IDisposable
 {
     private readonly GL _gl;
 
-    public uint Id { get; }
+    public GL.BufferId Id { get; }
 
     public BufferObject(GL gl, string? label = null)
     {
         _gl = gl;
 
-        uint id = 0;
+        GL.BufferId id = default;
         gl.GenBuffers(1, &id);
         Id = id;
 
         if (!string.IsNullOrWhiteSpace(label))
         {
             gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, Id);
-            gl.ObjectLabel(GL.ObjectIdentifier.BUFFER, Id, label);
-            gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, 0);
+            gl.ObjectLabel(GL.ObjectIdentifier.BUFFER, Id.Id, label);
+            gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, default);
         }
     }
 
@@ -47,19 +47,19 @@ public unsafe class BufferObject : IDisposable
             _gl.BufferData(GL.BufferTarget.ARRAY_BUFFER, data.Length * sizeof(T), pData, usage);
         }
 
-        _gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, 0);
+        _gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, default);
     }
 
     public void SetSizeAndUsage(int size, GL.BufferUsage usage)
     {
         _gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, Id);
         _gl.BufferData(GL.BufferTarget.ARRAY_BUFFER, size, (void*)0, usage);
-        _gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, 0);
+        _gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, default);
     }
 
     public void Dispose()
     {
-        uint id = Id;
+        GL.BufferId id = Id;
         _gl.DeleteBuffers(1, &id);
     }
 }

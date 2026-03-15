@@ -13,7 +13,7 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
     private readonly GL _gl;
     private readonly BufferObject _vertexBufferObject;
 
-    public uint Id { get; }
+    public GL.VertexArrayId Id { get; }
 
     public VertexArrayObject(GL gl, BufferObject vertexBufferObject, string? label = null)
     {
@@ -25,12 +25,12 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
         if (!string.IsNullOrWhiteSpace(label))
         {
             gl.BindVertexArray(Id);
-            gl.ObjectLabel(GL.ObjectIdentifier.VERTEX_ARRAY, Id, label);
-            gl.BindVertexArray(0);
+            gl.ObjectLabel(GL.ObjectIdentifier.VERTEX_ARRAY, Id.Id, label);
+            gl.BindVertexArray(default);
         }
     }
 
-    private uint CreateArrayAndConfigureAttributes(GL gl)
+    private GL.VertexArrayId CreateArrayAndConfigureAttributes(GL gl)
     {
         var sw = Stopwatch.StartNew();
         Console.WriteLine($"VertexArrayObject:");
@@ -41,7 +41,7 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
         int stride = sizeof(T);
         Console.WriteLine($"  Stride: {stride}");
 
-        uint id = 0;
+        GL.VertexArrayId id = default;
         gl.GenVertexArrays(1, &id);
         gl.BindVertexArray(id);
 
@@ -80,8 +80,8 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
         }
 
         // Unbind
-        gl.BindVertexArray(0);
-        gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, 0);
+        gl.BindVertexArray(default);
+        gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, default);
 
         Console.WriteLine($"-> {sw.ElapsedMilliseconds} ms"); // TODO: maybe add cache later
         return id;
@@ -94,7 +94,7 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
 
     public void Unbind()
     {
-        _gl.BindVertexArray(0);
+        _gl.BindVertexArray(default);
     }
 
     public void Draw(GL.PrimitiveType mode, int first, int count)
@@ -130,7 +130,7 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
 
     public void Dispose()
     {
-        uint id = Id;
+        GL.VertexArrayId id = Id;
         _gl.DeleteVertexArrays(1, &id);
     }
 }

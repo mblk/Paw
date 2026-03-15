@@ -78,6 +78,7 @@ internal class GlSpecParser
 
                 string? group = proto.OptionalAttributeValue("group");
                 string? kind = proto.OptionalAttributeValue("kind");
+                string? @class = proto.OptionalAttributeValue("class");
                 string name = proto.MandatoryElementValue("name");
                 string? ptype = proto.OptionalElementValue("ptype"); // ref to type
                 string? alias = command.Element("alias")?.Attribute("name")?.Value;
@@ -100,7 +101,7 @@ internal class GlSpecParser
                 }
 
                 //Console.WriteLine($"Command '{name}'");
-                _commands.Add(name, new GlSpec.CommandSpec(name, group, kind, ptype, alias, vecEquiv, returnPointerCount, paramSpecs));
+                _commands.Add(name, new GlSpec.CommandSpec(name, group, kind, ptype, alias, vecEquiv, @class, returnPointerCount, paramSpecs));
             }
         }
 

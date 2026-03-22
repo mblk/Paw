@@ -6,6 +6,27 @@ using System.Text;
 
 namespace Paw.Core.Engine;
 
+// Ideas for additional features:
+//
+// 1. Span<T> / ReadOnlySpan<T> overloads — For pointer-taking functions like GenBuffers(int n, BufferId* buffers),
+//    generate safe overloads like GenBuffers(Span<BufferId> buffers) that do the fixed pinning internally.
+//    This is the biggest ergonomic win.
+//
+// 2. Single - value convenience overloads — For Gen*/Create*/Delete* functions that take(int n, T* ptr),
+//    generate BufferId GenBuffer() / void DeleteBuffer(BufferId id) single - item helpers.
+//
+// 3. String parameter overloads — Generate string - accepting overloads for functions like GetUniformLocation(ProgramId, scoped ReadOnlySpan<byte>),
+//    BindAttribLocation(ProgramId, uint, byte*), etc. (the UTF-8 encoding + null-termination + fixed boilerplate currently written by hand in GL.cs).
+//
+// 4. Enum validation in DEBUG — Emit #if DEBUG assertions that enum values passed to GL functions are actually defined members, catching miscast integers early.
+//
+// 5. XML doc comments — Pull the <command> descriptions from gl.xml and emit /// <summary> on the generated wrappers so IntelliSense shows GL documentation.
+//    >> https://github.com/KhronosGroup/OpenGL-Refpages/tree/main/gl4
+//    >> https://github.com/BSVino/docs.gl/tree/mainline/gl4
+//    >> https://docs.gl/
+//
+// 6. Extension support — Add an option to include selected<extensions>(e.g., GL_ARB_bindless_texture) beyond the core profile, using the same require/remove machinery.
+
 public sealed unsafe partial class GL
 {
     public const int MajorVersion = 4;
@@ -251,4 +272,31 @@ public sealed unsafe partial class GL
         var infoLog = Encoding.UTF8.GetString(buffer).TrimEnd('\0', '\n', '\r');
         return infoLog;
     }
+
+    //
+    // ideas for automatically generated convenience functions:
+    //
+
+#if false
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public BufferId GenBuffer()
+    {
+        BufferId id = default;
+        _genBuffers(1, &id);
+        CheckError();
+        return id;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenBuffers(Span<BufferId> buffers)
+    {
+        fixed (BufferId* ptr = buffers)
+        {
+            _genBuffers(buffers.Length, ptr);
+        }
+        CheckError();
+    }
+
+#endif
 }

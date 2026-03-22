@@ -107,7 +107,8 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform1i(location, value);
+            //_gl.Uniform1i(location, value); // without DSA-like API - program must be bound
+            _gl.ProgramUniform1i(_program, location, value); // DSA-like without the need to bind the program first
         }
     }
 
@@ -116,7 +117,7 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform1f(location, value);
+            _gl.ProgramUniform1f(_program, location, value);
         }
     }
 
@@ -125,7 +126,7 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform2f(location, value.X, value.Y);
+            _gl.ProgramUniform2f(_program, location, value.X, value.Y);
         }
     }
 
@@ -134,7 +135,7 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            _gl.Uniform3f(location, value.X, value.Y, value.Z); // TODO try *v variants ?
+            _gl.ProgramUniform3f(_program, location, value.X, value.Y, value.Z); // TODO try *v variants ?
         }
     }
 
@@ -144,7 +145,7 @@ public sealed class Shader : Asset, IDisposable
         if (location != -1)
         {
             float* p = (float*)&value;
-            _gl.UniformMatrix4fv(location, 1, transpose, p);
+            _gl.ProgramUniformMatrix4fv(_program, location, 1, transpose, p);
         }
     }
 

@@ -219,8 +219,8 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             //_shader.Use();
             //_shader.SetUniform("uMVP", mvp);
 
-            _material1.Bind();
             _material1.SetUniform("uMVP", mvp);
+            _material1.Bind();
             
             _vertexArrayObject.Bind();
             _vertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _vertexBuffer.Count);
@@ -241,9 +241,9 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
 
             _texture1.Bind(0);
             {
-                _textureShader.Use();
                 _textureShader.SetUniform("uMVP", mvp);
                 _textureShader.SetUniform("uTex", 0);
+                _textureShader.Use();
                 {
                     _textureVertexArrayObject.Bind();
                     _textureVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _textureVertexBuffer.Count);
@@ -264,9 +264,9 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
 
             _font1.Texture.Bind(0);
             {
-                _fontShader.Use();
                 _fontShader.SetUniform("uMVP", mvp);
                 _fontShader.SetUniform("uTex", 0);
+                _fontShader.Use();
                 {
                     _fontVertexArrayObject.Bind();
                     {

@@ -20,7 +20,7 @@ internal class GlBindingGenerator
         _outputDir = outputDir;
     }
 
-    public void Generate(int majorVersion, int minorVersion)
+    public void Generate(int majorVersion, int minorVersion, GitInfo? specGitInfo = null)
     {
         Console.WriteLine($"Generating bindings for OpenGL {majorVersion}.{minorVersion}");
 
@@ -30,14 +30,17 @@ internal class GlBindingGenerator
 
         var enumGroupMappings = ResolveNamingCollisions(enumNames, commandNames);
 
+        string constantsCode = GenerateConstants(majorVersion, minorVersion, specGitInfo);
         string typesCode = GenerateTypes(commandNames);
         string enumsCode = GenerateEnums(enumNames, enumGroupMappings);
         string commandsCode = GenerateCommands(commandNames, enumGroupMappings);
 
+        var constantsCodeFile = new FileInfo(Path.Combine(_outputDir.FullName, $"{_className}.Constants.cs"));
         var typesCodeFile = new FileInfo(Path.Combine(_outputDir.FullName, $"{_className}.Types.cs"));
         var enumsCodeFile = new FileInfo(Path.Combine(_outputDir.FullName, $"{_className}.Enums.cs"));
         var commandsCodeFile = new FileInfo(Path.Combine(_outputDir.FullName, $"{_className}.Commands.cs"));
 
+        File.WriteAllText(constantsCodeFile.FullName, constantsCode);
         File.WriteAllText(typesCodeFile.FullName, typesCode);
         File.WriteAllText(enumsCodeFile.FullName, enumsCode);
         File.WriteAllText(commandsCodeFile.FullName, commandsCode);
@@ -106,6 +109,35 @@ internal class GlBindingGenerator
         return enumGroupMappings;
     }
     
+    private string GenerateConstants(int majorVersion, int minorVersion, GitInfo? specGitInfo)
+    {
+        var sb = new StringBuilder();
+
+        WriteFileStart(sb);
+        WriteNamespace(sb);
+        WriteClassStart(sb);
+
+        sb.Append(_indent);
+        sb.AppendLine($"public const int MajorVersion = {majorVersion};");
+        sb.Append(_indent);
+        sb.AppendLine($"public const int MinorVersion = {minorVersion};");
+
+        if (specGitInfo is not null)
+        {
+            sb.AppendLine();
+            sb.Append(_indent);
+            sb.AppendLine($"public const string SpecCommitHash = \"{specGitInfo.CommitHash}\";");
+            sb.Append(_indent);
+            sb.AppendLine($"public const string SpecCommitDate = \"{specGitInfo.CommitDate}\";");
+            sb.Append(_indent);
+            sb.AppendLine($"public const string SpecCommitSubject = \"{specGitInfo.CommitSubject}\";");
+        }
+
+        WriteClassEnd(sb);
+
+        return sb.ToString();
+    }
+
     private string GenerateTypes(IReadOnlyList<string> commandNames)
     {
         // Find all classes

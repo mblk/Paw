@@ -29,9 +29,6 @@ namespace Paw.Core.Engine;
 
 public sealed unsafe partial class GL
 {
-    public const int MajorVersion = 4;
-    public const int MinorVersion = 6;
-
     private readonly Func<string, nint> _loader;
 
     private DebugProc? _debugProc;

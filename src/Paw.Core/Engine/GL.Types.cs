@@ -4,15 +4,15 @@ namespace Paw.Core.Engine;
 
 public unsafe partial class GL
 {
-    public readonly record struct ShaderId(uint Id);
-    public readonly record struct ProgramId(uint Id);
-    public readonly record struct TextureId(uint Id);
-    public readonly record struct QueryId(uint Id);
     public readonly record struct BufferId(uint Id);
-    public readonly record struct ProgramPipelineId(uint Id);
-    public readonly record struct SamplerId(uint Id);
-    public readonly record struct VertexArrayId(uint Id);
-    public readonly record struct RenderbufferId(uint Id);
     public readonly record struct FramebufferId(uint Id);
+    public readonly record struct ProgramId(uint Id);
+    public readonly record struct ProgramPipelineId(uint Id);
+    public readonly record struct QueryId(uint Id);
+    public readonly record struct RenderbufferId(uint Id);
+    public readonly record struct SamplerId(uint Id);
+    public readonly record struct ShaderId(uint Id);
+    public readonly record struct TextureId(uint Id);
     public readonly record struct TransformFeedbackId(uint Id);
+    public readonly record struct VertexArrayId(uint Id);
 }

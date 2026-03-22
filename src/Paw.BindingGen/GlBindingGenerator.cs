@@ -135,7 +135,7 @@ internal class GlBindingGenerator
         WriteNamespace(sb);
         WriteClassStart(sb);
 
-        foreach (var className in allTypeClasses)
+        foreach (var className in allTypeClasses.OrderBy(s => s))
         {
             sb.Append(_indent);
             sb.Append("public readonly record struct ");
@@ -191,7 +191,7 @@ internal class GlBindingGenerator
         WriteNamespace(sb);
         WriteClassStart(sb);
 
-        foreach (var group in groups)
+        foreach (var group in groups.OrderBy(x => x.Key))
         {
             if (!enumGroupMappings.TryGetValue(group.Key, out string? mappedGroupName))
             {
@@ -251,7 +251,7 @@ internal class GlBindingGenerator
         var loads = new List<string>();
         var wrappers = new List<string>();
 
-        foreach (var commandName in commandNames)
+        foreach (var commandName in commandNames.OrderBy(s => s))
         {
             var commandSpec = _spec.Commands[commandName];
 

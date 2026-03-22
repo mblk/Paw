@@ -7,505 +7,577 @@ namespace Paw.Core.Engine;
 
 public unsafe partial class GL
 {
-    private delegate* unmanaged[Cdecl]<TriangleFace, void> _cullFace;
-    private delegate* unmanaged[Cdecl]<FrontFaceDirection, void> _frontFace;
-    private delegate* unmanaged[Cdecl]<HintTarget, HintMode, void> _hint;
-    private delegate* unmanaged[Cdecl]<float, void> _lineWidth;
-    private delegate* unmanaged[Cdecl]<float, void> _pointSize;
-    private delegate* unmanaged[Cdecl]<TriangleFace, PolygonModeEnum, void> _polygonMode;
-    private delegate* unmanaged[Cdecl]<int, int, int, int, void> _scissor;
-    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float, void> _texParameterf;
-    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float*, void> _texParameterfv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int, void> _texParameteri;
-    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int*, void> _texParameteriv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, PixelFormat, PixelType, void*, void> _texImage1D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, PixelFormat, PixelType, void*, void> _texImage2D;
-    private delegate* unmanaged[Cdecl]<DrawBufferMode, void> _drawBuffer;
-    private delegate* unmanaged[Cdecl]<ClearBufferMask, void> _clear;
-    private delegate* unmanaged[Cdecl]<float, float, float, float, void> _clearColor;
-    private delegate* unmanaged[Cdecl]<int, void> _clearStencil;
-    private delegate* unmanaged[Cdecl]<double, void> _clearDepth;
-    private delegate* unmanaged[Cdecl]<uint, void> _stencilMask;
-    private delegate* unmanaged[Cdecl]<byte, byte, byte, byte, void> _colorMask;
-    private delegate* unmanaged[Cdecl]<byte, void> _depthMask;
-    private delegate* unmanaged[Cdecl]<EnableCap, void> _disable;
-    private delegate* unmanaged[Cdecl]<EnableCap, void> _enable;
-    private delegate* unmanaged[Cdecl]<void> _finish;
-    private delegate* unmanaged[Cdecl]<void> _flush;
-    private delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, void> _blendFunc;
-    private delegate* unmanaged[Cdecl]<LogicOpEnum, void> _logicOp;
-    private delegate* unmanaged[Cdecl]<StencilFunction, int, uint, void> _stencilFunc;
-    private delegate* unmanaged[Cdecl]<StencilOpEnum, StencilOpEnum, StencilOpEnum, void> _stencilOp;
-    private delegate* unmanaged[Cdecl]<DepthFunction, void> _depthFunc;
-    private delegate* unmanaged[Cdecl]<PixelStoreParameter, float, void> _pixelStoref;
-    private delegate* unmanaged[Cdecl]<PixelStoreParameter, int, void> _pixelStorei;
-    private delegate* unmanaged[Cdecl]<ReadBufferMode, void> _readBuffer;
-    private delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, void*, void> _readPixels;
-    private delegate* unmanaged[Cdecl]<GetPName, byte*, void> _getBooleanv;
-    private delegate* unmanaged[Cdecl]<GetPName, double*, void> _getDoublev;
-    private delegate* unmanaged[Cdecl]<ErrorCode> _getError;
-    private delegate* unmanaged[Cdecl]<GetPName, float*, void> _getFloatv;
-    private delegate* unmanaged[Cdecl]<GetPName, int*, void> _getIntegerv;
-    private delegate* unmanaged[Cdecl]<StringName, nint> _getString;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, void*, void> _getTexImage;
-    private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, float*, void> _getTexParameterfv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void> _getTexParameteriv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, GetTextureParameter, float*, void> _getTexLevelParameterfv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, GetTextureParameter, int*, void> _getTexLevelParameteriv;
-    private delegate* unmanaged[Cdecl]<EnableCap, byte> _isEnabled;
-    private delegate* unmanaged[Cdecl]<double, double, void> _depthRange;
-    private delegate* unmanaged[Cdecl]<int, int, int, int, void> _viewport;
-    private delegate* unmanaged[Cdecl]<float, float, float, void> _polygonOffsetClamp;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, nint, int, int, void> _multiDrawElementsIndirectCount;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, void*, nint, int, int, void> _multiDrawArraysIndirectCount;
-    private delegate* unmanaged[Cdecl]<ShaderId, byte*, uint, uint*, uint*, void> _specializeShader;
-    private delegate* unmanaged[Cdecl]<void> _textureBarrier;
-    private delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, int, void*, void> _readnPixels;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _getnUniformuiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _getnUniformiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _getnUniformfv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _getnUniformdv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, int, void*, void> _getnTexImage;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, void*, void> _getnCompressedTexImage;
-    private delegate* unmanaged[Cdecl]<GraphicsResetStatus> _getGraphicsResetStatus;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, int, void*, void> _getCompressedTextureSubImage;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, int, void*, void> _getTextureSubImage;
-    private delegate* unmanaged[Cdecl]<MemoryBarrierMask, void> _memoryBarrierByRegion;
-    private delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void> _getQueryBufferObjectuiv;
-    private delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void> _getQueryBufferObjectui64v;
-    private delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void> _getQueryBufferObjectiv;
-    private delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void> _getQueryBufferObjecti64v;
-    private delegate* unmanaged[Cdecl]<QueryTarget, int, QueryId*, void> _createQueries;
-    private delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void> _createProgramPipelines;
-    private delegate* unmanaged[Cdecl]<int, SamplerId*, void> _createSamplers;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, VertexArrayPName, long*, void> _getVertexArrayIndexed64iv;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, VertexArrayPName, int*, void> _getVertexArrayIndexediv;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, VertexArrayPName, int*, void> _getVertexArrayiv;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void> _vertexArrayBindingDivisor;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribLType, uint, void> _vertexArrayAttribLFormat;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribIType, uint, void> _vertexArrayAttribIFormat;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribType, byte, uint, void> _vertexArrayAttribFormat;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void> _vertexArrayAttribBinding;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, BufferId*, nint, int*, void> _vertexArrayVertexBuffers;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, BufferId, nint, int, void> _vertexArrayVertexBuffer;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, BufferId, void> _vertexArrayElementBuffer;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, void> _enableVertexArrayAttrib;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, void> _disableVertexArrayAttrib;
-    private delegate* unmanaged[Cdecl]<int, VertexArrayId*, void> _createVertexArrays;
-    private delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, int*, void> _getTextureParameteriv;
-    private delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, uint*, void> _getTextureParameterIuiv;
-    private delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, int*, void> _getTextureParameterIiv;
-    private delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, float*, void> _getTextureParameterfv;
-    private delegate* unmanaged[Cdecl]<TextureId, int, GetTextureParameter, int*, void> _getTextureLevelParameteriv;
-    private delegate* unmanaged[Cdecl]<TextureId, int, GetTextureParameter, float*, void> _getTextureLevelParameterfv;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, void*, void> _getCompressedTextureImage;
-    private delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, int, void*, void> _getTextureImage;
+    private delegate* unmanaged[Cdecl]<ProgramPipelineId, ProgramId, void> _activeShaderProgram;
+    private delegate* unmanaged[Cdecl]<TextureUnit, void> _activeTexture;
+    private delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void> _attachShader;
+    private delegate* unmanaged[Cdecl]<uint, ConditionalRenderMode, void> _beginConditionalRender;
+    private delegate* unmanaged[Cdecl]<QueryTarget, QueryId, void> _beginQuery;
+    private delegate* unmanaged[Cdecl]<QueryTarget, uint, QueryId, void> _beginQueryIndexed;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, void> _beginTransformFeedback;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void> _bindAttribLocation;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferId, void> _bindBuffer;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, void> _bindBufferBase;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, nint, nint, void> _bindBufferRange;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, void> _bindBuffersBase;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, nint, nint, void> _bindBuffersRange;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void> _bindFragDataLocation;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, byte*, void> _bindFragDataLocationIndexed;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferId, void> _bindFramebuffer;
+    private delegate* unmanaged[Cdecl]<uint, TextureId, int, byte, int, BufferAccess, InternalFormat, void> _bindImageTexture;
+    private delegate* unmanaged[Cdecl]<uint, int, TextureId*, void> _bindImageTextures;
+    private delegate* unmanaged[Cdecl]<ProgramPipelineId, void> _bindProgramPipeline;
+    private delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferId, void> _bindRenderbuffer;
+    private delegate* unmanaged[Cdecl]<uint, SamplerId, void> _bindSampler;
+    private delegate* unmanaged[Cdecl]<uint, int, SamplerId*, void> _bindSamplers;
+    private delegate* unmanaged[Cdecl]<TextureTarget, TextureId, void> _bindTexture;
+    private delegate* unmanaged[Cdecl]<uint, int, TextureId*, void> _bindTextures;
     private delegate* unmanaged[Cdecl]<uint, TextureId, void> _bindTextureUnit;
-    private delegate* unmanaged[Cdecl]<TextureId, void> _generateTextureMipmap;
-    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int*, void> _textureParameteriv;
-    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, uint*, void> _textureParameterIuiv;
-    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int*, void> _textureParameterIiv;
-    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int, void> _textureParameteri;
-    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, float*, void> _textureParameterfv;
-    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, float, void> _textureParameterf;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, int, void> _copyTextureSubImage3D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, void> _copyTextureSubImage2D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, void> _copyTextureSubImage1D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, InternalFormat, int, void*, void> _compressedTextureSubImage3D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, InternalFormat, int, void*, void> _compressedTextureSubImage2D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, InternalFormat, int, void*, void> _compressedTextureSubImage1D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void> _textureSubImage3D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, PixelFormat, PixelType, void*, void> _textureSubImage2D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, PixelFormat, PixelType, void*, void> _textureSubImage1D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, int, byte, void> _textureStorage3DMultisample;
-    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, byte, void> _textureStorage2DMultisample;
-    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, int, void> _textureStorage3D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, void> _textureStorage2D;
-    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, void> _textureStorage1D;
-    private delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, nint, nint, void> _textureBufferRange;
-    private delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, void> _textureBuffer;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, TextureId*, void> _createTextures;
-    private delegate* unmanaged[Cdecl]<RenderbufferId, RenderbufferParameterName, int*, void> _getNamedRenderbufferParameteriv;
-    private delegate* unmanaged[Cdecl]<RenderbufferId, int, InternalFormat, int, int, void> _namedRenderbufferStorageMultisample;
-    private delegate* unmanaged[Cdecl]<RenderbufferId, InternalFormat, int, int, void> _namedRenderbufferStorage;
-    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _createRenderbuffers;
-    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void> _getNamedFramebufferAttachmentParameteriv;
-    private delegate* unmanaged[Cdecl]<FramebufferId, GetFramebufferParameter, int*, void> _getNamedFramebufferParameteriv;
-    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferTarget, FramebufferStatus> _checkNamedFramebufferStatus;
+    private delegate* unmanaged[Cdecl]<BindTransformFeedbackTarget, TransformFeedbackId, void> _bindTransformFeedback;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, void> _bindVertexArray;
+    private delegate* unmanaged[Cdecl]<uint, BufferId, nint, int, void> _bindVertexBuffer;
+    private delegate* unmanaged[Cdecl]<uint, int, BufferId*, nint, int*, void> _bindVertexBuffers;
+    private delegate* unmanaged[Cdecl]<float, float, float, float, void> _blendColor;
+    private delegate* unmanaged[Cdecl]<BlendEquationModeEXT, void> _blendEquation;
+    private delegate* unmanaged[Cdecl]<uint, BlendEquationModeEXT, void> _blendEquationi;
+    private delegate* unmanaged[Cdecl]<BlendEquationModeEXT, BlendEquationModeEXT, void> _blendEquationSeparate;
+    private delegate* unmanaged[Cdecl]<uint, BlendEquationModeEXT, BlendEquationModeEXT, void> _blendEquationSeparatei;
+    private delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, void> _blendFunc;
+    private delegate* unmanaged[Cdecl]<uint, BlendingFactor, BlendingFactor, void> _blendFunci;
+    private delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void> _blendFuncSeparate;
+    private delegate* unmanaged[Cdecl]<uint, BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void> _blendFuncSeparatei;
+    private delegate* unmanaged[Cdecl]<int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void> _blitFramebuffer;
     private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferId, int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void> _blitNamedFramebuffer;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, void*, BufferUsage, void> _bufferData;
+    private delegate* unmanaged[Cdecl]<BufferStorageTarget, nint, void*, BufferStorageMask, void> _bufferStorage;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void> _bufferSubData;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferStatus> _checkFramebufferStatus;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferTarget, FramebufferStatus> _checkNamedFramebufferStatus;
+    private delegate* unmanaged[Cdecl]<ClampColorTarget, ClampColorMode, void> _clampColor;
+    private delegate* unmanaged[Cdecl]<ClearBufferMask, void> _clear;
+    private delegate* unmanaged[Cdecl]<BufferStorageTarget, SizedInternalFormat, PixelFormat, PixelType, void*, void> _clearBufferData;
+    private delegate* unmanaged[Cdecl]<Buffer, int, float, int, void> _clearBufferfi;
+    private delegate* unmanaged[Cdecl]<Buffer, int, float*, void> _clearBufferfv;
+    private delegate* unmanaged[Cdecl]<Buffer, int, int*, void> _clearBufferiv;
+    private delegate* unmanaged[Cdecl]<BufferTarget, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void> _clearBufferSubData;
+    private delegate* unmanaged[Cdecl]<Buffer, int, uint*, void> _clearBufferuiv;
+    private delegate* unmanaged[Cdecl]<float, float, float, float, void> _clearColor;
+    private delegate* unmanaged[Cdecl]<double, void> _clearDepth;
+    private delegate* unmanaged[Cdecl]<float, void> _clearDepthf;
+    private delegate* unmanaged[Cdecl]<BufferId, SizedInternalFormat, PixelFormat, PixelType, void*, void> _clearNamedBufferData;
+    private delegate* unmanaged[Cdecl]<BufferId, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void> _clearNamedBufferSubData;
     private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, float, int, void> _clearNamedFramebufferfi;
     private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, float*, void> _clearNamedFramebufferfv;
-    private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, uint*, void> _clearNamedFramebufferuiv;
     private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, int*, void> _clearNamedFramebufferiv;
-    private delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, int, int, int, int, void> _invalidateNamedFramebufferSubData;
-    private delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, void> _invalidateNamedFramebufferData;
-    private delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void> _namedFramebufferReadBuffer;
-    private delegate* unmanaged[Cdecl]<FramebufferId, int, ColorBuffer*, void> _namedFramebufferDrawBuffers;
-    private delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void> _namedFramebufferDrawBuffer;
-    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, int, void> _namedFramebufferTextureLayer;
-    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, void> _namedFramebufferTexture;
-    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferParameterName, int, void> _namedFramebufferParameteri;
-    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void> _namedFramebufferRenderbuffer;
-    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _createFramebuffers;
-    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void> _getNamedBufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferId, BufferPointerName, void**, void> _getNamedBufferPointerv;
-    private delegate* unmanaged[Cdecl]<BufferId, BufferPName, long*, void> _getNamedBufferParameteri64v;
-    private delegate* unmanaged[Cdecl]<BufferId, BufferPName, int*, void> _getNamedBufferParameteriv;
-    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void> _flushMappedNamedBufferRange;
-    private delegate* unmanaged[Cdecl]<BufferId, byte> _unmapNamedBuffer;
-    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, MapBufferAccessMask, void*> _mapNamedBufferRange;
-    private delegate* unmanaged[Cdecl]<BufferId, BufferAccess, void*> _mapNamedBuffer;
-    private delegate* unmanaged[Cdecl]<BufferId, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void> _clearNamedBufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferId, SizedInternalFormat, PixelFormat, PixelType, void*, void> _clearNamedBufferData;
-    private delegate* unmanaged[Cdecl]<BufferId, BufferId, nint, nint, nint, void> _copyNamedBufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void> _namedBufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferId, nint, void*, BufferUsage, void> _namedBufferData;
-    private delegate* unmanaged[Cdecl]<BufferId, nint, void*, BufferStorageMask, void> _namedBufferStorage;
-    private delegate* unmanaged[Cdecl]<int, BufferId*, void> _createBuffers;
-    private delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, uint, long*, void> _getTransformFeedbacki64_v;
-    private delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, uint, int*, void> _getTransformFeedbacki_v;
-    private delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, int*, void> _getTransformFeedbackiv;
-    private delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, nint, nint, void> _transformFeedbackBufferRange;
-    private delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, void> _transformFeedbackBufferBase;
-    private delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void> _createTransformFeedbacks;
-    private delegate* unmanaged[Cdecl]<ClipControlOrigin, ClipControlDepth, void> _clipControl;
-    private delegate* unmanaged[Cdecl]<uint, int, BufferId*, nint, int*, void> _bindVertexBuffers;
-    private delegate* unmanaged[Cdecl]<uint, int, TextureId*, void> _bindImageTextures;
-    private delegate* unmanaged[Cdecl]<uint, int, SamplerId*, void> _bindSamplers;
-    private delegate* unmanaged[Cdecl]<uint, int, TextureId*, void> _bindTextures;
-    private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, nint, nint, void> _bindBuffersRange;
-    private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, void> _bindBuffersBase;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void> _clearTexSubImage;
+    private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, uint*, void> _clearNamedFramebufferuiv;
+    private delegate* unmanaged[Cdecl]<int, void> _clearStencil;
     private delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, void*, void> _clearTexImage;
-    private delegate* unmanaged[Cdecl]<BufferStorageTarget, nint, void*, BufferStorageMask, void> _bufferStorage;
-    private delegate* unmanaged[Cdecl]<GetPointervPName, void**, void> _getPointerv;
-    private delegate* unmanaged[Cdecl]<void*, int, int*, byte*, void> _getObjectPtrLabel;
-    private delegate* unmanaged[Cdecl]<void*, int, byte*, void> _objectPtrLabel;
-    private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, byte*, void> _getObjectLabel;
-    private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, byte*, void> _objectLabel;
-    private delegate* unmanaged[Cdecl]<void> _popDebugGroup;
-    private delegate* unmanaged[Cdecl]<DebugSource, uint, int, byte*, void> _pushDebugGroup;
-    private delegate* unmanaged[Cdecl]<uint, int, DebugSource*, DebugType*, uint*, DebugSeverity*, int*, byte*, uint> _getDebugMessageLog;
-    private delegate* unmanaged[Cdecl]<DebugProc, void*, void> _debugMessageCallback;
-    private delegate* unmanaged[Cdecl]<DebugSource, DebugType, uint, DebugSeverity, int, byte*, void> _debugMessageInsert;
-    private delegate* unmanaged[Cdecl]<DebugSource, DebugType, DebugSeverity, int, uint*, byte, void> _debugMessageControl;
-    private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexBindingDivisor;
-    private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexAttribBinding;
-    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribLType, uint, void> _vertexAttribLFormat;
-    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, uint, void> _vertexAttribIFormat;
-    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribType, byte, uint, void> _vertexAttribFormat;
-    private delegate* unmanaged[Cdecl]<uint, BufferId, nint, int, void> _bindVertexBuffer;
-    private delegate* unmanaged[Cdecl]<TextureId, TextureTarget, TextureId, SizedInternalFormat, uint, uint, uint, uint, void> _textureView;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, int, byte, void> _texStorage3DMultisample;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, byte, void> _texStorage2DMultisample;
-    private delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, nint, nint, void> _texBufferRange;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void> _shaderStorageBlockBinding;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int> _getProgramResourceLocationIndex;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int> _getProgramResourceLocation;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, ProgramResourceProperty*, int, int*, int*, void> _getProgramResourceiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, int*, byte*, void> _getProgramResourceName;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, uint> _getProgramResourceIndex;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, ProgramInterfacePName, int*, void> _getProgramInterfaceiv;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, int, int, void> _multiDrawElementsIndirect;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, void*, int, int, void> _multiDrawArraysIndirect;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, int, InvalidateFramebufferAttachment*, int, int, int, int, void> _invalidateSubFramebuffer;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, int, InvalidateFramebufferAttachment*, void> _invalidateFramebuffer;
-    private delegate* unmanaged[Cdecl]<BufferId, void> _invalidateBufferData;
-    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void> _invalidateBufferSubData;
-    private delegate* unmanaged[Cdecl]<TextureId, int, void> _invalidateTexImage;
-    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, void> _invalidateTexSubImage;
-    private delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, long*, void> _getInternalformati64v;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachmentParameterName, int*, void> _getFramebufferParameteriv;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferParameterName, int, void> _framebufferParameteri;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void> _clearTexSubImage;
+    private delegate* unmanaged[Cdecl]<nint, SyncObjectMask, ulong, SyncStatus> _clientWaitSync;
+    private delegate* unmanaged[Cdecl]<ClipControlOrigin, ClipControlDepth, void> _clipControl;
+    private delegate* unmanaged[Cdecl]<byte, byte, byte, byte, void> _colorMask;
+    private delegate* unmanaged[Cdecl]<uint, byte, byte, byte, byte, void> _colorMaski;
+    private delegate* unmanaged[Cdecl]<ShaderId, void> _compileShader;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, void*, void> _compressedTexImage1D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, void*, void> _compressedTexImage2D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, int, void*, void> _compressedTexImage3D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, InternalFormat, int, void*, void> _compressedTexSubImage1D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, InternalFormat, int, void*, void> _compressedTexSubImage2D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, InternalFormat, int, void*, void> _compressedTexSubImage3D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, InternalFormat, int, void*, void> _compressedTextureSubImage1D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, InternalFormat, int, void*, void> _compressedTextureSubImage2D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, InternalFormat, int, void*, void> _compressedTextureSubImage3D;
+    private delegate* unmanaged[Cdecl]<CopyBufferSubDataTarget, CopyBufferSubDataTarget, nint, nint, nint, void> _copyBufferSubData;
     private delegate* unmanaged[Cdecl]<uint, CopyImageSubDataTarget, int, int, int, int, uint, CopyImageSubDataTarget, int, int, int, int, int, int, int, void> _copyImageSubData;
-    private delegate* unmanaged[Cdecl]<nint, void> _dispatchComputeIndirect;
-    private delegate* unmanaged[Cdecl]<uint, uint, uint, void> _dispatchCompute;
-    private delegate* unmanaged[Cdecl]<BufferTarget, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void> _clearBufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferStorageTarget, SizedInternalFormat, PixelFormat, PixelType, void*, void> _clearBufferData;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, uint, int, void> _drawTransformFeedbackStreamInstanced;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, int, void> _drawTransformFeedbackInstanced;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, int, void> _texStorage3D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, void> _texStorage2D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, void> _texStorage1D;
-    private delegate* unmanaged[Cdecl]<MemoryBarrierMask, void> _memoryBarrier;
-    private delegate* unmanaged[Cdecl]<uint, TextureId, int, byte, int, BufferAccess, InternalFormat, void> _bindImageTexture;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, AtomicCounterBufferPName, int*, void> _getActiveAtomicCounterBufferiv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, int*, void> _getInternalformativ;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, uint, void> _drawElementsInstancedBaseVertexBaseInstance;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, uint, void> _drawElementsInstancedBaseInstance;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, int, int, uint, void> _drawArraysInstancedBaseInstance;
-    private delegate* unmanaged[Cdecl]<GetPName, uint, double*, void> _getDoublei_v;
-    private delegate* unmanaged[Cdecl]<GetPName, uint, float*, void> _getFloati_v;
-    private delegate* unmanaged[Cdecl]<uint, double, double, void> _depthRangeIndexed;
-    private delegate* unmanaged[Cdecl]<uint, int, double*, void> _depthRangeArrayv;
-    private delegate* unmanaged[Cdecl]<uint, int*, void> _scissorIndexedv;
-    private delegate* unmanaged[Cdecl]<uint, int, int, int, int, void> _scissorIndexed;
-    private delegate* unmanaged[Cdecl]<uint, int, int*, void> _scissorArrayv;
-    private delegate* unmanaged[Cdecl]<uint, float*, void> _viewportIndexedfv;
-    private delegate* unmanaged[Cdecl]<uint, float, float, float, float, void> _viewportIndexedf;
-    private delegate* unmanaged[Cdecl]<uint, int, float*, void> _viewportArrayv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, double*, void> _getVertexAttribLdv;
-    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribLType, int, void*, void> _vertexAttribLPointer;
-    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttribL4dv;
-    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttribL3dv;
-    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttribL2dv;
-    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttribL1dv;
-    private delegate* unmanaged[Cdecl]<uint, double, double, double, double, void> _vertexAttribL4d;
-    private delegate* unmanaged[Cdecl]<uint, double, double, double, void> _vertexAttribL3d;
-    private delegate* unmanaged[Cdecl]<uint, double, double, void> _vertexAttribL2d;
-    private delegate* unmanaged[Cdecl]<uint, double, void> _vertexAttribL1d;
-    private delegate* unmanaged[Cdecl]<ProgramPipelineId, int, int*, byte*, void> _getProgramPipelineInfoLog;
-    private delegate* unmanaged[Cdecl]<ProgramPipelineId, void> _validateProgramPipeline;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix4x3dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix3x4dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix4x2dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix2x4dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix3x2dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix2x3dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix4x3fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix3x4fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix4x2fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix2x4fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix3x2fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix2x3fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix4dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix3dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix2dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix4fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix3fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix2fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _programUniform4uiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, uint, uint, void> _programUniform4ui;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _programUniform4dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, double, double, double, double, void> _programUniform4d;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _programUniform4fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, float, float, float, float, void> _programUniform4f;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _programUniform4iv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int, int, int, void> _programUniform4i;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _programUniform3uiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, uint, void> _programUniform3ui;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _programUniform3dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, double, double, double, void> _programUniform3d;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _programUniform3fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, float, float, float, void> _programUniform3f;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _programUniform3iv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int, int, void> _programUniform3i;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _programUniform2uiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, void> _programUniform2ui;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _programUniform2dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, double, double, void> _programUniform2d;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _programUniform2fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, float, float, void> _programUniform2f;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _programUniform2iv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int, void> _programUniform2i;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _programUniform1uiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, uint, void> _programUniform1ui;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _programUniform1dv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, double, void> _programUniform1d;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _programUniform1fv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, float, void> _programUniform1f;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, int, void> _drawArrays;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, void> _drawElements;
-    private delegate* unmanaged[Cdecl]<ProgramPipelineId, void> _bindProgramPipeline;
-    private delegate* unmanaged[Cdecl]<float, float, void> _polygonOffset;
+    private delegate* unmanaged[Cdecl]<BufferId, BufferId, nint, nint, nint, void> _copyNamedBufferSubData;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, void> _copyTexImage1D;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, int, void> _copyTexImage2D;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, void> _copyTexSubImage1D;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, void> _copyTexSubImage2D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, PixelFormat, PixelType, void*, void> _texSubImage1D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, PixelFormat, PixelType, void*, void> _texSubImage2D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, TextureId, void> _bindTexture;
-    private delegate* unmanaged[Cdecl]<int, TextureId*, void> _deleteTextures;
-    private delegate* unmanaged[Cdecl]<int, TextureId*, void> _genTextures;
-    private delegate* unmanaged[Cdecl]<TextureId, byte> _isTexture;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _programUniform1iv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int, void> _programUniform1i;
-    private delegate* unmanaged[Cdecl]<ProgramPipelineId, PipelineParameterName, int*, void> _getProgramPipelineiv;
-    private delegate* unmanaged[Cdecl]<ProgramPipelineId, byte> _isProgramPipeline;
-    private delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void> _genProgramPipelines;
-    private delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void> _deleteProgramPipelines;
-    private delegate* unmanaged[Cdecl]<ShaderType, int, byte**, ProgramId> _createShaderProgramv;
-    private delegate* unmanaged[Cdecl]<ProgramPipelineId, ProgramId, void> _activeShaderProgram;
-    private delegate* unmanaged[Cdecl]<ProgramPipelineId, UseProgramStageMask, ProgramId, void> _useProgramStages;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramParameterPName, int, void> _programParameteri;
-    private delegate* unmanaged[Cdecl]<ProgramId, Enum, void*, int, void> _programBinary;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, Enum*, void*, void> _getProgramBinary;
-    private delegate* unmanaged[Cdecl]<float, void> _clearDepthf;
-    private delegate* unmanaged[Cdecl]<float, float, void> _depthRangef;
-    private delegate* unmanaged[Cdecl]<ShaderType, PrecisionType, int*, int*, void> _getShaderPrecisionFormat;
-    private delegate* unmanaged[Cdecl]<int, ShaderId*, ShaderBinaryFormat, void*, int, void> _shaderBinary;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, void> _drawRangeElements;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, PixelFormat, PixelType, void*, void> _texImage3D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void> _texSubImage3D;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, int, void> _copyTexSubImage3D;
-    private delegate* unmanaged[Cdecl]<TextureUnit, void> _activeTexture;
-    private delegate* unmanaged[Cdecl]<float, byte, void> _sampleCoverage;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, int, void*, void> _compressedTexImage3D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, void*, void> _compressedTexImage2D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, void*, void> _compressedTexImage1D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, InternalFormat, int, void*, void> _compressedTexSubImage3D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, InternalFormat, int, void*, void> _compressedTexSubImage2D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, InternalFormat, int, void*, void> _compressedTexSubImage1D;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, void*, void> _getCompressedTexImage;
-    private delegate* unmanaged[Cdecl]<void> _releaseShaderCompiler;
-    private delegate* unmanaged[Cdecl]<QueryTarget, uint, QueryParameterName, int*, void> _getQueryIndexediv;
-    private delegate* unmanaged[Cdecl]<QueryTarget, uint, void> _endQueryIndexed;
-    private delegate* unmanaged[Cdecl]<QueryTarget, uint, QueryId, void> _beginQueryIndexed;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, uint, void> _drawTransformFeedbackStream;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, void> _drawTransformFeedback;
-    private delegate* unmanaged[Cdecl]<void> _resumeTransformFeedback;
-    private delegate* unmanaged[Cdecl]<void> _pauseTransformFeedback;
-    private delegate* unmanaged[Cdecl]<TransformFeedbackId, byte> _isTransformFeedback;
-    private delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void> _genTransformFeedbacks;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, void> _copyTextureSubImage1D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, void> _copyTextureSubImage2D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, int, void> _copyTextureSubImage3D;
+    private delegate* unmanaged[Cdecl]<int, BufferId*, void> _createBuffers;
+    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _createFramebuffers;
+    private delegate* unmanaged[Cdecl]<ProgramId> _createProgram;
+    private delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void> _createProgramPipelines;
+    private delegate* unmanaged[Cdecl]<QueryTarget, int, QueryId*, void> _createQueries;
+    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _createRenderbuffers;
+    private delegate* unmanaged[Cdecl]<int, SamplerId*, void> _createSamplers;
+    private delegate* unmanaged[Cdecl]<ShaderType, ShaderId> _createShader;
+    private delegate* unmanaged[Cdecl]<ShaderType, int, byte**, ProgramId> _createShaderProgramv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, TextureId*, void> _createTextures;
+    private delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void> _createTransformFeedbacks;
+    private delegate* unmanaged[Cdecl]<int, VertexArrayId*, void> _createVertexArrays;
+    private delegate* unmanaged[Cdecl]<TriangleFace, void> _cullFace;
+    private delegate* unmanaged[Cdecl]<DebugProc, void*, void> _debugMessageCallback;
+    private delegate* unmanaged[Cdecl]<DebugSource, DebugType, DebugSeverity, int, uint*, byte, void> _debugMessageControl;
+    private delegate* unmanaged[Cdecl]<DebugSource, DebugType, uint, DebugSeverity, int, byte*, void> _debugMessageInsert;
+    private delegate* unmanaged[Cdecl]<int, BufferId*, void> _deleteBuffers;
+    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _deleteFramebuffers;
+    private delegate* unmanaged[Cdecl]<ProgramId, void> _deleteProgram;
+    private delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void> _deleteProgramPipelines;
+    private delegate* unmanaged[Cdecl]<int, QueryId*, void> _deleteQueries;
+    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _deleteRenderbuffers;
+    private delegate* unmanaged[Cdecl]<int, SamplerId*, void> _deleteSamplers;
+    private delegate* unmanaged[Cdecl]<ShaderId, void> _deleteShader;
+    private delegate* unmanaged[Cdecl]<nint, void> _deleteSync;
+    private delegate* unmanaged[Cdecl]<int, TextureId*, void> _deleteTextures;
     private delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void> _deleteTransformFeedbacks;
-    private delegate* unmanaged[Cdecl]<BindTransformFeedbackTarget, TransformFeedbackId, void> _bindTransformFeedback;
-    private delegate* unmanaged[Cdecl]<PatchParameterName, float*, void> _patchParameterfv;
-    private delegate* unmanaged[Cdecl]<PatchParameterName, int, void> _patchParameteri;
-    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, ProgramStagePName, int*, void> _getProgramStageiv;
-    private delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void> _getUniformSubroutineuiv;
-    private delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void> _uniformSubroutinesuiv;
+    private delegate* unmanaged[Cdecl]<int, VertexArrayId*, void> _deleteVertexArrays;
+    private delegate* unmanaged[Cdecl]<DepthFunction, void> _depthFunc;
+    private delegate* unmanaged[Cdecl]<byte, void> _depthMask;
+    private delegate* unmanaged[Cdecl]<double, double, void> _depthRange;
+    private delegate* unmanaged[Cdecl]<uint, int, double*, void> _depthRangeArrayv;
+    private delegate* unmanaged[Cdecl]<float, float, void> _depthRangef;
+    private delegate* unmanaged[Cdecl]<uint, double, double, void> _depthRangeIndexed;
+    private delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void> _detachShader;
+    private delegate* unmanaged[Cdecl]<EnableCap, void> _disable;
+    private delegate* unmanaged[Cdecl]<EnableCap, uint, void> _disablei;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, void> _disableVertexArrayAttrib;
+    private delegate* unmanaged[Cdecl]<uint, void> _disableVertexAttribArray;
+    private delegate* unmanaged[Cdecl]<uint, uint, uint, void> _dispatchCompute;
+    private delegate* unmanaged[Cdecl]<nint, void> _dispatchComputeIndirect;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, int, void> _drawArrays;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, void*, void> _drawArraysIndirect;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, int, int, void> _drawArraysInstanced;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, int, int, uint, void> _drawArraysInstancedBaseInstance;
+    private delegate* unmanaged[Cdecl]<DrawBufferMode, void> _drawBuffer;
+    private delegate* unmanaged[Cdecl]<int, DrawBufferMode*, void> _drawBuffers;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, void> _drawElements;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void> _drawElementsBaseVertex;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, void> _drawElementsIndirect;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void> _drawElementsInstanced;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, uint, void> _drawElementsInstancedBaseInstance;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, void> _drawElementsInstancedBaseVertex;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, uint, void> _drawElementsInstancedBaseVertexBaseInstance;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, void> _drawRangeElements;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, int, void> _drawRangeElementsBaseVertex;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, void> _drawTransformFeedback;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, int, void> _drawTransformFeedbackInstanced;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, uint, void> _drawTransformFeedbackStream;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, uint, int, void> _drawTransformFeedbackStreamInstanced;
+    private delegate* unmanaged[Cdecl]<EnableCap, void> _enable;
+    private delegate* unmanaged[Cdecl]<EnableCap, uint, void> _enablei;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, void> _enableVertexArrayAttrib;
+    private delegate* unmanaged[Cdecl]<uint, void> _enableVertexAttribArray;
+    private delegate* unmanaged[Cdecl]<void> _endConditionalRender;
+    private delegate* unmanaged[Cdecl]<QueryTarget, void> _endQuery;
+    private delegate* unmanaged[Cdecl]<QueryTarget, uint, void> _endQueryIndexed;
+    private delegate* unmanaged[Cdecl]<void> _endTransformFeedback;
+    private delegate* unmanaged[Cdecl]<SyncCondition, SyncBehaviorFlags, nint> _fenceSync;
+    private delegate* unmanaged[Cdecl]<void> _finish;
+    private delegate* unmanaged[Cdecl]<void> _flush;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void> _flushMappedBufferRange;
+    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void> _flushMappedNamedBufferRange;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferParameterName, int, void> _framebufferParameteri;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void> _framebufferRenderbuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureId, int, void> _framebufferTexture;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void> _framebufferTexture1D;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void> _framebufferTexture2D;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, int, void> _framebufferTexture3D;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureId, int, int, void> _framebufferTextureLayer;
+    private delegate* unmanaged[Cdecl]<FrontFaceDirection, void> _frontFace;
+    private delegate* unmanaged[Cdecl]<int, BufferId*, void> _genBuffers;
+    private delegate* unmanaged[Cdecl]<TextureTarget, void> _generateMipmap;
+    private delegate* unmanaged[Cdecl]<TextureId, void> _generateTextureMipmap;
+    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _genFramebuffers;
+    private delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void> _genProgramPipelines;
+    private delegate* unmanaged[Cdecl]<int, QueryId*, void> _genQueries;
+    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _genRenderbuffers;
+    private delegate* unmanaged[Cdecl]<int, SamplerId*, void> _genSamplers;
+    private delegate* unmanaged[Cdecl]<int, TextureId*, void> _genTextures;
+    private delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void> _genTransformFeedbacks;
+    private delegate* unmanaged[Cdecl]<int, VertexArrayId*, void> _genVertexArrays;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, AtomicCounterBufferPName, int*, void> _getActiveAtomicCounterBufferiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void> _getActiveAttrib;
     private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void> _getActiveSubroutineName;
-    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void> _getActiveSubroutineUniformName;
     private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, SubroutineParameterName, int*, void> _getActiveSubroutineUniformiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void> _getActiveSubroutineUniformName;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, UniformType*, byte*, void> _getActiveUniform;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, UniformBlockPName, int*, void> _getActiveUniformBlockiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void> _getActiveUniformBlockName;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void> _getActiveUniformName;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, uint*, UniformPName, int*, void> _getActiveUniformsiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, ShaderId*, void> _getAttachedShaders;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getAttribLocation;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, byte*, void> _getBooleani_v;
+    private delegate* unmanaged[Cdecl]<GetPName, byte*, void> _getBooleanv;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, long*, void> _getBufferParameteri64v;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, int*, void> _getBufferParameteriv;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPointerName, void**, void> _getBufferPointerv;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void> _getBufferSubData;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, void*, void> _getCompressedTexImage;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, void*, void> _getCompressedTextureImage;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, int, void*, void> _getCompressedTextureSubImage;
+    private delegate* unmanaged[Cdecl]<uint, int, DebugSource*, DebugType*, uint*, DebugSeverity*, int*, byte*, uint> _getDebugMessageLog;
+    private delegate* unmanaged[Cdecl]<GetPName, uint, double*, void> _getDoublei_v;
+    private delegate* unmanaged[Cdecl]<GetPName, double*, void> _getDoublev;
+    private delegate* unmanaged[Cdecl]<ErrorCode> _getError;
+    private delegate* unmanaged[Cdecl]<GetPName, uint, float*, void> _getFloati_v;
+    private delegate* unmanaged[Cdecl]<GetPName, float*, void> _getFloatv;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getFragDataIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getFragDataLocation;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void> _getFramebufferAttachmentParameteriv;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachmentParameterName, int*, void> _getFramebufferParameteriv;
+    private delegate* unmanaged[Cdecl]<GraphicsResetStatus> _getGraphicsResetStatus;
+    private delegate* unmanaged[Cdecl]<GetPName, uint, long*, void> _getInteger64i_v;
+    private delegate* unmanaged[Cdecl]<GetPName, long*, void> _getInteger64v;
+    private delegate* unmanaged[Cdecl]<GetPName, uint, int*, void> _getIntegeri_v;
+    private delegate* unmanaged[Cdecl]<GetPName, int*, void> _getIntegerv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, long*, void> _getInternalformati64v;
+    private delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, int*, void> _getInternalformativ;
+    private delegate* unmanaged[Cdecl]<GetMultisamplePNameNV, uint, float*, void> _getMultisamplefv;
+    private delegate* unmanaged[Cdecl]<BufferId, BufferPName, long*, void> _getNamedBufferParameteri64v;
+    private delegate* unmanaged[Cdecl]<BufferId, BufferPName, int*, void> _getNamedBufferParameteriv;
+    private delegate* unmanaged[Cdecl]<BufferId, BufferPointerName, void**, void> _getNamedBufferPointerv;
+    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void> _getNamedBufferSubData;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void> _getNamedFramebufferAttachmentParameteriv;
+    private delegate* unmanaged[Cdecl]<FramebufferId, GetFramebufferParameter, int*, void> _getNamedFramebufferParameteriv;
+    private delegate* unmanaged[Cdecl]<RenderbufferId, RenderbufferParameterName, int*, void> _getNamedRenderbufferParameteriv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, void*, void> _getnCompressedTexImage;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, int, void*, void> _getnTexImage;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _getnUniformdv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _getnUniformfv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _getnUniformiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _getnUniformuiv;
+    private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, byte*, void> _getObjectLabel;
+    private delegate* unmanaged[Cdecl]<void*, int, int*, byte*, void> _getObjectPtrLabel;
+    private delegate* unmanaged[Cdecl]<GetPointervPName, void**, void> _getPointerv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, Enum*, void*, void> _getProgramBinary;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, byte*, void> _getProgramInfoLog;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, ProgramInterfacePName, int*, void> _getProgramInterfaceiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramProperty, int*, void> _getProgramiv;
+    private delegate* unmanaged[Cdecl]<ProgramPipelineId, int, int*, byte*, void> _getProgramPipelineInfoLog;
+    private delegate* unmanaged[Cdecl]<ProgramPipelineId, PipelineParameterName, int*, void> _getProgramPipelineiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, uint> _getProgramResourceIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, ProgramResourceProperty*, int, int*, int*, void> _getProgramResourceiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int> _getProgramResourceLocation;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int> _getProgramResourceLocationIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, int*, byte*, void> _getProgramResourceName;
+    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, ProgramStagePName, int*, void> _getProgramStageiv;
+    private delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void> _getQueryBufferObjecti64v;
+    private delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void> _getQueryBufferObjectiv;
+    private delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void> _getQueryBufferObjectui64v;
+    private delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void> _getQueryBufferObjectuiv;
+    private delegate* unmanaged[Cdecl]<QueryTarget, uint, QueryParameterName, int*, void> _getQueryIndexediv;
+    private delegate* unmanaged[Cdecl]<QueryTarget, QueryParameterName, int*, void> _getQueryiv;
+    private delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, long*, void> _getQueryObjecti64v;
+    private delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, int*, void> _getQueryObjectiv;
+    private delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, ulong*, void> _getQueryObjectui64v;
+    private delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, uint*, void> _getQueryObjectuiv;
+    private delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferParameterName, int*, void> _getRenderbufferParameteriv;
+    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float*, void> _getSamplerParameterfv;
+    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void> _getSamplerParameterIiv;
+    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, uint*, void> _getSamplerParameterIuiv;
+    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void> _getSamplerParameteriv;
+    private delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void> _getShaderInfoLog;
+    private delegate* unmanaged[Cdecl]<ShaderId, ShaderParameterName, int*, void> _getShaderiv;
+    private delegate* unmanaged[Cdecl]<ShaderType, PrecisionType, int*, int*, void> _getShaderPrecisionFormat;
+    private delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void> _getShaderSource;
+    private delegate* unmanaged[Cdecl]<StringName, nint> _getString;
+    private delegate* unmanaged[Cdecl]<StringName, uint, nint> _getStringi;
     private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, byte*, uint> _getSubroutineIndex;
     private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, byte*, int> _getSubroutineUniformLocation;
+    private delegate* unmanaged[Cdecl]<nint, SyncParameterName, int, int*, int*, void> _getSynciv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, void*, void> _getTexImage;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, GetTextureParameter, float*, void> _getTexLevelParameterfv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, GetTextureParameter, int*, void> _getTexLevelParameteriv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, float*, void> _getTexParameterfv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void> _getTexParameterIiv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, uint*, void> _getTexParameterIuiv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void> _getTexParameteriv;
+    private delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, int, void*, void> _getTextureImage;
+    private delegate* unmanaged[Cdecl]<TextureId, int, GetTextureParameter, float*, void> _getTextureLevelParameterfv;
+    private delegate* unmanaged[Cdecl]<TextureId, int, GetTextureParameter, int*, void> _getTextureLevelParameteriv;
+    private delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, float*, void> _getTextureParameterfv;
+    private delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, int*, void> _getTextureParameterIiv;
+    private delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, uint*, void> _getTextureParameterIuiv;
+    private delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, int*, void> _getTextureParameteriv;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, int, void*, void> _getTextureSubImage;
+    private delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, uint, int*, void> _getTransformFeedbacki_v;
+    private delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, uint, long*, void> _getTransformFeedbacki64_v;
+    private delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, int*, void> _getTransformFeedbackiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void> _getTransformFeedbackVarying;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, uint> _getUniformBlockIndex;
     private delegate* unmanaged[Cdecl]<ProgramId, int, double*, void> _getUniformdv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix4x3dv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix4x2dv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix3x4dv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix3x2dv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix2x4dv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix2x3dv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix4dv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix3dv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix2dv;
-    private delegate* unmanaged[Cdecl]<int, int, double*, void> _uniform4dv;
-    private delegate* unmanaged[Cdecl]<int, int, double*, void> _uniform3dv;
-    private delegate* unmanaged[Cdecl]<int, int, double*, void> _uniform2dv;
-    private delegate* unmanaged[Cdecl]<int, int, double*, void> _uniform1dv;
-    private delegate* unmanaged[Cdecl]<int, double, double, double, double, void> _uniform4d;
-    private delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void> _blendFuncSeparate;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, float*, void> _getUniformfv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, byte**, uint*, void> _getUniformIndices;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, void> _getUniformiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getUniformLocation;
+    private delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void> _getUniformSubroutineuiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, uint*, void> _getUniformuiv;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, VertexArrayPName, long*, void> _getVertexArrayIndexed64iv;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, VertexArrayPName, int*, void> _getVertexArrayIndexediv;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, VertexArrayPName, int*, void> _getVertexArrayiv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, double*, void> _getVertexAttribdv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, float*, void> _getVertexAttribfv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, int*, void> _getVertexAttribIiv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, uint*, void> _getVertexAttribIuiv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, int*, void> _getVertexAttribiv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, double*, void> _getVertexAttribLdv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerProperty, void**, void> _getVertexAttribPointerv;
+    private delegate* unmanaged[Cdecl]<HintTarget, HintMode, void> _hint;
+    private delegate* unmanaged[Cdecl]<BufferId, void> _invalidateBufferData;
+    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void> _invalidateBufferSubData;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, int, InvalidateFramebufferAttachment*, void> _invalidateFramebuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, void> _invalidateNamedFramebufferData;
+    private delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, int, int, int, int, void> _invalidateNamedFramebufferSubData;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, int, InvalidateFramebufferAttachment*, int, int, int, int, void> _invalidateSubFramebuffer;
+    private delegate* unmanaged[Cdecl]<TextureId, int, void> _invalidateTexImage;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, void> _invalidateTexSubImage;
+    private delegate* unmanaged[Cdecl]<BufferId, byte> _isBuffer;
+    private delegate* unmanaged[Cdecl]<EnableCap, byte> _isEnabled;
+    private delegate* unmanaged[Cdecl]<EnableCap, uint, byte> _isEnabledi;
+    private delegate* unmanaged[Cdecl]<FramebufferId, byte> _isFramebuffer;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte> _isProgram;
+    private delegate* unmanaged[Cdecl]<ProgramPipelineId, byte> _isProgramPipeline;
+    private delegate* unmanaged[Cdecl]<QueryId, byte> _isQuery;
+    private delegate* unmanaged[Cdecl]<RenderbufferId, byte> _isRenderbuffer;
+    private delegate* unmanaged[Cdecl]<SamplerId, byte> _isSampler;
+    private delegate* unmanaged[Cdecl]<ShaderId, byte> _isShader;
+    private delegate* unmanaged[Cdecl]<nint, byte> _isSync;
+    private delegate* unmanaged[Cdecl]<TextureId, byte> _isTexture;
+    private delegate* unmanaged[Cdecl]<TransformFeedbackId, byte> _isTransformFeedback;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, byte> _isVertexArray;
+    private delegate* unmanaged[Cdecl]<float, void> _lineWidth;
+    private delegate* unmanaged[Cdecl]<ProgramId, void> _linkProgram;
+    private delegate* unmanaged[Cdecl]<LogicOpEnum, void> _logicOp;
+    private delegate* unmanaged[Cdecl]<BufferTarget, BufferAccess, void*> _mapBuffer;
+    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, MapBufferAccessMask, void*> _mapBufferRange;
+    private delegate* unmanaged[Cdecl]<BufferId, BufferAccess, void*> _mapNamedBuffer;
+    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, MapBufferAccessMask, void*> _mapNamedBufferRange;
+    private delegate* unmanaged[Cdecl]<MemoryBarrierMask, void> _memoryBarrier;
+    private delegate* unmanaged[Cdecl]<MemoryBarrierMask, void> _memoryBarrierByRegion;
+    private delegate* unmanaged[Cdecl]<float, void> _minSampleShading;
     private delegate* unmanaged[Cdecl]<PrimitiveType, int*, int*, int, void> _multiDrawArrays;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, void*, int, int, void> _multiDrawArraysIndirect;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, void*, nint, int, int, void> _multiDrawArraysIndirectCount;
     private delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, void> _multiDrawElements;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, int*, void> _multiDrawElementsBaseVertex;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, int, int, void> _multiDrawElementsIndirect;
+    private delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, nint, int, int, void> _multiDrawElementsIndirectCount;
+    private delegate* unmanaged[Cdecl]<BufferId, nint, void*, BufferUsage, void> _namedBufferData;
+    private delegate* unmanaged[Cdecl]<BufferId, nint, void*, BufferStorageMask, void> _namedBufferStorage;
+    private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void> _namedBufferSubData;
+    private delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void> _namedFramebufferDrawBuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferId, int, ColorBuffer*, void> _namedFramebufferDrawBuffers;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferParameterName, int, void> _namedFramebufferParameteri;
+    private delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void> _namedFramebufferReadBuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void> _namedFramebufferRenderbuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, void> _namedFramebufferTexture;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, int, void> _namedFramebufferTextureLayer;
+    private delegate* unmanaged[Cdecl]<RenderbufferId, InternalFormat, int, int, void> _namedRenderbufferStorage;
+    private delegate* unmanaged[Cdecl]<RenderbufferId, int, InternalFormat, int, int, void> _namedRenderbufferStorageMultisample;
+    private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, byte*, void> _objectLabel;
+    private delegate* unmanaged[Cdecl]<void*, int, byte*, void> _objectPtrLabel;
+    private delegate* unmanaged[Cdecl]<PatchParameterName, float*, void> _patchParameterfv;
+    private delegate* unmanaged[Cdecl]<PatchParameterName, int, void> _patchParameteri;
+    private delegate* unmanaged[Cdecl]<void> _pauseTransformFeedback;
+    private delegate* unmanaged[Cdecl]<PixelStoreParameter, float, void> _pixelStoref;
+    private delegate* unmanaged[Cdecl]<PixelStoreParameter, int, void> _pixelStorei;
     private delegate* unmanaged[Cdecl]<PointParameterName, float, void> _pointParameterf;
     private delegate* unmanaged[Cdecl]<PointParameterName, float*, void> _pointParameterfv;
     private delegate* unmanaged[Cdecl]<PointParameterName, int, void> _pointParameteri;
     private delegate* unmanaged[Cdecl]<PointParameterName, int*, void> _pointParameteriv;
-    private delegate* unmanaged[Cdecl]<int, double, double, double, void> _uniform3d;
-    private delegate* unmanaged[Cdecl]<int, double, double, void> _uniform2d;
-    private delegate* unmanaged[Cdecl]<int, double, void> _uniform1d;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, void> _drawElementsIndirect;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, void*, void> _drawArraysIndirect;
-    private delegate* unmanaged[Cdecl]<uint, BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void> _blendFuncSeparatei;
-    private delegate* unmanaged[Cdecl]<uint, BlendingFactor, BlendingFactor, void> _blendFunci;
-    private delegate* unmanaged[Cdecl]<uint, BlendEquationModeEXT, BlendEquationModeEXT, void> _blendEquationSeparatei;
-    private delegate* unmanaged[Cdecl]<uint, BlendEquationModeEXT, void> _blendEquationi;
-    private delegate* unmanaged[Cdecl]<float, void> _minSampleShading;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void> _vertexAttribP4uiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void> _vertexAttribP4ui;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void> _vertexAttribP3uiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void> _vertexAttribP3ui;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void> _vertexAttribP2uiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void> _vertexAttribP2ui;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void> _vertexAttribP1uiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void> _vertexAttribP1ui;
-    private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexAttribDivisor;
-    private delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, ulong*, void> _getQueryObjectui64v;
-    private delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, long*, void> _getQueryObjecti64v;
+    private delegate* unmanaged[Cdecl]<float, void> _pointSize;
+    private delegate* unmanaged[Cdecl]<TriangleFace, PolygonModeEnum, void> _polygonMode;
+    private delegate* unmanaged[Cdecl]<float, float, void> _polygonOffset;
+    private delegate* unmanaged[Cdecl]<float, float, float, void> _polygonOffsetClamp;
+    private delegate* unmanaged[Cdecl]<void> _popDebugGroup;
+    private delegate* unmanaged[Cdecl]<uint, void> _primitiveRestartIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, Enum, void*, int, void> _programBinary;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramParameterPName, int, void> _programParameteri;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, double, void> _programUniform1d;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _programUniform1dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, float, void> _programUniform1f;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _programUniform1fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, void> _programUniform1i;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _programUniform1iv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, uint, void> _programUniform1ui;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _programUniform1uiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, double, double, void> _programUniform2d;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _programUniform2dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, float, float, void> _programUniform2f;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _programUniform2fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int, void> _programUniform2i;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _programUniform2iv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, void> _programUniform2ui;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _programUniform2uiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, double, double, double, void> _programUniform3d;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _programUniform3dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, float, float, float, void> _programUniform3f;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _programUniform3fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int, int, void> _programUniform3i;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _programUniform3iv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, uint, void> _programUniform3ui;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _programUniform3uiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, double, double, double, double, void> _programUniform4d;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void> _programUniform4dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, float, float, float, float, void> _programUniform4f;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void> _programUniform4fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int, int, int, void> _programUniform4i;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void> _programUniform4iv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, uint, uint, void> _programUniform4ui;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _programUniform4uiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix2dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix2fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix2x3dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix2x3fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix2x4dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix2x4fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix3dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix3fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix3x2dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix3x2fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix3x4dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix3x4fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix4dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix4fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix4x2dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix4x2fv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix4x3dv;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void> _programUniformMatrix4x3fv;
+    private delegate* unmanaged[Cdecl]<VertexProvokingMode, void> _provokingVertex;
+    private delegate* unmanaged[Cdecl]<DebugSource, uint, int, byte*, void> _pushDebugGroup;
     private delegate* unmanaged[Cdecl]<QueryId, QueryCounterTarget, void> _queryCounter;
-    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, uint*, void> _getSamplerParameterIuiv;
-    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float*, void> _getSamplerParameterfv;
-    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void> _getSamplerParameterIiv;
-    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void> _getSamplerParameteriv;
-    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, uint*, void> _samplerParameterIuiv;
-    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void> _samplerParameterIiv;
-    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float*, void> _samplerParameterfv;
+    private delegate* unmanaged[Cdecl]<ReadBufferMode, void> _readBuffer;
+    private delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, int, void*, void> _readnPixels;
+    private delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, void*, void> _readPixels;
+    private delegate* unmanaged[Cdecl]<void> _releaseShaderCompiler;
+    private delegate* unmanaged[Cdecl]<RenderbufferTarget, InternalFormat, int, int, void> _renderbufferStorage;
+    private delegate* unmanaged[Cdecl]<RenderbufferTarget, int, InternalFormat, int, int, void> _renderbufferStorageMultisample;
+    private delegate* unmanaged[Cdecl]<void> _resumeTransformFeedback;
+    private delegate* unmanaged[Cdecl]<float, byte, void> _sampleCoverage;
+    private delegate* unmanaged[Cdecl]<uint, uint, void> _sampleMaski;
     private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float, void> _samplerParameterf;
-    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void> _samplerParameteriv;
+    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float*, void> _samplerParameterfv;
     private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int, void> _samplerParameteri;
-    private delegate* unmanaged[Cdecl]<uint, SamplerId, void> _bindSampler;
-    private delegate* unmanaged[Cdecl]<SamplerId, byte> _isSampler;
-    private delegate* unmanaged[Cdecl]<int, SamplerId*, void> _deleteSamplers;
-    private delegate* unmanaged[Cdecl]<int, SamplerId*, void> _genSamplers;
-    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getFragDataIndex;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, byte*, void> _bindFragDataLocationIndexed;
-    private delegate* unmanaged[Cdecl]<float, float, float, float, void> _blendColor;
-    private delegate* unmanaged[Cdecl]<BlendEquationModeEXT, void> _blendEquation;
-    private delegate* unmanaged[Cdecl]<int, QueryId*, void> _genQueries;
-    private delegate* unmanaged[Cdecl]<int, QueryId*, void> _deleteQueries;
-    private delegate* unmanaged[Cdecl]<QueryId, byte> _isQuery;
-    private delegate* unmanaged[Cdecl]<QueryTarget, QueryId, void> _beginQuery;
-    private delegate* unmanaged[Cdecl]<QueryTarget, void> _endQuery;
-    private delegate* unmanaged[Cdecl]<QueryTarget, QueryParameterName, int*, void> _getQueryiv;
-    private delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, int*, void> _getQueryObjectiv;
-    private delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, uint*, void> _getQueryObjectuiv;
-    private delegate* unmanaged[Cdecl]<BufferTarget, BufferId, void> _bindBuffer;
-    private delegate* unmanaged[Cdecl]<int, BufferId*, void> _deleteBuffers;
-    private delegate* unmanaged[Cdecl]<int, BufferId*, void> _genBuffers;
-    private delegate* unmanaged[Cdecl]<BufferId, byte> _isBuffer;
-    private delegate* unmanaged[Cdecl]<BufferTarget, nint, void*, BufferUsage, void> _bufferData;
-    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void> _bufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void> _getBufferSubData;
-    private delegate* unmanaged[Cdecl]<BufferTarget, BufferAccess, void*> _mapBuffer;
-    private delegate* unmanaged[Cdecl]<BufferTarget, byte> _unmapBuffer;
-    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, int*, void> _getBufferParameteriv;
-    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPointerName, void**, void> _getBufferPointerv;
-    private delegate* unmanaged[Cdecl]<BlendEquationModeEXT, BlendEquationModeEXT, void> _blendEquationSeparate;
-    private delegate* unmanaged[Cdecl]<int, DrawBufferMode*, void> _drawBuffers;
-    private delegate* unmanaged[Cdecl]<TriangleFace, StencilOpEnum, StencilOpEnum, StencilOpEnum, void> _stencilOpSeparate;
-    private delegate* unmanaged[Cdecl]<TriangleFace, StencilFunction, int, uint, void> _stencilFuncSeparate;
-    private delegate* unmanaged[Cdecl]<TriangleFace, uint, void> _stencilMaskSeparate;
-    private delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void> _attachShader;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void> _bindAttribLocation;
-    private delegate* unmanaged[Cdecl]<ShaderId, void> _compileShader;
-    private delegate* unmanaged[Cdecl]<ProgramId> _createProgram;
-    private delegate* unmanaged[Cdecl]<ShaderType, ShaderId> _createShader;
-    private delegate* unmanaged[Cdecl]<ProgramId, void> _deleteProgram;
-    private delegate* unmanaged[Cdecl]<ShaderId, void> _deleteShader;
-    private delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void> _detachShader;
-    private delegate* unmanaged[Cdecl]<uint, void> _disableVertexAttribArray;
-    private delegate* unmanaged[Cdecl]<uint, void> _enableVertexAttribArray;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void> _getActiveAttrib;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, UniformType*, byte*, void> _getActiveUniform;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, ShaderId*, void> _getAttachedShaders;
-    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getAttribLocation;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramProperty, int*, void> _getProgramiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, byte*, void> _getProgramInfoLog;
-    private delegate* unmanaged[Cdecl]<ShaderId, ShaderParameterName, int*, void> _getShaderiv;
-    private delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void> _getShaderInfoLog;
-    private delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void> _getShaderSource;
-    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getUniformLocation;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, float*, void> _getUniformfv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, void> _getUniformiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, double*, void> _getVertexAttribdv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, float*, void> _getVertexAttribfv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, int*, void> _getVertexAttribiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerProperty, void**, void> _getVertexAttribPointerv;
-    private delegate* unmanaged[Cdecl]<ProgramId, byte> _isProgram;
-    private delegate* unmanaged[Cdecl]<ShaderId, byte> _isShader;
-    private delegate* unmanaged[Cdecl]<ProgramId, void> _linkProgram;
+    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void> _samplerParameterIiv;
+    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, uint*, void> _samplerParameterIuiv;
+    private delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void> _samplerParameteriv;
+    private delegate* unmanaged[Cdecl]<int, int, int, int, void> _scissor;
+    private delegate* unmanaged[Cdecl]<uint, int, int*, void> _scissorArrayv;
+    private delegate* unmanaged[Cdecl]<uint, int, int, int, int, void> _scissorIndexed;
+    private delegate* unmanaged[Cdecl]<uint, int*, void> _scissorIndexedv;
+    private delegate* unmanaged[Cdecl]<int, ShaderId*, ShaderBinaryFormat, void*, int, void> _shaderBinary;
     private delegate* unmanaged[Cdecl]<ShaderId, int, byte**, int*, void> _shaderSource;
-    private delegate* unmanaged[Cdecl]<ProgramId, void> _useProgram;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void> _shaderStorageBlockBinding;
+    private delegate* unmanaged[Cdecl]<ShaderId, byte*, uint, uint*, uint*, void> _specializeShader;
+    private delegate* unmanaged[Cdecl]<StencilFunction, int, uint, void> _stencilFunc;
+    private delegate* unmanaged[Cdecl]<TriangleFace, StencilFunction, int, uint, void> _stencilFuncSeparate;
+    private delegate* unmanaged[Cdecl]<uint, void> _stencilMask;
+    private delegate* unmanaged[Cdecl]<TriangleFace, uint, void> _stencilMaskSeparate;
+    private delegate* unmanaged[Cdecl]<StencilOpEnum, StencilOpEnum, StencilOpEnum, void> _stencilOp;
+    private delegate* unmanaged[Cdecl]<TriangleFace, StencilOpEnum, StencilOpEnum, StencilOpEnum, void> _stencilOpSeparate;
+    private delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, void> _texBuffer;
+    private delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, nint, nint, void> _texBufferRange;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, PixelFormat, PixelType, void*, void> _texImage1D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, PixelFormat, PixelType, void*, void> _texImage2D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, byte, void> _texImage2DMultisample;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, PixelFormat, PixelType, void*, void> _texImage3D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, byte, void> _texImage3DMultisample;
+    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float, void> _texParameterf;
+    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float*, void> _texParameterfv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int, void> _texParameteri;
+    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int*, void> _texParameterIiv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, uint*, void> _texParameterIuiv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int*, void> _texParameteriv;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, void> _texStorage1D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, void> _texStorage2D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, byte, void> _texStorage2DMultisample;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, int, void> _texStorage3D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, int, byte, void> _texStorage3DMultisample;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, PixelFormat, PixelType, void*, void> _texSubImage1D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, PixelFormat, PixelType, void*, void> _texSubImage2D;
+    private delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void> _texSubImage3D;
+    private delegate* unmanaged[Cdecl]<void> _textureBarrier;
+    private delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, void> _textureBuffer;
+    private delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, nint, nint, void> _textureBufferRange;
+    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, float, void> _textureParameterf;
+    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, float*, void> _textureParameterfv;
+    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int, void> _textureParameteri;
+    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int*, void> _textureParameterIiv;
+    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, uint*, void> _textureParameterIuiv;
+    private delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int*, void> _textureParameteriv;
+    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, void> _textureStorage1D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, void> _textureStorage2D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, byte, void> _textureStorage2DMultisample;
+    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, int, void> _textureStorage3D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, int, byte, void> _textureStorage3DMultisample;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, PixelFormat, PixelType, void*, void> _textureSubImage1D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, PixelFormat, PixelType, void*, void> _textureSubImage2D;
+    private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void> _textureSubImage3D;
+    private delegate* unmanaged[Cdecl]<TextureId, TextureTarget, TextureId, SizedInternalFormat, uint, uint, uint, uint, void> _textureView;
+    private delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, void> _transformFeedbackBufferBase;
+    private delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, nint, nint, void> _transformFeedbackBufferRange;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, byte**, TransformFeedbackBufferMode, void> _transformFeedbackVaryings;
+    private delegate* unmanaged[Cdecl]<int, double, void> _uniform1d;
+    private delegate* unmanaged[Cdecl]<int, int, double*, void> _uniform1dv;
     private delegate* unmanaged[Cdecl]<int, float, void> _uniform1f;
-    private delegate* unmanaged[Cdecl]<int, float, float, void> _uniform2f;
-    private delegate* unmanaged[Cdecl]<int, float, float, float, void> _uniform3f;
-    private delegate* unmanaged[Cdecl]<int, float, float, float, float, void> _uniform4f;
-    private delegate* unmanaged[Cdecl]<int, int, void> _uniform1i;
-    private delegate* unmanaged[Cdecl]<int, int, int, void> _uniform2i;
-    private delegate* unmanaged[Cdecl]<int, int, int, int, void> _uniform3i;
-    private delegate* unmanaged[Cdecl]<int, int, int, int, int, void> _uniform4i;
     private delegate* unmanaged[Cdecl]<int, int, float*, void> _uniform1fv;
-    private delegate* unmanaged[Cdecl]<int, int, float*, void> _uniform2fv;
-    private delegate* unmanaged[Cdecl]<int, int, float*, void> _uniform3fv;
-    private delegate* unmanaged[Cdecl]<int, int, float*, void> _uniform4fv;
+    private delegate* unmanaged[Cdecl]<int, int, void> _uniform1i;
     private delegate* unmanaged[Cdecl]<int, int, int*, void> _uniform1iv;
+    private delegate* unmanaged[Cdecl]<int, uint, void> _uniform1ui;
+    private delegate* unmanaged[Cdecl]<int, int, uint*, void> _uniform1uiv;
+    private delegate* unmanaged[Cdecl]<int, double, double, void> _uniform2d;
+    private delegate* unmanaged[Cdecl]<int, int, double*, void> _uniform2dv;
+    private delegate* unmanaged[Cdecl]<int, float, float, void> _uniform2f;
+    private delegate* unmanaged[Cdecl]<int, int, float*, void> _uniform2fv;
+    private delegate* unmanaged[Cdecl]<int, int, int, void> _uniform2i;
     private delegate* unmanaged[Cdecl]<int, int, int*, void> _uniform2iv;
+    private delegate* unmanaged[Cdecl]<int, uint, uint, void> _uniform2ui;
+    private delegate* unmanaged[Cdecl]<int, int, uint*, void> _uniform2uiv;
+    private delegate* unmanaged[Cdecl]<int, double, double, double, void> _uniform3d;
+    private delegate* unmanaged[Cdecl]<int, int, double*, void> _uniform3dv;
+    private delegate* unmanaged[Cdecl]<int, float, float, float, void> _uniform3f;
+    private delegate* unmanaged[Cdecl]<int, int, float*, void> _uniform3fv;
+    private delegate* unmanaged[Cdecl]<int, int, int, int, void> _uniform3i;
     private delegate* unmanaged[Cdecl]<int, int, int*, void> _uniform3iv;
+    private delegate* unmanaged[Cdecl]<int, uint, uint, uint, void> _uniform3ui;
+    private delegate* unmanaged[Cdecl]<int, int, uint*, void> _uniform3uiv;
+    private delegate* unmanaged[Cdecl]<int, double, double, double, double, void> _uniform4d;
+    private delegate* unmanaged[Cdecl]<int, int, double*, void> _uniform4dv;
+    private delegate* unmanaged[Cdecl]<int, float, float, float, float, void> _uniform4f;
+    private delegate* unmanaged[Cdecl]<int, int, float*, void> _uniform4fv;
+    private delegate* unmanaged[Cdecl]<int, int, int, int, int, void> _uniform4i;
     private delegate* unmanaged[Cdecl]<int, int, int*, void> _uniform4iv;
+    private delegate* unmanaged[Cdecl]<int, uint, uint, uint, uint, void> _uniform4ui;
+    private delegate* unmanaged[Cdecl]<int, int, uint*, void> _uniform4uiv;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void> _uniformBlockBinding;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix2dv;
     private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix2fv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix2x3dv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix2x3fv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix2x4dv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix2x4fv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix3dv;
     private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix3fv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix3x2dv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix3x2fv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix3x4dv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix3x4fv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix4dv;
     private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix4fv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix4x2dv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix4x2fv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix4x3dv;
+    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix4x3fv;
+    private delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void> _uniformSubroutinesuiv;
+    private delegate* unmanaged[Cdecl]<BufferTarget, byte> _unmapBuffer;
+    private delegate* unmanaged[Cdecl]<BufferId, byte> _unmapNamedBuffer;
+    private delegate* unmanaged[Cdecl]<ProgramId, void> _useProgram;
+    private delegate* unmanaged[Cdecl]<ProgramPipelineId, UseProgramStageMask, ProgramId, void> _useProgramStages;
     private delegate* unmanaged[Cdecl]<ProgramId, void> _validateProgram;
+    private delegate* unmanaged[Cdecl]<ProgramPipelineId, void> _validateProgramPipeline;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void> _vertexArrayAttribBinding;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribType, byte, uint, void> _vertexArrayAttribFormat;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribIType, uint, void> _vertexArrayAttribIFormat;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribLType, uint, void> _vertexArrayAttribLFormat;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void> _vertexArrayBindingDivisor;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, BufferId, void> _vertexArrayElementBuffer;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, BufferId, nint, int, void> _vertexArrayVertexBuffer;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, BufferId*, nint, int*, void> _vertexArrayVertexBuffers;
     private delegate* unmanaged[Cdecl]<uint, double, void> _vertexAttrib1d;
     private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttrib1dv;
     private delegate* unmanaged[Cdecl]<uint, float, void> _vertexAttrib1f;
@@ -524,6 +596,12 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<uint, float*, void> _vertexAttrib3fv;
     private delegate* unmanaged[Cdecl]<uint, short, short, short, void> _vertexAttrib3s;
     private delegate* unmanaged[Cdecl]<uint, short*, void> _vertexAttrib3sv;
+    private delegate* unmanaged[Cdecl]<uint, sbyte*, void> _vertexAttrib4bv;
+    private delegate* unmanaged[Cdecl]<uint, double, double, double, double, void> _vertexAttrib4d;
+    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttrib4dv;
+    private delegate* unmanaged[Cdecl]<uint, float, float, float, float, void> _vertexAttrib4f;
+    private delegate* unmanaged[Cdecl]<uint, float*, void> _vertexAttrib4fv;
+    private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttrib4iv;
     private delegate* unmanaged[Cdecl]<uint, sbyte*, void> _vertexAttrib4Nbv;
     private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttrib4Niv;
     private delegate* unmanaged[Cdecl]<uint, short*, void> _vertexAttrib4Nsv;
@@ -531,641 +609,635 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<uint, byte*, void> _vertexAttrib4Nubv;
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttrib4Nuiv;
     private delegate* unmanaged[Cdecl]<uint, ushort*, void> _vertexAttrib4Nusv;
-    private delegate* unmanaged[Cdecl]<uint, sbyte*, void> _vertexAttrib4bv;
-    private delegate* unmanaged[Cdecl]<uint, double, double, double, double, void> _vertexAttrib4d;
-    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttrib4dv;
-    private delegate* unmanaged[Cdecl]<uint, float, float, float, float, void> _vertexAttrib4f;
-    private delegate* unmanaged[Cdecl]<uint, float*, void> _vertexAttrib4fv;
-    private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttrib4iv;
     private delegate* unmanaged[Cdecl]<uint, short, short, short, short, void> _vertexAttrib4s;
     private delegate* unmanaged[Cdecl]<uint, short*, void> _vertexAttrib4sv;
     private delegate* unmanaged[Cdecl]<uint, byte*, void> _vertexAttrib4ubv;
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttrib4uiv;
     private delegate* unmanaged[Cdecl]<uint, ushort*, void> _vertexAttrib4usv;
-    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribPointerType, byte, int, void*, void> _vertexAttribPointer;
-    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix2x3fv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix3x2fv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix2x4fv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix4x2fv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix3x4fv;
-    private delegate* unmanaged[Cdecl]<int, int, byte, float*, void> _uniformMatrix4x3fv;
-    private delegate* unmanaged[Cdecl]<uint, byte, byte, byte, byte, void> _colorMaski;
-    private delegate* unmanaged[Cdecl]<BufferTarget, uint, byte*, void> _getBooleani_v;
-    private delegate* unmanaged[Cdecl]<GetPName, uint, int*, void> _getIntegeri_v;
-    private delegate* unmanaged[Cdecl]<EnableCap, uint, void> _enablei;
-    private delegate* unmanaged[Cdecl]<EnableCap, uint, void> _disablei;
-    private delegate* unmanaged[Cdecl]<EnableCap, uint, byte> _isEnabledi;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, void> _beginTransformFeedback;
-    private delegate* unmanaged[Cdecl]<void> _endTransformFeedback;
-    private delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, nint, nint, void> _bindBufferRange;
-    private delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, void> _bindBufferBase;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, byte**, TransformFeedbackBufferMode, void> _transformFeedbackVaryings;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void> _getTransformFeedbackVarying;
-    private delegate* unmanaged[Cdecl]<ClampColorTarget, ClampColorMode, void> _clampColor;
-    private delegate* unmanaged[Cdecl]<uint, ConditionalRenderMode, void> _beginConditionalRender;
-    private delegate* unmanaged[Cdecl]<void> _endConditionalRender;
-    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, int, void*, void> _vertexAttribIPointer;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, int*, void> _getVertexAttribIiv;
-    private delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, uint*, void> _getVertexAttribIuiv;
+    private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexAttribBinding;
+    private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexAttribDivisor;
+    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribType, byte, uint, void> _vertexAttribFormat;
     private delegate* unmanaged[Cdecl]<uint, int, void> _vertexAttribI1i;
-    private delegate* unmanaged[Cdecl]<uint, int, int, void> _vertexAttribI2i;
-    private delegate* unmanaged[Cdecl]<uint, int, int, int, void> _vertexAttribI3i;
-    private delegate* unmanaged[Cdecl]<uint, int, int, int, int, void> _vertexAttribI4i;
-    private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexAttribI1ui;
-    private delegate* unmanaged[Cdecl]<uint, uint, uint, void> _vertexAttribI2ui;
-    private delegate* unmanaged[Cdecl]<uint, uint, uint, uint, void> _vertexAttribI3ui;
-    private delegate* unmanaged[Cdecl]<uint, uint, uint, uint, uint, void> _vertexAttribI4ui;
     private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttribI1iv;
-    private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttribI2iv;
-    private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttribI3iv;
-    private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttribI4iv;
+    private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexAttribI1ui;
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttribI1uiv;
+    private delegate* unmanaged[Cdecl]<uint, int, int, void> _vertexAttribI2i;
+    private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttribI2iv;
+    private delegate* unmanaged[Cdecl]<uint, uint, uint, void> _vertexAttribI2ui;
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttribI2uiv;
+    private delegate* unmanaged[Cdecl]<uint, int, int, int, void> _vertexAttribI3i;
+    private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttribI3iv;
+    private delegate* unmanaged[Cdecl]<uint, uint, uint, uint, void> _vertexAttribI3ui;
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttribI3uiv;
-    private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttribI4uiv;
     private delegate* unmanaged[Cdecl]<uint, sbyte*, void> _vertexAttribI4bv;
+    private delegate* unmanaged[Cdecl]<uint, int, int, int, int, void> _vertexAttribI4i;
+    private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttribI4iv;
     private delegate* unmanaged[Cdecl]<uint, short*, void> _vertexAttribI4sv;
     private delegate* unmanaged[Cdecl]<uint, byte*, void> _vertexAttribI4ubv;
+    private delegate* unmanaged[Cdecl]<uint, uint, uint, uint, uint, void> _vertexAttribI4ui;
+    private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttribI4uiv;
     private delegate* unmanaged[Cdecl]<uint, ushort*, void> _vertexAttribI4usv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, uint*, void> _getUniformuiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void> _bindFragDataLocation;
-    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getFragDataLocation;
-    private delegate* unmanaged[Cdecl]<int, uint, void> _uniform1ui;
-    private delegate* unmanaged[Cdecl]<int, uint, uint, void> _uniform2ui;
-    private delegate* unmanaged[Cdecl]<int, uint, uint, uint, void> _uniform3ui;
-    private delegate* unmanaged[Cdecl]<int, uint, uint, uint, uint, void> _uniform4ui;
-    private delegate* unmanaged[Cdecl]<int, int, uint*, void> _uniform1uiv;
-    private delegate* unmanaged[Cdecl]<int, int, uint*, void> _uniform2uiv;
-    private delegate* unmanaged[Cdecl]<int, int, uint*, void> _uniform3uiv;
-    private delegate* unmanaged[Cdecl]<int, int, uint*, void> _uniform4uiv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int*, void> _texParameterIiv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, uint*, void> _texParameterIuiv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void> _getTexParameterIiv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, uint*, void> _getTexParameterIuiv;
-    private delegate* unmanaged[Cdecl]<Buffer, int, int*, void> _clearBufferiv;
-    private delegate* unmanaged[Cdecl]<Buffer, int, uint*, void> _clearBufferuiv;
-    private delegate* unmanaged[Cdecl]<Buffer, int, float*, void> _clearBufferfv;
-    private delegate* unmanaged[Cdecl]<Buffer, int, float, int, void> _clearBufferfi;
-    private delegate* unmanaged[Cdecl]<StringName, uint, nint> _getStringi;
-    private delegate* unmanaged[Cdecl]<RenderbufferId, byte> _isRenderbuffer;
-    private delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferId, void> _bindRenderbuffer;
-    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _deleteRenderbuffers;
-    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _genRenderbuffers;
-    private delegate* unmanaged[Cdecl]<RenderbufferTarget, InternalFormat, int, int, void> _renderbufferStorage;
-    private delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferParameterName, int*, void> _getRenderbufferParameteriv;
-    private delegate* unmanaged[Cdecl]<FramebufferId, byte> _isFramebuffer;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferId, void> _bindFramebuffer;
-    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _deleteFramebuffers;
-    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _genFramebuffers;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferStatus> _checkFramebufferStatus;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void> _framebufferTexture1D;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void> _framebufferTexture2D;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, int, void> _framebufferTexture3D;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void> _framebufferRenderbuffer;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void> _getFramebufferAttachmentParameteriv;
-    private delegate* unmanaged[Cdecl]<TextureTarget, void> _generateMipmap;
-    private delegate* unmanaged[Cdecl]<int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void> _blitFramebuffer;
-    private delegate* unmanaged[Cdecl]<RenderbufferTarget, int, InternalFormat, int, int, void> _renderbufferStorageMultisample;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureId, int, int, void> _framebufferTextureLayer;
-    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, MapBufferAccessMask, void*> _mapBufferRange;
-    private delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void> _flushMappedBufferRange;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, void> _bindVertexArray;
-    private delegate* unmanaged[Cdecl]<int, VertexArrayId*, void> _deleteVertexArrays;
-    private delegate* unmanaged[Cdecl]<int, VertexArrayId*, void> _genVertexArrays;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, byte> _isVertexArray;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, int, int, void> _drawArraysInstanced;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void> _drawElementsInstanced;
-    private delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, void> _texBuffer;
-    private delegate* unmanaged[Cdecl]<uint, void> _primitiveRestartIndex;
-    private delegate* unmanaged[Cdecl]<CopyBufferSubDataTarget, CopyBufferSubDataTarget, nint, nint, nint, void> _copyBufferSubData;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, byte**, uint*, void> _getUniformIndices;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, uint*, UniformPName, int*, void> _getActiveUniformsiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void> _getActiveUniformName;
-    private delegate* unmanaged[Cdecl]<ProgramId, byte*, uint> _getUniformBlockIndex;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, UniformBlockPName, int*, void> _getActiveUniformBlockiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void> _getActiveUniformBlockName;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void> _uniformBlockBinding;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void> _drawElementsBaseVertex;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, int, void> _drawRangeElementsBaseVertex;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, void> _drawElementsInstancedBaseVertex;
-    private delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, int*, void> _multiDrawElementsBaseVertex;
-    private delegate* unmanaged[Cdecl]<VertexProvokingMode, void> _provokingVertex;
-    private delegate* unmanaged[Cdecl]<SyncCondition, SyncBehaviorFlags, nint> _fenceSync;
-    private delegate* unmanaged[Cdecl]<nint, byte> _isSync;
-    private delegate* unmanaged[Cdecl]<nint, void> _deleteSync;
-    private delegate* unmanaged[Cdecl]<nint, SyncObjectMask, ulong, SyncStatus> _clientWaitSync;
+    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, uint, void> _vertexAttribIFormat;
+    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, int, void*, void> _vertexAttribIPointer;
+    private delegate* unmanaged[Cdecl]<uint, double, void> _vertexAttribL1d;
+    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttribL1dv;
+    private delegate* unmanaged[Cdecl]<uint, double, double, void> _vertexAttribL2d;
+    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttribL2dv;
+    private delegate* unmanaged[Cdecl]<uint, double, double, double, void> _vertexAttribL3d;
+    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttribL3dv;
+    private delegate* unmanaged[Cdecl]<uint, double, double, double, double, void> _vertexAttribL4d;
+    private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttribL4dv;
+    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribLType, uint, void> _vertexAttribLFormat;
+    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribLType, int, void*, void> _vertexAttribLPointer;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void> _vertexAttribP1ui;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void> _vertexAttribP1uiv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void> _vertexAttribP2ui;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void> _vertexAttribP2uiv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void> _vertexAttribP3ui;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void> _vertexAttribP3uiv;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void> _vertexAttribP4ui;
+    private delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void> _vertexAttribP4uiv;
+    private delegate* unmanaged[Cdecl]<uint, int, VertexAttribPointerType, byte, int, void*, void> _vertexAttribPointer;
+    private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexBindingDivisor;
+    private delegate* unmanaged[Cdecl]<int, int, int, int, void> _viewport;
+    private delegate* unmanaged[Cdecl]<uint, int, float*, void> _viewportArrayv;
+    private delegate* unmanaged[Cdecl]<uint, float, float, float, float, void> _viewportIndexedf;
+    private delegate* unmanaged[Cdecl]<uint, float*, void> _viewportIndexedfv;
     private delegate* unmanaged[Cdecl]<nint, SyncBehaviorFlags, ulong, void> _waitSync;
-    private delegate* unmanaged[Cdecl]<GetPName, long*, void> _getInteger64v;
-    private delegate* unmanaged[Cdecl]<nint, SyncParameterName, int, int*, int*, void> _getSynciv;
-    private delegate* unmanaged[Cdecl]<GetPName, uint, long*, void> _getInteger64i_v;
-    private delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, long*, void> _getBufferParameteri64v;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureId, int, void> _framebufferTexture;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, byte, void> _texImage2DMultisample;
-    private delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, byte, void> _texImage3DMultisample;
-    private delegate* unmanaged[Cdecl]<GetMultisamplePNameNV, uint, float*, void> _getMultisamplefv;
-    private delegate* unmanaged[Cdecl]<uint, uint, void> _sampleMaski;
 
     private void LoadFunctions()
     {
-        _cullFace = (delegate* unmanaged[Cdecl]<TriangleFace, void>)Load("glCullFace");
-        _frontFace = (delegate* unmanaged[Cdecl]<FrontFaceDirection, void>)Load("glFrontFace");
-        _hint = (delegate* unmanaged[Cdecl]<HintTarget, HintMode, void>)Load("glHint");
-        _lineWidth = (delegate* unmanaged[Cdecl]<float, void>)Load("glLineWidth");
-        _pointSize = (delegate* unmanaged[Cdecl]<float, void>)Load("glPointSize");
-        _polygonMode = (delegate* unmanaged[Cdecl]<TriangleFace, PolygonModeEnum, void>)Load("glPolygonMode");
-        _scissor = (delegate* unmanaged[Cdecl]<int, int, int, int, void>)Load("glScissor");
-        _texParameterf = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float, void>)Load("glTexParameterf");
-        _texParameterfv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float*, void>)Load("glTexParameterfv");
-        _texParameteri = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int, void>)Load("glTexParameteri");
-        _texParameteriv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int*, void>)Load("glTexParameteriv");
-        _texImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, PixelFormat, PixelType, void*, void>)Load("glTexImage1D");
-        _texImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexImage2D");
-        _drawBuffer = (delegate* unmanaged[Cdecl]<DrawBufferMode, void>)Load("glDrawBuffer");
-        _clear = (delegate* unmanaged[Cdecl]<ClearBufferMask, void>)Load("glClear");
-        _clearColor = (delegate* unmanaged[Cdecl]<float, float, float, float, void>)Load("glClearColor");
-        _clearStencil = (delegate* unmanaged[Cdecl]<int, void>)Load("glClearStencil");
-        _clearDepth = (delegate* unmanaged[Cdecl]<double, void>)Load("glClearDepth");
-        _stencilMask = (delegate* unmanaged[Cdecl]<uint, void>)Load("glStencilMask");
-        _colorMask = (delegate* unmanaged[Cdecl]<byte, byte, byte, byte, void>)Load("glColorMask");
-        _depthMask = (delegate* unmanaged[Cdecl]<byte, void>)Load("glDepthMask");
-        _disable = (delegate* unmanaged[Cdecl]<EnableCap, void>)Load("glDisable");
-        _enable = (delegate* unmanaged[Cdecl]<EnableCap, void>)Load("glEnable");
-        _finish = (delegate* unmanaged[Cdecl]<void>)Load("glFinish");
-        _flush = (delegate* unmanaged[Cdecl]<void>)Load("glFlush");
-        _blendFunc = (delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, void>)Load("glBlendFunc");
-        _logicOp = (delegate* unmanaged[Cdecl]<LogicOpEnum, void>)Load("glLogicOp");
-        _stencilFunc = (delegate* unmanaged[Cdecl]<StencilFunction, int, uint, void>)Load("glStencilFunc");
-        _stencilOp = (delegate* unmanaged[Cdecl]<StencilOpEnum, StencilOpEnum, StencilOpEnum, void>)Load("glStencilOp");
-        _depthFunc = (delegate* unmanaged[Cdecl]<DepthFunction, void>)Load("glDepthFunc");
-        _pixelStoref = (delegate* unmanaged[Cdecl]<PixelStoreParameter, float, void>)Load("glPixelStoref");
-        _pixelStorei = (delegate* unmanaged[Cdecl]<PixelStoreParameter, int, void>)Load("glPixelStorei");
-        _readBuffer = (delegate* unmanaged[Cdecl]<ReadBufferMode, void>)Load("glReadBuffer");
-        _readPixels = (delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glReadPixels");
-        _getBooleanv = (delegate* unmanaged[Cdecl]<GetPName, byte*, void>)Load("glGetBooleanv");
-        _getDoublev = (delegate* unmanaged[Cdecl]<GetPName, double*, void>)Load("glGetDoublev");
-        _getError = (delegate* unmanaged[Cdecl]<ErrorCode>)Load("glGetError");
-        _getFloatv = (delegate* unmanaged[Cdecl]<GetPName, float*, void>)Load("glGetFloatv");
-        _getIntegerv = (delegate* unmanaged[Cdecl]<GetPName, int*, void>)Load("glGetIntegerv");
-        _getString = (delegate* unmanaged[Cdecl]<StringName, nint>)Load("glGetString");
-        _getTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, void*, void>)Load("glGetTexImage");
-        _getTexParameterfv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, float*, void>)Load("glGetTexParameterfv");
-        _getTexParameteriv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void>)Load("glGetTexParameteriv");
-        _getTexLevelParameterfv = (delegate* unmanaged[Cdecl]<TextureTarget, int, GetTextureParameter, float*, void>)Load("glGetTexLevelParameterfv");
-        _getTexLevelParameteriv = (delegate* unmanaged[Cdecl]<TextureTarget, int, GetTextureParameter, int*, void>)Load("glGetTexLevelParameteriv");
-        _isEnabled = (delegate* unmanaged[Cdecl]<EnableCap, byte>)Load("glIsEnabled");
-        _depthRange = (delegate* unmanaged[Cdecl]<double, double, void>)Load("glDepthRange");
-        _viewport = (delegate* unmanaged[Cdecl]<int, int, int, int, void>)Load("glViewport");
-        _polygonOffsetClamp = (delegate* unmanaged[Cdecl]<float, float, float, void>)Load("glPolygonOffsetClamp");
-        _multiDrawElementsIndirectCount = (delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, nint, int, int, void>)Load("glMultiDrawElementsIndirectCount");
-        _multiDrawArraysIndirectCount = (delegate* unmanaged[Cdecl]<PrimitiveType, void*, nint, int, int, void>)Load("glMultiDrawArraysIndirectCount");
-        _specializeShader = (delegate* unmanaged[Cdecl]<ShaderId, byte*, uint, uint*, uint*, void>)Load("glSpecializeShader");
-        _textureBarrier = (delegate* unmanaged[Cdecl]<void>)Load("glTextureBarrier");
-        _readnPixels = (delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, int, void*, void>)Load("glReadnPixels");
-        _getnUniformuiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glGetnUniformuiv");
-        _getnUniformiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glGetnUniformiv");
-        _getnUniformfv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glGetnUniformfv");
-        _getnUniformdv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glGetnUniformdv");
-        _getnTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, int, void*, void>)Load("glGetnTexImage");
-        _getnCompressedTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, void*, void>)Load("glGetnCompressedTexImage");
-        _getGraphicsResetStatus = (delegate* unmanaged[Cdecl]<GraphicsResetStatus>)Load("glGetGraphicsResetStatus");
-        _getCompressedTextureSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, int, void*, void>)Load("glGetCompressedTextureSubImage");
-        _getTextureSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, int, void*, void>)Load("glGetTextureSubImage");
-        _memoryBarrierByRegion = (delegate* unmanaged[Cdecl]<MemoryBarrierMask, void>)Load("glMemoryBarrierByRegion");
-        _getQueryBufferObjectuiv = (delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void>)Load("glGetQueryBufferObjectuiv");
-        _getQueryBufferObjectui64v = (delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void>)Load("glGetQueryBufferObjectui64v");
-        _getQueryBufferObjectiv = (delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void>)Load("glGetQueryBufferObjectiv");
-        _getQueryBufferObjecti64v = (delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void>)Load("glGetQueryBufferObjecti64v");
-        _createQueries = (delegate* unmanaged[Cdecl]<QueryTarget, int, QueryId*, void>)Load("glCreateQueries");
-        _createProgramPipelines = (delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void>)Load("glCreateProgramPipelines");
-        _createSamplers = (delegate* unmanaged[Cdecl]<int, SamplerId*, void>)Load("glCreateSamplers");
-        _getVertexArrayIndexed64iv = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, VertexArrayPName, long*, void>)Load("glGetVertexArrayIndexed64iv");
-        _getVertexArrayIndexediv = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, VertexArrayPName, int*, void>)Load("glGetVertexArrayIndexediv");
-        _getVertexArrayiv = (delegate* unmanaged[Cdecl]<VertexArrayId, VertexArrayPName, int*, void>)Load("glGetVertexArrayiv");
-        _vertexArrayBindingDivisor = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void>)Load("glVertexArrayBindingDivisor");
-        _vertexArrayAttribLFormat = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribLType, uint, void>)Load("glVertexArrayAttribLFormat");
-        _vertexArrayAttribIFormat = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribIType, uint, void>)Load("glVertexArrayAttribIFormat");
-        _vertexArrayAttribFormat = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribType, byte, uint, void>)Load("glVertexArrayAttribFormat");
-        _vertexArrayAttribBinding = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void>)Load("glVertexArrayAttribBinding");
-        _vertexArrayVertexBuffers = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, BufferId*, nint, int*, void>)Load("glVertexArrayVertexBuffers");
-        _vertexArrayVertexBuffer = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, BufferId, nint, int, void>)Load("glVertexArrayVertexBuffer");
-        _vertexArrayElementBuffer = (delegate* unmanaged[Cdecl]<VertexArrayId, BufferId, void>)Load("glVertexArrayElementBuffer");
-        _enableVertexArrayAttrib = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, void>)Load("glEnableVertexArrayAttrib");
-        _disableVertexArrayAttrib = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, void>)Load("glDisableVertexArrayAttrib");
-        _createVertexArrays = (delegate* unmanaged[Cdecl]<int, VertexArrayId*, void>)Load("glCreateVertexArrays");
-        _getTextureParameteriv = (delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, int*, void>)Load("glGetTextureParameteriv");
-        _getTextureParameterIuiv = (delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, uint*, void>)Load("glGetTextureParameterIuiv");
-        _getTextureParameterIiv = (delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, int*, void>)Load("glGetTextureParameterIiv");
-        _getTextureParameterfv = (delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, float*, void>)Load("glGetTextureParameterfv");
-        _getTextureLevelParameteriv = (delegate* unmanaged[Cdecl]<TextureId, int, GetTextureParameter, int*, void>)Load("glGetTextureLevelParameteriv");
-        _getTextureLevelParameterfv = (delegate* unmanaged[Cdecl]<TextureId, int, GetTextureParameter, float*, void>)Load("glGetTextureLevelParameterfv");
-        _getCompressedTextureImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, void*, void>)Load("glGetCompressedTextureImage");
-        _getTextureImage = (delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, int, void*, void>)Load("glGetTextureImage");
+        _activeShaderProgram = (delegate* unmanaged[Cdecl]<ProgramPipelineId, ProgramId, void>)Load("glActiveShaderProgram");
+        _activeTexture = (delegate* unmanaged[Cdecl]<TextureUnit, void>)Load("glActiveTexture");
+        _attachShader = (delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void>)Load("glAttachShader");
+        _beginConditionalRender = (delegate* unmanaged[Cdecl]<uint, ConditionalRenderMode, void>)Load("glBeginConditionalRender");
+        _beginQuery = (delegate* unmanaged[Cdecl]<QueryTarget, QueryId, void>)Load("glBeginQuery");
+        _beginQueryIndexed = (delegate* unmanaged[Cdecl]<QueryTarget, uint, QueryId, void>)Load("glBeginQueryIndexed");
+        _beginTransformFeedback = (delegate* unmanaged[Cdecl]<PrimitiveType, void>)Load("glBeginTransformFeedback");
+        _bindAttribLocation = (delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void>)Load("glBindAttribLocation");
+        _bindBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, BufferId, void>)Load("glBindBuffer");
+        _bindBufferBase = (delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, void>)Load("glBindBufferBase");
+        _bindBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, nint, nint, void>)Load("glBindBufferRange");
+        _bindBuffersBase = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, void>)Load("glBindBuffersBase");
+        _bindBuffersRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, nint, nint, void>)Load("glBindBuffersRange");
+        _bindFragDataLocation = (delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void>)Load("glBindFragDataLocation");
+        _bindFragDataLocationIndexed = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, byte*, void>)Load("glBindFragDataLocationIndexed");
+        _bindFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferId, void>)Load("glBindFramebuffer");
+        _bindImageTexture = (delegate* unmanaged[Cdecl]<uint, TextureId, int, byte, int, BufferAccess, InternalFormat, void>)Load("glBindImageTexture");
+        _bindImageTextures = (delegate* unmanaged[Cdecl]<uint, int, TextureId*, void>)Load("glBindImageTextures");
+        _bindProgramPipeline = (delegate* unmanaged[Cdecl]<ProgramPipelineId, void>)Load("glBindProgramPipeline");
+        _bindRenderbuffer = (delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferId, void>)Load("glBindRenderbuffer");
+        _bindSampler = (delegate* unmanaged[Cdecl]<uint, SamplerId, void>)Load("glBindSampler");
+        _bindSamplers = (delegate* unmanaged[Cdecl]<uint, int, SamplerId*, void>)Load("glBindSamplers");
+        _bindTexture = (delegate* unmanaged[Cdecl]<TextureTarget, TextureId, void>)Load("glBindTexture");
+        _bindTextures = (delegate* unmanaged[Cdecl]<uint, int, TextureId*, void>)Load("glBindTextures");
         _bindTextureUnit = (delegate* unmanaged[Cdecl]<uint, TextureId, void>)Load("glBindTextureUnit");
-        _generateTextureMipmap = (delegate* unmanaged[Cdecl]<TextureId, void>)Load("glGenerateTextureMipmap");
-        _textureParameteriv = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int*, void>)Load("glTextureParameteriv");
-        _textureParameterIuiv = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, uint*, void>)Load("glTextureParameterIuiv");
-        _textureParameterIiv = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int*, void>)Load("glTextureParameterIiv");
-        _textureParameteri = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int, void>)Load("glTextureParameteri");
-        _textureParameterfv = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, float*, void>)Load("glTextureParameterfv");
-        _textureParameterf = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, float, void>)Load("glTextureParameterf");
-        _copyTextureSubImage3D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, int, void>)Load("glCopyTextureSubImage3D");
-        _copyTextureSubImage2D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, void>)Load("glCopyTextureSubImage2D");
-        _copyTextureSubImage1D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, void>)Load("glCopyTextureSubImage1D");
-        _compressedTextureSubImage3D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTextureSubImage3D");
-        _compressedTextureSubImage2D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTextureSubImage2D");
-        _compressedTextureSubImage1D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTextureSubImage1D");
-        _textureSubImage3D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTextureSubImage3D");
-        _textureSubImage2D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTextureSubImage2D");
-        _textureSubImage1D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTextureSubImage1D");
-        _textureStorage3DMultisample = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, int, byte, void>)Load("glTextureStorage3DMultisample");
-        _textureStorage2DMultisample = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, byte, void>)Load("glTextureStorage2DMultisample");
-        _textureStorage3D = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, int, void>)Load("glTextureStorage3D");
-        _textureStorage2D = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, void>)Load("glTextureStorage2D");
-        _textureStorage1D = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, void>)Load("glTextureStorage1D");
-        _textureBufferRange = (delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, nint, nint, void>)Load("glTextureBufferRange");
-        _textureBuffer = (delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, void>)Load("glTextureBuffer");
-        _createTextures = (delegate* unmanaged[Cdecl]<TextureTarget, int, TextureId*, void>)Load("glCreateTextures");
-        _getNamedRenderbufferParameteriv = (delegate* unmanaged[Cdecl]<RenderbufferId, RenderbufferParameterName, int*, void>)Load("glGetNamedRenderbufferParameteriv");
-        _namedRenderbufferStorageMultisample = (delegate* unmanaged[Cdecl]<RenderbufferId, int, InternalFormat, int, int, void>)Load("glNamedRenderbufferStorageMultisample");
-        _namedRenderbufferStorage = (delegate* unmanaged[Cdecl]<RenderbufferId, InternalFormat, int, int, void>)Load("glNamedRenderbufferStorage");
-        _createRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glCreateRenderbuffers");
-        _getNamedFramebufferAttachmentParameteriv = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void>)Load("glGetNamedFramebufferAttachmentParameteriv");
-        _getNamedFramebufferParameteriv = (delegate* unmanaged[Cdecl]<FramebufferId, GetFramebufferParameter, int*, void>)Load("glGetNamedFramebufferParameteriv");
-        _checkNamedFramebufferStatus = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferTarget, FramebufferStatus>)Load("glCheckNamedFramebufferStatus");
+        _bindTransformFeedback = (delegate* unmanaged[Cdecl]<BindTransformFeedbackTarget, TransformFeedbackId, void>)Load("glBindTransformFeedback");
+        _bindVertexArray = (delegate* unmanaged[Cdecl]<VertexArrayId, void>)Load("glBindVertexArray");
+        _bindVertexBuffer = (delegate* unmanaged[Cdecl]<uint, BufferId, nint, int, void>)Load("glBindVertexBuffer");
+        _bindVertexBuffers = (delegate* unmanaged[Cdecl]<uint, int, BufferId*, nint, int*, void>)Load("glBindVertexBuffers");
+        _blendColor = (delegate* unmanaged[Cdecl]<float, float, float, float, void>)Load("glBlendColor");
+        _blendEquation = (delegate* unmanaged[Cdecl]<BlendEquationModeEXT, void>)Load("glBlendEquation");
+        _blendEquationi = (delegate* unmanaged[Cdecl]<uint, BlendEquationModeEXT, void>)Load("glBlendEquationi");
+        _blendEquationSeparate = (delegate* unmanaged[Cdecl]<BlendEquationModeEXT, BlendEquationModeEXT, void>)Load("glBlendEquationSeparate");
+        _blendEquationSeparatei = (delegate* unmanaged[Cdecl]<uint, BlendEquationModeEXT, BlendEquationModeEXT, void>)Load("glBlendEquationSeparatei");
+        _blendFunc = (delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, void>)Load("glBlendFunc");
+        _blendFunci = (delegate* unmanaged[Cdecl]<uint, BlendingFactor, BlendingFactor, void>)Load("glBlendFunci");
+        _blendFuncSeparate = (delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void>)Load("glBlendFuncSeparate");
+        _blendFuncSeparatei = (delegate* unmanaged[Cdecl]<uint, BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void>)Load("glBlendFuncSeparatei");
+        _blitFramebuffer = (delegate* unmanaged[Cdecl]<int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void>)Load("glBlitFramebuffer");
         _blitNamedFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferId, int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void>)Load("glBlitNamedFramebuffer");
+        _bufferData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, void*, BufferUsage, void>)Load("glBufferData");
+        _bufferStorage = (delegate* unmanaged[Cdecl]<BufferStorageTarget, nint, void*, BufferStorageMask, void>)Load("glBufferStorage");
+        _bufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void>)Load("glBufferSubData");
+        _checkFramebufferStatus = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferStatus>)Load("glCheckFramebufferStatus");
+        _checkNamedFramebufferStatus = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferTarget, FramebufferStatus>)Load("glCheckNamedFramebufferStatus");
+        _clampColor = (delegate* unmanaged[Cdecl]<ClampColorTarget, ClampColorMode, void>)Load("glClampColor");
+        _clear = (delegate* unmanaged[Cdecl]<ClearBufferMask, void>)Load("glClear");
+        _clearBufferData = (delegate* unmanaged[Cdecl]<BufferStorageTarget, SizedInternalFormat, PixelFormat, PixelType, void*, void>)Load("glClearBufferData");
+        _clearBufferfi = (delegate* unmanaged[Cdecl]<Buffer, int, float, int, void>)Load("glClearBufferfi");
+        _clearBufferfv = (delegate* unmanaged[Cdecl]<Buffer, int, float*, void>)Load("glClearBufferfv");
+        _clearBufferiv = (delegate* unmanaged[Cdecl]<Buffer, int, int*, void>)Load("glClearBufferiv");
+        _clearBufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void>)Load("glClearBufferSubData");
+        _clearBufferuiv = (delegate* unmanaged[Cdecl]<Buffer, int, uint*, void>)Load("glClearBufferuiv");
+        _clearColor = (delegate* unmanaged[Cdecl]<float, float, float, float, void>)Load("glClearColor");
+        _clearDepth = (delegate* unmanaged[Cdecl]<double, void>)Load("glClearDepth");
+        _clearDepthf = (delegate* unmanaged[Cdecl]<float, void>)Load("glClearDepthf");
+        _clearNamedBufferData = (delegate* unmanaged[Cdecl]<BufferId, SizedInternalFormat, PixelFormat, PixelType, void*, void>)Load("glClearNamedBufferData");
+        _clearNamedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void>)Load("glClearNamedBufferSubData");
         _clearNamedFramebufferfi = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, float, int, void>)Load("glClearNamedFramebufferfi");
         _clearNamedFramebufferfv = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, float*, void>)Load("glClearNamedFramebufferfv");
-        _clearNamedFramebufferuiv = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, uint*, void>)Load("glClearNamedFramebufferuiv");
         _clearNamedFramebufferiv = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, int*, void>)Load("glClearNamedFramebufferiv");
-        _invalidateNamedFramebufferSubData = (delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, int, int, int, int, void>)Load("glInvalidateNamedFramebufferSubData");
-        _invalidateNamedFramebufferData = (delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, void>)Load("glInvalidateNamedFramebufferData");
-        _namedFramebufferReadBuffer = (delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void>)Load("glNamedFramebufferReadBuffer");
-        _namedFramebufferDrawBuffers = (delegate* unmanaged[Cdecl]<FramebufferId, int, ColorBuffer*, void>)Load("glNamedFramebufferDrawBuffers");
-        _namedFramebufferDrawBuffer = (delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void>)Load("glNamedFramebufferDrawBuffer");
-        _namedFramebufferTextureLayer = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, int, void>)Load("glNamedFramebufferTextureLayer");
-        _namedFramebufferTexture = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, void>)Load("glNamedFramebufferTexture");
-        _namedFramebufferParameteri = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferParameterName, int, void>)Load("glNamedFramebufferParameteri");
-        _namedFramebufferRenderbuffer = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void>)Load("glNamedFramebufferRenderbuffer");
-        _createFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glCreateFramebuffers");
-        _getNamedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void>)Load("glGetNamedBufferSubData");
-        _getNamedBufferPointerv = (delegate* unmanaged[Cdecl]<BufferId, BufferPointerName, void**, void>)Load("glGetNamedBufferPointerv");
-        _getNamedBufferParameteri64v = (delegate* unmanaged[Cdecl]<BufferId, BufferPName, long*, void>)Load("glGetNamedBufferParameteri64v");
-        _getNamedBufferParameteriv = (delegate* unmanaged[Cdecl]<BufferId, BufferPName, int*, void>)Load("glGetNamedBufferParameteriv");
-        _flushMappedNamedBufferRange = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void>)Load("glFlushMappedNamedBufferRange");
-        _unmapNamedBuffer = (delegate* unmanaged[Cdecl]<BufferId, byte>)Load("glUnmapNamedBuffer");
-        _mapNamedBufferRange = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, MapBufferAccessMask, void*>)Load("glMapNamedBufferRange");
-        _mapNamedBuffer = (delegate* unmanaged[Cdecl]<BufferId, BufferAccess, void*>)Load("glMapNamedBuffer");
-        _clearNamedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void>)Load("glClearNamedBufferSubData");
-        _clearNamedBufferData = (delegate* unmanaged[Cdecl]<BufferId, SizedInternalFormat, PixelFormat, PixelType, void*, void>)Load("glClearNamedBufferData");
-        _copyNamedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, BufferId, nint, nint, nint, void>)Load("glCopyNamedBufferSubData");
-        _namedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void>)Load("glNamedBufferSubData");
-        _namedBufferData = (delegate* unmanaged[Cdecl]<BufferId, nint, void*, BufferUsage, void>)Load("glNamedBufferData");
-        _namedBufferStorage = (delegate* unmanaged[Cdecl]<BufferId, nint, void*, BufferStorageMask, void>)Load("glNamedBufferStorage");
-        _createBuffers = (delegate* unmanaged[Cdecl]<int, BufferId*, void>)Load("glCreateBuffers");
-        _getTransformFeedbacki64_v = (delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, uint, long*, void>)Load("glGetTransformFeedbacki64_v");
-        _getTransformFeedbacki_v = (delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, uint, int*, void>)Load("glGetTransformFeedbacki_v");
-        _getTransformFeedbackiv = (delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, int*, void>)Load("glGetTransformFeedbackiv");
-        _transformFeedbackBufferRange = (delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, nint, nint, void>)Load("glTransformFeedbackBufferRange");
-        _transformFeedbackBufferBase = (delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, void>)Load("glTransformFeedbackBufferBase");
-        _createTransformFeedbacks = (delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void>)Load("glCreateTransformFeedbacks");
-        _clipControl = (delegate* unmanaged[Cdecl]<ClipControlOrigin, ClipControlDepth, void>)Load("glClipControl");
-        _bindVertexBuffers = (delegate* unmanaged[Cdecl]<uint, int, BufferId*, nint, int*, void>)Load("glBindVertexBuffers");
-        _bindImageTextures = (delegate* unmanaged[Cdecl]<uint, int, TextureId*, void>)Load("glBindImageTextures");
-        _bindSamplers = (delegate* unmanaged[Cdecl]<uint, int, SamplerId*, void>)Load("glBindSamplers");
-        _bindTextures = (delegate* unmanaged[Cdecl]<uint, int, TextureId*, void>)Load("glBindTextures");
-        _bindBuffersRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, nint, nint, void>)Load("glBindBuffersRange");
-        _bindBuffersBase = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, void>)Load("glBindBuffersBase");
-        _clearTexSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glClearTexSubImage");
+        _clearNamedFramebufferuiv = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, uint*, void>)Load("glClearNamedFramebufferuiv");
+        _clearStencil = (delegate* unmanaged[Cdecl]<int, void>)Load("glClearStencil");
         _clearTexImage = (delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, void*, void>)Load("glClearTexImage");
-        _bufferStorage = (delegate* unmanaged[Cdecl]<BufferStorageTarget, nint, void*, BufferStorageMask, void>)Load("glBufferStorage");
-        _getPointerv = (delegate* unmanaged[Cdecl]<GetPointervPName, void**, void>)Load("glGetPointerv");
-        _getObjectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, int*, byte*, void>)Load("glGetObjectPtrLabel");
-        _objectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, byte*, void>)Load("glObjectPtrLabel");
-        _getObjectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, byte*, void>)Load("glGetObjectLabel");
-        _objectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, byte*, void>)Load("glObjectLabel");
-        _popDebugGroup = (delegate* unmanaged[Cdecl]<void>)Load("glPopDebugGroup");
-        _pushDebugGroup = (delegate* unmanaged[Cdecl]<DebugSource, uint, int, byte*, void>)Load("glPushDebugGroup");
-        _getDebugMessageLog = (delegate* unmanaged[Cdecl]<uint, int, DebugSource*, DebugType*, uint*, DebugSeverity*, int*, byte*, uint>)Load("glGetDebugMessageLog");
-        _debugMessageCallback = (delegate* unmanaged[Cdecl]<DebugProc, void*, void>)Load("glDebugMessageCallback");
-        _debugMessageInsert = (delegate* unmanaged[Cdecl]<DebugSource, DebugType, uint, DebugSeverity, int, byte*, void>)Load("glDebugMessageInsert");
-        _debugMessageControl = (delegate* unmanaged[Cdecl]<DebugSource, DebugType, DebugSeverity, int, uint*, byte, void>)Load("glDebugMessageControl");
-        _vertexBindingDivisor = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexBindingDivisor");
-        _vertexAttribBinding = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexAttribBinding");
-        _vertexAttribLFormat = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribLType, uint, void>)Load("glVertexAttribLFormat");
-        _vertexAttribIFormat = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, uint, void>)Load("glVertexAttribIFormat");
-        _vertexAttribFormat = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribType, byte, uint, void>)Load("glVertexAttribFormat");
-        _bindVertexBuffer = (delegate* unmanaged[Cdecl]<uint, BufferId, nint, int, void>)Load("glBindVertexBuffer");
-        _textureView = (delegate* unmanaged[Cdecl]<TextureId, TextureTarget, TextureId, SizedInternalFormat, uint, uint, uint, uint, void>)Load("glTextureView");
-        _texStorage3DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, int, byte, void>)Load("glTexStorage3DMultisample");
-        _texStorage2DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, byte, void>)Load("glTexStorage2DMultisample");
-        _texBufferRange = (delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, nint, nint, void>)Load("glTexBufferRange");
-        _shaderStorageBlockBinding = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void>)Load("glShaderStorageBlockBinding");
-        _getProgramResourceLocationIndex = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int>)Load("glGetProgramResourceLocationIndex");
-        _getProgramResourceLocation = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int>)Load("glGetProgramResourceLocation");
-        _getProgramResourceiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, ProgramResourceProperty*, int, int*, int*, void>)Load("glGetProgramResourceiv");
-        _getProgramResourceName = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, int*, byte*, void>)Load("glGetProgramResourceName");
-        _getProgramResourceIndex = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, uint>)Load("glGetProgramResourceIndex");
-        _getProgramInterfaceiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, ProgramInterfacePName, int*, void>)Load("glGetProgramInterfaceiv");
-        _multiDrawElementsIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, int, int, void>)Load("glMultiDrawElementsIndirect");
-        _multiDrawArraysIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, void*, int, int, void>)Load("glMultiDrawArraysIndirect");
-        _invalidateSubFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, int, InvalidateFramebufferAttachment*, int, int, int, int, void>)Load("glInvalidateSubFramebuffer");
-        _invalidateFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, int, InvalidateFramebufferAttachment*, void>)Load("glInvalidateFramebuffer");
-        _invalidateBufferData = (delegate* unmanaged[Cdecl]<BufferId, void>)Load("glInvalidateBufferData");
-        _invalidateBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void>)Load("glInvalidateBufferSubData");
-        _invalidateTexImage = (delegate* unmanaged[Cdecl]<TextureId, int, void>)Load("glInvalidateTexImage");
-        _invalidateTexSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, void>)Load("glInvalidateTexSubImage");
-        _getInternalformati64v = (delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, long*, void>)Load("glGetInternalformati64v");
-        _getFramebufferParameteriv = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachmentParameterName, int*, void>)Load("glGetFramebufferParameteriv");
-        _framebufferParameteri = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferParameterName, int, void>)Load("glFramebufferParameteri");
+        _clearTexSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glClearTexSubImage");
+        _clientWaitSync = (delegate* unmanaged[Cdecl]<nint, SyncObjectMask, ulong, SyncStatus>)Load("glClientWaitSync");
+        _clipControl = (delegate* unmanaged[Cdecl]<ClipControlOrigin, ClipControlDepth, void>)Load("glClipControl");
+        _colorMask = (delegate* unmanaged[Cdecl]<byte, byte, byte, byte, void>)Load("glColorMask");
+        _colorMaski = (delegate* unmanaged[Cdecl]<uint, byte, byte, byte, byte, void>)Load("glColorMaski");
+        _compileShader = (delegate* unmanaged[Cdecl]<ShaderId, void>)Load("glCompileShader");
+        _compressedTexImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, void*, void>)Load("glCompressedTexImage1D");
+        _compressedTexImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, void*, void>)Load("glCompressedTexImage2D");
+        _compressedTexImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, int, void*, void>)Load("glCompressedTexImage3D");
+        _compressedTexSubImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTexSubImage1D");
+        _compressedTexSubImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTexSubImage2D");
+        _compressedTexSubImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTexSubImage3D");
+        _compressedTextureSubImage1D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTextureSubImage1D");
+        _compressedTextureSubImage2D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTextureSubImage2D");
+        _compressedTextureSubImage3D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTextureSubImage3D");
+        _copyBufferSubData = (delegate* unmanaged[Cdecl]<CopyBufferSubDataTarget, CopyBufferSubDataTarget, nint, nint, nint, void>)Load("glCopyBufferSubData");
         _copyImageSubData = (delegate* unmanaged[Cdecl]<uint, CopyImageSubDataTarget, int, int, int, int, uint, CopyImageSubDataTarget, int, int, int, int, int, int, int, void>)Load("glCopyImageSubData");
-        _dispatchComputeIndirect = (delegate* unmanaged[Cdecl]<nint, void>)Load("glDispatchComputeIndirect");
-        _dispatchCompute = (delegate* unmanaged[Cdecl]<uint, uint, uint, void>)Load("glDispatchCompute");
-        _clearBufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, SizedInternalFormat, nint, nint, PixelFormat, PixelType, void*, void>)Load("glClearBufferSubData");
-        _clearBufferData = (delegate* unmanaged[Cdecl]<BufferStorageTarget, SizedInternalFormat, PixelFormat, PixelType, void*, void>)Load("glClearBufferData");
-        _drawTransformFeedbackStreamInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, uint, int, void>)Load("glDrawTransformFeedbackStreamInstanced");
-        _drawTransformFeedbackInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, int, void>)Load("glDrawTransformFeedbackInstanced");
-        _texStorage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, int, void>)Load("glTexStorage3D");
-        _texStorage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, void>)Load("glTexStorage2D");
-        _texStorage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, void>)Load("glTexStorage1D");
-        _memoryBarrier = (delegate* unmanaged[Cdecl]<MemoryBarrierMask, void>)Load("glMemoryBarrier");
-        _bindImageTexture = (delegate* unmanaged[Cdecl]<uint, TextureId, int, byte, int, BufferAccess, InternalFormat, void>)Load("glBindImageTexture");
-        _getActiveAtomicCounterBufferiv = (delegate* unmanaged[Cdecl]<ProgramId, uint, AtomicCounterBufferPName, int*, void>)Load("glGetActiveAtomicCounterBufferiv");
-        _getInternalformativ = (delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, int*, void>)Load("glGetInternalformativ");
-        _drawElementsInstancedBaseVertexBaseInstance = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, uint, void>)Load("glDrawElementsInstancedBaseVertexBaseInstance");
-        _drawElementsInstancedBaseInstance = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, uint, void>)Load("glDrawElementsInstancedBaseInstance");
-        _drawArraysInstancedBaseInstance = (delegate* unmanaged[Cdecl]<PrimitiveType, int, int, int, uint, void>)Load("glDrawArraysInstancedBaseInstance");
-        _getDoublei_v = (delegate* unmanaged[Cdecl]<GetPName, uint, double*, void>)Load("glGetDoublei_v");
-        _getFloati_v = (delegate* unmanaged[Cdecl]<GetPName, uint, float*, void>)Load("glGetFloati_v");
-        _depthRangeIndexed = (delegate* unmanaged[Cdecl]<uint, double, double, void>)Load("glDepthRangeIndexed");
-        _depthRangeArrayv = (delegate* unmanaged[Cdecl]<uint, int, double*, void>)Load("glDepthRangeArrayv");
-        _scissorIndexedv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glScissorIndexedv");
-        _scissorIndexed = (delegate* unmanaged[Cdecl]<uint, int, int, int, int, void>)Load("glScissorIndexed");
-        _scissorArrayv = (delegate* unmanaged[Cdecl]<uint, int, int*, void>)Load("glScissorArrayv");
-        _viewportIndexedfv = (delegate* unmanaged[Cdecl]<uint, float*, void>)Load("glViewportIndexedfv");
-        _viewportIndexedf = (delegate* unmanaged[Cdecl]<uint, float, float, float, float, void>)Load("glViewportIndexedf");
-        _viewportArrayv = (delegate* unmanaged[Cdecl]<uint, int, float*, void>)Load("glViewportArrayv");
-        _getVertexAttribLdv = (delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, double*, void>)Load("glGetVertexAttribLdv");
-        _vertexAttribLPointer = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribLType, int, void*, void>)Load("glVertexAttribLPointer");
-        _vertexAttribL4dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttribL4dv");
-        _vertexAttribL3dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttribL3dv");
-        _vertexAttribL2dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttribL2dv");
-        _vertexAttribL1dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttribL1dv");
-        _vertexAttribL4d = (delegate* unmanaged[Cdecl]<uint, double, double, double, double, void>)Load("glVertexAttribL4d");
-        _vertexAttribL3d = (delegate* unmanaged[Cdecl]<uint, double, double, double, void>)Load("glVertexAttribL3d");
-        _vertexAttribL2d = (delegate* unmanaged[Cdecl]<uint, double, double, void>)Load("glVertexAttribL2d");
-        _vertexAttribL1d = (delegate* unmanaged[Cdecl]<uint, double, void>)Load("glVertexAttribL1d");
-        _getProgramPipelineInfoLog = (delegate* unmanaged[Cdecl]<ProgramPipelineId, int, int*, byte*, void>)Load("glGetProgramPipelineInfoLog");
-        _validateProgramPipeline = (delegate* unmanaged[Cdecl]<ProgramPipelineId, void>)Load("glValidateProgramPipeline");
-        _programUniformMatrix4x3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix4x3dv");
-        _programUniformMatrix3x4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix3x4dv");
-        _programUniformMatrix4x2dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix4x2dv");
-        _programUniformMatrix2x4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix2x4dv");
-        _programUniformMatrix3x2dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix3x2dv");
-        _programUniformMatrix2x3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix2x3dv");
-        _programUniformMatrix4x3fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix4x3fv");
-        _programUniformMatrix3x4fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix3x4fv");
-        _programUniformMatrix4x2fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix4x2fv");
-        _programUniformMatrix2x4fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix2x4fv");
-        _programUniformMatrix3x2fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix3x2fv");
-        _programUniformMatrix2x3fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix2x3fv");
-        _programUniformMatrix4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix4dv");
-        _programUniformMatrix3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix3dv");
-        _programUniformMatrix2dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix2dv");
-        _programUniformMatrix4fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix4fv");
-        _programUniformMatrix3fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix3fv");
-        _programUniformMatrix2fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix2fv");
-        _programUniform4uiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glProgramUniform4uiv");
-        _programUniform4ui = (delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, uint, uint, void>)Load("glProgramUniform4ui");
-        _programUniform4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glProgramUniform4dv");
-        _programUniform4d = (delegate* unmanaged[Cdecl]<ProgramId, int, double, double, double, double, void>)Load("glProgramUniform4d");
-        _programUniform4fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glProgramUniform4fv");
-        _programUniform4f = (delegate* unmanaged[Cdecl]<ProgramId, int, float, float, float, float, void>)Load("glProgramUniform4f");
-        _programUniform4iv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glProgramUniform4iv");
-        _programUniform4i = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int, int, int, void>)Load("glProgramUniform4i");
-        _programUniform3uiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glProgramUniform3uiv");
-        _programUniform3ui = (delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, uint, void>)Load("glProgramUniform3ui");
-        _programUniform3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glProgramUniform3dv");
-        _programUniform3d = (delegate* unmanaged[Cdecl]<ProgramId, int, double, double, double, void>)Load("glProgramUniform3d");
-        _programUniform3fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glProgramUniform3fv");
-        _programUniform3f = (delegate* unmanaged[Cdecl]<ProgramId, int, float, float, float, void>)Load("glProgramUniform3f");
-        _programUniform3iv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glProgramUniform3iv");
-        _programUniform3i = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int, int, void>)Load("glProgramUniform3i");
-        _programUniform2uiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glProgramUniform2uiv");
-        _programUniform2ui = (delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, void>)Load("glProgramUniform2ui");
-        _programUniform2dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glProgramUniform2dv");
-        _programUniform2d = (delegate* unmanaged[Cdecl]<ProgramId, int, double, double, void>)Load("glProgramUniform2d");
-        _programUniform2fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glProgramUniform2fv");
-        _programUniform2f = (delegate* unmanaged[Cdecl]<ProgramId, int, float, float, void>)Load("glProgramUniform2f");
-        _programUniform2iv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glProgramUniform2iv");
-        _programUniform2i = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int, void>)Load("glProgramUniform2i");
-        _programUniform1uiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glProgramUniform1uiv");
-        _programUniform1ui = (delegate* unmanaged[Cdecl]<ProgramId, int, uint, void>)Load("glProgramUniform1ui");
-        _programUniform1dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glProgramUniform1dv");
-        _programUniform1d = (delegate* unmanaged[Cdecl]<ProgramId, int, double, void>)Load("glProgramUniform1d");
-        _programUniform1fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glProgramUniform1fv");
-        _programUniform1f = (delegate* unmanaged[Cdecl]<ProgramId, int, float, void>)Load("glProgramUniform1f");
-        _drawArrays = (delegate* unmanaged[Cdecl]<PrimitiveType, int, int, void>)Load("glDrawArrays");
-        _drawElements = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, void>)Load("glDrawElements");
-        _bindProgramPipeline = (delegate* unmanaged[Cdecl]<ProgramPipelineId, void>)Load("glBindProgramPipeline");
-        _polygonOffset = (delegate* unmanaged[Cdecl]<float, float, void>)Load("glPolygonOffset");
+        _copyNamedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, BufferId, nint, nint, nint, void>)Load("glCopyNamedBufferSubData");
         _copyTexImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, void>)Load("glCopyTexImage1D");
         _copyTexImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, int, void>)Load("glCopyTexImage2D");
         _copyTexSubImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, void>)Load("glCopyTexSubImage1D");
         _copyTexSubImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, void>)Load("glCopyTexSubImage2D");
-        _texSubImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexSubImage1D");
-        _texSubImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexSubImage2D");
-        _bindTexture = (delegate* unmanaged[Cdecl]<TextureTarget, TextureId, void>)Load("glBindTexture");
-        _deleteTextures = (delegate* unmanaged[Cdecl]<int, TextureId*, void>)Load("glDeleteTextures");
-        _genTextures = (delegate* unmanaged[Cdecl]<int, TextureId*, void>)Load("glGenTextures");
-        _isTexture = (delegate* unmanaged[Cdecl]<TextureId, byte>)Load("glIsTexture");
-        _programUniform1iv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glProgramUniform1iv");
-        _programUniform1i = (delegate* unmanaged[Cdecl]<ProgramId, int, int, void>)Load("glProgramUniform1i");
-        _getProgramPipelineiv = (delegate* unmanaged[Cdecl]<ProgramPipelineId, PipelineParameterName, int*, void>)Load("glGetProgramPipelineiv");
-        _isProgramPipeline = (delegate* unmanaged[Cdecl]<ProgramPipelineId, byte>)Load("glIsProgramPipeline");
-        _genProgramPipelines = (delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void>)Load("glGenProgramPipelines");
-        _deleteProgramPipelines = (delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void>)Load("glDeleteProgramPipelines");
-        _createShaderProgramv = (delegate* unmanaged[Cdecl]<ShaderType, int, byte**, ProgramId>)Load("glCreateShaderProgramv");
-        _activeShaderProgram = (delegate* unmanaged[Cdecl]<ProgramPipelineId, ProgramId, void>)Load("glActiveShaderProgram");
-        _useProgramStages = (delegate* unmanaged[Cdecl]<ProgramPipelineId, UseProgramStageMask, ProgramId, void>)Load("glUseProgramStages");
-        _programParameteri = (delegate* unmanaged[Cdecl]<ProgramId, ProgramParameterPName, int, void>)Load("glProgramParameteri");
-        _programBinary = (delegate* unmanaged[Cdecl]<ProgramId, Enum, void*, int, void>)Load("glProgramBinary");
-        _getProgramBinary = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, Enum*, void*, void>)Load("glGetProgramBinary");
-        _clearDepthf = (delegate* unmanaged[Cdecl]<float, void>)Load("glClearDepthf");
-        _depthRangef = (delegate* unmanaged[Cdecl]<float, float, void>)Load("glDepthRangef");
-        _getShaderPrecisionFormat = (delegate* unmanaged[Cdecl]<ShaderType, PrecisionType, int*, int*, void>)Load("glGetShaderPrecisionFormat");
-        _shaderBinary = (delegate* unmanaged[Cdecl]<int, ShaderId*, ShaderBinaryFormat, void*, int, void>)Load("glShaderBinary");
-        _drawRangeElements = (delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, void>)Load("glDrawRangeElements");
-        _texImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexImage3D");
-        _texSubImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexSubImage3D");
         _copyTexSubImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, int, void>)Load("glCopyTexSubImage3D");
-        _activeTexture = (delegate* unmanaged[Cdecl]<TextureUnit, void>)Load("glActiveTexture");
-        _sampleCoverage = (delegate* unmanaged[Cdecl]<float, byte, void>)Load("glSampleCoverage");
-        _compressedTexImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, int, void*, void>)Load("glCompressedTexImage3D");
-        _compressedTexImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, void*, void>)Load("glCompressedTexImage2D");
-        _compressedTexImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, void*, void>)Load("glCompressedTexImage1D");
-        _compressedTexSubImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTexSubImage3D");
-        _compressedTexSubImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTexSubImage2D");
-        _compressedTexSubImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, InternalFormat, int, void*, void>)Load("glCompressedTexSubImage1D");
-        _getCompressedTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, void*, void>)Load("glGetCompressedTexImage");
-        _releaseShaderCompiler = (delegate* unmanaged[Cdecl]<void>)Load("glReleaseShaderCompiler");
-        _getQueryIndexediv = (delegate* unmanaged[Cdecl]<QueryTarget, uint, QueryParameterName, int*, void>)Load("glGetQueryIndexediv");
-        _endQueryIndexed = (delegate* unmanaged[Cdecl]<QueryTarget, uint, void>)Load("glEndQueryIndexed");
-        _beginQueryIndexed = (delegate* unmanaged[Cdecl]<QueryTarget, uint, QueryId, void>)Load("glBeginQueryIndexed");
-        _drawTransformFeedbackStream = (delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, uint, void>)Load("glDrawTransformFeedbackStream");
-        _drawTransformFeedback = (delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, void>)Load("glDrawTransformFeedback");
-        _resumeTransformFeedback = (delegate* unmanaged[Cdecl]<void>)Load("glResumeTransformFeedback");
-        _pauseTransformFeedback = (delegate* unmanaged[Cdecl]<void>)Load("glPauseTransformFeedback");
-        _isTransformFeedback = (delegate* unmanaged[Cdecl]<TransformFeedbackId, byte>)Load("glIsTransformFeedback");
-        _genTransformFeedbacks = (delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void>)Load("glGenTransformFeedbacks");
+        _copyTextureSubImage1D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, void>)Load("glCopyTextureSubImage1D");
+        _copyTextureSubImage2D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, void>)Load("glCopyTextureSubImage2D");
+        _copyTextureSubImage3D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, int, void>)Load("glCopyTextureSubImage3D");
+        _createBuffers = (delegate* unmanaged[Cdecl]<int, BufferId*, void>)Load("glCreateBuffers");
+        _createFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glCreateFramebuffers");
+        _createProgram = (delegate* unmanaged[Cdecl]<ProgramId>)Load("glCreateProgram");
+        _createProgramPipelines = (delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void>)Load("glCreateProgramPipelines");
+        _createQueries = (delegate* unmanaged[Cdecl]<QueryTarget, int, QueryId*, void>)Load("glCreateQueries");
+        _createRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glCreateRenderbuffers");
+        _createSamplers = (delegate* unmanaged[Cdecl]<int, SamplerId*, void>)Load("glCreateSamplers");
+        _createShader = (delegate* unmanaged[Cdecl]<ShaderType, ShaderId>)Load("glCreateShader");
+        _createShaderProgramv = (delegate* unmanaged[Cdecl]<ShaderType, int, byte**, ProgramId>)Load("glCreateShaderProgramv");
+        _createTextures = (delegate* unmanaged[Cdecl]<TextureTarget, int, TextureId*, void>)Load("glCreateTextures");
+        _createTransformFeedbacks = (delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void>)Load("glCreateTransformFeedbacks");
+        _createVertexArrays = (delegate* unmanaged[Cdecl]<int, VertexArrayId*, void>)Load("glCreateVertexArrays");
+        _cullFace = (delegate* unmanaged[Cdecl]<TriangleFace, void>)Load("glCullFace");
+        _debugMessageCallback = (delegate* unmanaged[Cdecl]<DebugProc, void*, void>)Load("glDebugMessageCallback");
+        _debugMessageControl = (delegate* unmanaged[Cdecl]<DebugSource, DebugType, DebugSeverity, int, uint*, byte, void>)Load("glDebugMessageControl");
+        _debugMessageInsert = (delegate* unmanaged[Cdecl]<DebugSource, DebugType, uint, DebugSeverity, int, byte*, void>)Load("glDebugMessageInsert");
+        _deleteBuffers = (delegate* unmanaged[Cdecl]<int, BufferId*, void>)Load("glDeleteBuffers");
+        _deleteFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glDeleteFramebuffers");
+        _deleteProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glDeleteProgram");
+        _deleteProgramPipelines = (delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void>)Load("glDeleteProgramPipelines");
+        _deleteQueries = (delegate* unmanaged[Cdecl]<int, QueryId*, void>)Load("glDeleteQueries");
+        _deleteRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glDeleteRenderbuffers");
+        _deleteSamplers = (delegate* unmanaged[Cdecl]<int, SamplerId*, void>)Load("glDeleteSamplers");
+        _deleteShader = (delegate* unmanaged[Cdecl]<ShaderId, void>)Load("glDeleteShader");
+        _deleteSync = (delegate* unmanaged[Cdecl]<nint, void>)Load("glDeleteSync");
+        _deleteTextures = (delegate* unmanaged[Cdecl]<int, TextureId*, void>)Load("glDeleteTextures");
         _deleteTransformFeedbacks = (delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void>)Load("glDeleteTransformFeedbacks");
-        _bindTransformFeedback = (delegate* unmanaged[Cdecl]<BindTransformFeedbackTarget, TransformFeedbackId, void>)Load("glBindTransformFeedback");
-        _patchParameterfv = (delegate* unmanaged[Cdecl]<PatchParameterName, float*, void>)Load("glPatchParameterfv");
-        _patchParameteri = (delegate* unmanaged[Cdecl]<PatchParameterName, int, void>)Load("glPatchParameteri");
-        _getProgramStageiv = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, ProgramStagePName, int*, void>)Load("glGetProgramStageiv");
-        _getUniformSubroutineuiv = (delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void>)Load("glGetUniformSubroutineuiv");
-        _uniformSubroutinesuiv = (delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void>)Load("glUniformSubroutinesuiv");
+        _deleteVertexArrays = (delegate* unmanaged[Cdecl]<int, VertexArrayId*, void>)Load("glDeleteVertexArrays");
+        _depthFunc = (delegate* unmanaged[Cdecl]<DepthFunction, void>)Load("glDepthFunc");
+        _depthMask = (delegate* unmanaged[Cdecl]<byte, void>)Load("glDepthMask");
+        _depthRange = (delegate* unmanaged[Cdecl]<double, double, void>)Load("glDepthRange");
+        _depthRangeArrayv = (delegate* unmanaged[Cdecl]<uint, int, double*, void>)Load("glDepthRangeArrayv");
+        _depthRangef = (delegate* unmanaged[Cdecl]<float, float, void>)Load("glDepthRangef");
+        _depthRangeIndexed = (delegate* unmanaged[Cdecl]<uint, double, double, void>)Load("glDepthRangeIndexed");
+        _detachShader = (delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void>)Load("glDetachShader");
+        _disable = (delegate* unmanaged[Cdecl]<EnableCap, void>)Load("glDisable");
+        _disablei = (delegate* unmanaged[Cdecl]<EnableCap, uint, void>)Load("glDisablei");
+        _disableVertexArrayAttrib = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, void>)Load("glDisableVertexArrayAttrib");
+        _disableVertexAttribArray = (delegate* unmanaged[Cdecl]<uint, void>)Load("glDisableVertexAttribArray");
+        _dispatchCompute = (delegate* unmanaged[Cdecl]<uint, uint, uint, void>)Load("glDispatchCompute");
+        _dispatchComputeIndirect = (delegate* unmanaged[Cdecl]<nint, void>)Load("glDispatchComputeIndirect");
+        _drawArrays = (delegate* unmanaged[Cdecl]<PrimitiveType, int, int, void>)Load("glDrawArrays");
+        _drawArraysIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, void*, void>)Load("glDrawArraysIndirect");
+        _drawArraysInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, int, int, int, void>)Load("glDrawArraysInstanced");
+        _drawArraysInstancedBaseInstance = (delegate* unmanaged[Cdecl]<PrimitiveType, int, int, int, uint, void>)Load("glDrawArraysInstancedBaseInstance");
+        _drawBuffer = (delegate* unmanaged[Cdecl]<DrawBufferMode, void>)Load("glDrawBuffer");
+        _drawBuffers = (delegate* unmanaged[Cdecl]<int, DrawBufferMode*, void>)Load("glDrawBuffers");
+        _drawElements = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, void>)Load("glDrawElements");
+        _drawElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void>)Load("glDrawElementsBaseVertex");
+        _drawElementsIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, void>)Load("glDrawElementsIndirect");
+        _drawElementsInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void>)Load("glDrawElementsInstanced");
+        _drawElementsInstancedBaseInstance = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, uint, void>)Load("glDrawElementsInstancedBaseInstance");
+        _drawElementsInstancedBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, void>)Load("glDrawElementsInstancedBaseVertex");
+        _drawElementsInstancedBaseVertexBaseInstance = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, uint, void>)Load("glDrawElementsInstancedBaseVertexBaseInstance");
+        _drawRangeElements = (delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, void>)Load("glDrawRangeElements");
+        _drawRangeElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, int, void>)Load("glDrawRangeElementsBaseVertex");
+        _drawTransformFeedback = (delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, void>)Load("glDrawTransformFeedback");
+        _drawTransformFeedbackInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, int, void>)Load("glDrawTransformFeedbackInstanced");
+        _drawTransformFeedbackStream = (delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, uint, void>)Load("glDrawTransformFeedbackStream");
+        _drawTransformFeedbackStreamInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, TransformFeedbackId, uint, int, void>)Load("glDrawTransformFeedbackStreamInstanced");
+        _enable = (delegate* unmanaged[Cdecl]<EnableCap, void>)Load("glEnable");
+        _enablei = (delegate* unmanaged[Cdecl]<EnableCap, uint, void>)Load("glEnablei");
+        _enableVertexArrayAttrib = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, void>)Load("glEnableVertexArrayAttrib");
+        _enableVertexAttribArray = (delegate* unmanaged[Cdecl]<uint, void>)Load("glEnableVertexAttribArray");
+        _endConditionalRender = (delegate* unmanaged[Cdecl]<void>)Load("glEndConditionalRender");
+        _endQuery = (delegate* unmanaged[Cdecl]<QueryTarget, void>)Load("glEndQuery");
+        _endQueryIndexed = (delegate* unmanaged[Cdecl]<QueryTarget, uint, void>)Load("glEndQueryIndexed");
+        _endTransformFeedback = (delegate* unmanaged[Cdecl]<void>)Load("glEndTransformFeedback");
+        _fenceSync = (delegate* unmanaged[Cdecl]<SyncCondition, SyncBehaviorFlags, nint>)Load("glFenceSync");
+        _finish = (delegate* unmanaged[Cdecl]<void>)Load("glFinish");
+        _flush = (delegate* unmanaged[Cdecl]<void>)Load("glFlush");
+        _flushMappedBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void>)Load("glFlushMappedBufferRange");
+        _flushMappedNamedBufferRange = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void>)Load("glFlushMappedNamedBufferRange");
+        _framebufferParameteri = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferParameterName, int, void>)Load("glFramebufferParameteri");
+        _framebufferRenderbuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void>)Load("glFramebufferRenderbuffer");
+        _framebufferTexture = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureId, int, void>)Load("glFramebufferTexture");
+        _framebufferTexture1D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void>)Load("glFramebufferTexture1D");
+        _framebufferTexture2D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void>)Load("glFramebufferTexture2D");
+        _framebufferTexture3D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, int, void>)Load("glFramebufferTexture3D");
+        _framebufferTextureLayer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureId, int, int, void>)Load("glFramebufferTextureLayer");
+        _frontFace = (delegate* unmanaged[Cdecl]<FrontFaceDirection, void>)Load("glFrontFace");
+        _genBuffers = (delegate* unmanaged[Cdecl]<int, BufferId*, void>)Load("glGenBuffers");
+        _generateMipmap = (delegate* unmanaged[Cdecl]<TextureTarget, void>)Load("glGenerateMipmap");
+        _generateTextureMipmap = (delegate* unmanaged[Cdecl]<TextureId, void>)Load("glGenerateTextureMipmap");
+        _genFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glGenFramebuffers");
+        _genProgramPipelines = (delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void>)Load("glGenProgramPipelines");
+        _genQueries = (delegate* unmanaged[Cdecl]<int, QueryId*, void>)Load("glGenQueries");
+        _genRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glGenRenderbuffers");
+        _genSamplers = (delegate* unmanaged[Cdecl]<int, SamplerId*, void>)Load("glGenSamplers");
+        _genTextures = (delegate* unmanaged[Cdecl]<int, TextureId*, void>)Load("glGenTextures");
+        _genTransformFeedbacks = (delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void>)Load("glGenTransformFeedbacks");
+        _genVertexArrays = (delegate* unmanaged[Cdecl]<int, VertexArrayId*, void>)Load("glGenVertexArrays");
+        _getActiveAtomicCounterBufferiv = (delegate* unmanaged[Cdecl]<ProgramId, uint, AtomicCounterBufferPName, int*, void>)Load("glGetActiveAtomicCounterBufferiv");
+        _getActiveAttrib = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void>)Load("glGetActiveAttrib");
         _getActiveSubroutineName = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void>)Load("glGetActiveSubroutineName");
-        _getActiveSubroutineUniformName = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void>)Load("glGetActiveSubroutineUniformName");
         _getActiveSubroutineUniformiv = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, SubroutineParameterName, int*, void>)Load("glGetActiveSubroutineUniformiv");
+        _getActiveSubroutineUniformName = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void>)Load("glGetActiveSubroutineUniformName");
+        _getActiveUniform = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, UniformType*, byte*, void>)Load("glGetActiveUniform");
+        _getActiveUniformBlockiv = (delegate* unmanaged[Cdecl]<ProgramId, uint, UniformBlockPName, int*, void>)Load("glGetActiveUniformBlockiv");
+        _getActiveUniformBlockName = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void>)Load("glGetActiveUniformBlockName");
+        _getActiveUniformName = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void>)Load("glGetActiveUniformName");
+        _getActiveUniformsiv = (delegate* unmanaged[Cdecl]<ProgramId, int, uint*, UniformPName, int*, void>)Load("glGetActiveUniformsiv");
+        _getAttachedShaders = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, ShaderId*, void>)Load("glGetAttachedShaders");
+        _getAttribLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetAttribLocation");
+        _getBooleani_v = (delegate* unmanaged[Cdecl]<BufferTarget, uint, byte*, void>)Load("glGetBooleani_v");
+        _getBooleanv = (delegate* unmanaged[Cdecl]<GetPName, byte*, void>)Load("glGetBooleanv");
+        _getBufferParameteri64v = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, long*, void>)Load("glGetBufferParameteri64v");
+        _getBufferParameteriv = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, int*, void>)Load("glGetBufferParameteriv");
+        _getBufferPointerv = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPointerName, void**, void>)Load("glGetBufferPointerv");
+        _getBufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void>)Load("glGetBufferSubData");
+        _getCompressedTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, void*, void>)Load("glGetCompressedTexImage");
+        _getCompressedTextureImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, void*, void>)Load("glGetCompressedTextureImage");
+        _getCompressedTextureSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, int, void*, void>)Load("glGetCompressedTextureSubImage");
+        _getDebugMessageLog = (delegate* unmanaged[Cdecl]<uint, int, DebugSource*, DebugType*, uint*, DebugSeverity*, int*, byte*, uint>)Load("glGetDebugMessageLog");
+        _getDoublei_v = (delegate* unmanaged[Cdecl]<GetPName, uint, double*, void>)Load("glGetDoublei_v");
+        _getDoublev = (delegate* unmanaged[Cdecl]<GetPName, double*, void>)Load("glGetDoublev");
+        _getError = (delegate* unmanaged[Cdecl]<ErrorCode>)Load("glGetError");
+        _getFloati_v = (delegate* unmanaged[Cdecl]<GetPName, uint, float*, void>)Load("glGetFloati_v");
+        _getFloatv = (delegate* unmanaged[Cdecl]<GetPName, float*, void>)Load("glGetFloatv");
+        _getFragDataIndex = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetFragDataIndex");
+        _getFragDataLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetFragDataLocation");
+        _getFramebufferAttachmentParameteriv = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void>)Load("glGetFramebufferAttachmentParameteriv");
+        _getFramebufferParameteriv = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachmentParameterName, int*, void>)Load("glGetFramebufferParameteriv");
+        _getGraphicsResetStatus = (delegate* unmanaged[Cdecl]<GraphicsResetStatus>)Load("glGetGraphicsResetStatus");
+        _getInteger64i_v = (delegate* unmanaged[Cdecl]<GetPName, uint, long*, void>)Load("glGetInteger64i_v");
+        _getInteger64v = (delegate* unmanaged[Cdecl]<GetPName, long*, void>)Load("glGetInteger64v");
+        _getIntegeri_v = (delegate* unmanaged[Cdecl]<GetPName, uint, int*, void>)Load("glGetIntegeri_v");
+        _getIntegerv = (delegate* unmanaged[Cdecl]<GetPName, int*, void>)Load("glGetIntegerv");
+        _getInternalformati64v = (delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, long*, void>)Load("glGetInternalformati64v");
+        _getInternalformativ = (delegate* unmanaged[Cdecl]<TextureTarget, InternalFormat, InternalFormatPName, int, int*, void>)Load("glGetInternalformativ");
+        _getMultisamplefv = (delegate* unmanaged[Cdecl]<GetMultisamplePNameNV, uint, float*, void>)Load("glGetMultisamplefv");
+        _getNamedBufferParameteri64v = (delegate* unmanaged[Cdecl]<BufferId, BufferPName, long*, void>)Load("glGetNamedBufferParameteri64v");
+        _getNamedBufferParameteriv = (delegate* unmanaged[Cdecl]<BufferId, BufferPName, int*, void>)Load("glGetNamedBufferParameteriv");
+        _getNamedBufferPointerv = (delegate* unmanaged[Cdecl]<BufferId, BufferPointerName, void**, void>)Load("glGetNamedBufferPointerv");
+        _getNamedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void>)Load("glGetNamedBufferSubData");
+        _getNamedFramebufferAttachmentParameteriv = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void>)Load("glGetNamedFramebufferAttachmentParameteriv");
+        _getNamedFramebufferParameteriv = (delegate* unmanaged[Cdecl]<FramebufferId, GetFramebufferParameter, int*, void>)Load("glGetNamedFramebufferParameteriv");
+        _getNamedRenderbufferParameteriv = (delegate* unmanaged[Cdecl]<RenderbufferId, RenderbufferParameterName, int*, void>)Load("glGetNamedRenderbufferParameteriv");
+        _getnCompressedTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, void*, void>)Load("glGetnCompressedTexImage");
+        _getnTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, int, void*, void>)Load("glGetnTexImage");
+        _getnUniformdv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glGetnUniformdv");
+        _getnUniformfv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glGetnUniformfv");
+        _getnUniformiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glGetnUniformiv");
+        _getnUniformuiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glGetnUniformuiv");
+        _getObjectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, byte*, void>)Load("glGetObjectLabel");
+        _getObjectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, int*, byte*, void>)Load("glGetObjectPtrLabel");
+        _getPointerv = (delegate* unmanaged[Cdecl]<GetPointervPName, void**, void>)Load("glGetPointerv");
+        _getProgramBinary = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, Enum*, void*, void>)Load("glGetProgramBinary");
+        _getProgramInfoLog = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, byte*, void>)Load("glGetProgramInfoLog");
+        _getProgramInterfaceiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, ProgramInterfacePName, int*, void>)Load("glGetProgramInterfaceiv");
+        _getProgramiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramProperty, int*, void>)Load("glGetProgramiv");
+        _getProgramPipelineInfoLog = (delegate* unmanaged[Cdecl]<ProgramPipelineId, int, int*, byte*, void>)Load("glGetProgramPipelineInfoLog");
+        _getProgramPipelineiv = (delegate* unmanaged[Cdecl]<ProgramPipelineId, PipelineParameterName, int*, void>)Load("glGetProgramPipelineiv");
+        _getProgramResourceIndex = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, uint>)Load("glGetProgramResourceIndex");
+        _getProgramResourceiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, ProgramResourceProperty*, int, int*, int*, void>)Load("glGetProgramResourceiv");
+        _getProgramResourceLocation = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int>)Load("glGetProgramResourceLocation");
+        _getProgramResourceLocationIndex = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int>)Load("glGetProgramResourceLocationIndex");
+        _getProgramResourceName = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, int*, byte*, void>)Load("glGetProgramResourceName");
+        _getProgramStageiv = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, ProgramStagePName, int*, void>)Load("glGetProgramStageiv");
+        _getQueryBufferObjecti64v = (delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void>)Load("glGetQueryBufferObjecti64v");
+        _getQueryBufferObjectiv = (delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void>)Load("glGetQueryBufferObjectiv");
+        _getQueryBufferObjectui64v = (delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void>)Load("glGetQueryBufferObjectui64v");
+        _getQueryBufferObjectuiv = (delegate* unmanaged[Cdecl]<QueryId, BufferId, QueryObjectParameterName, nint, void>)Load("glGetQueryBufferObjectuiv");
+        _getQueryIndexediv = (delegate* unmanaged[Cdecl]<QueryTarget, uint, QueryParameterName, int*, void>)Load("glGetQueryIndexediv");
+        _getQueryiv = (delegate* unmanaged[Cdecl]<QueryTarget, QueryParameterName, int*, void>)Load("glGetQueryiv");
+        _getQueryObjecti64v = (delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, long*, void>)Load("glGetQueryObjecti64v");
+        _getQueryObjectiv = (delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, int*, void>)Load("glGetQueryObjectiv");
+        _getQueryObjectui64v = (delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, ulong*, void>)Load("glGetQueryObjectui64v");
+        _getQueryObjectuiv = (delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, uint*, void>)Load("glGetQueryObjectuiv");
+        _getRenderbufferParameteriv = (delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferParameterName, int*, void>)Load("glGetRenderbufferParameteriv");
+        _getSamplerParameterfv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float*, void>)Load("glGetSamplerParameterfv");
+        _getSamplerParameterIiv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void>)Load("glGetSamplerParameterIiv");
+        _getSamplerParameterIuiv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, uint*, void>)Load("glGetSamplerParameterIuiv");
+        _getSamplerParameteriv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void>)Load("glGetSamplerParameteriv");
+        _getShaderInfoLog = (delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void>)Load("glGetShaderInfoLog");
+        _getShaderiv = (delegate* unmanaged[Cdecl]<ShaderId, ShaderParameterName, int*, void>)Load("glGetShaderiv");
+        _getShaderPrecisionFormat = (delegate* unmanaged[Cdecl]<ShaderType, PrecisionType, int*, int*, void>)Load("glGetShaderPrecisionFormat");
+        _getShaderSource = (delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void>)Load("glGetShaderSource");
+        _getString = (delegate* unmanaged[Cdecl]<StringName, nint>)Load("glGetString");
+        _getStringi = (delegate* unmanaged[Cdecl]<StringName, uint, nint>)Load("glGetStringi");
         _getSubroutineIndex = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, byte*, uint>)Load("glGetSubroutineIndex");
         _getSubroutineUniformLocation = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, byte*, int>)Load("glGetSubroutineUniformLocation");
+        _getSynciv = (delegate* unmanaged[Cdecl]<nint, SyncParameterName, int, int*, int*, void>)Load("glGetSynciv");
+        _getTexImage = (delegate* unmanaged[Cdecl]<TextureTarget, int, PixelFormat, PixelType, void*, void>)Load("glGetTexImage");
+        _getTexLevelParameterfv = (delegate* unmanaged[Cdecl]<TextureTarget, int, GetTextureParameter, float*, void>)Load("glGetTexLevelParameterfv");
+        _getTexLevelParameteriv = (delegate* unmanaged[Cdecl]<TextureTarget, int, GetTextureParameter, int*, void>)Load("glGetTexLevelParameteriv");
+        _getTexParameterfv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, float*, void>)Load("glGetTexParameterfv");
+        _getTexParameterIiv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void>)Load("glGetTexParameterIiv");
+        _getTexParameterIuiv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, uint*, void>)Load("glGetTexParameterIuiv");
+        _getTexParameteriv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void>)Load("glGetTexParameteriv");
+        _getTextureImage = (delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, int, void*, void>)Load("glGetTextureImage");
+        _getTextureLevelParameterfv = (delegate* unmanaged[Cdecl]<TextureId, int, GetTextureParameter, float*, void>)Load("glGetTextureLevelParameterfv");
+        _getTextureLevelParameteriv = (delegate* unmanaged[Cdecl]<TextureId, int, GetTextureParameter, int*, void>)Load("glGetTextureLevelParameteriv");
+        _getTextureParameterfv = (delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, float*, void>)Load("glGetTextureParameterfv");
+        _getTextureParameterIiv = (delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, int*, void>)Load("glGetTextureParameterIiv");
+        _getTextureParameterIuiv = (delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, uint*, void>)Load("glGetTextureParameterIuiv");
+        _getTextureParameteriv = (delegate* unmanaged[Cdecl]<TextureId, GetTextureParameter, int*, void>)Load("glGetTextureParameteriv");
+        _getTextureSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, int, void*, void>)Load("glGetTextureSubImage");
+        _getTransformFeedbacki_v = (delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, uint, int*, void>)Load("glGetTransformFeedbacki_v");
+        _getTransformFeedbacki64_v = (delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, uint, long*, void>)Load("glGetTransformFeedbacki64_v");
+        _getTransformFeedbackiv = (delegate* unmanaged[Cdecl]<TransformFeedbackId, TransformFeedbackPName, int*, void>)Load("glGetTransformFeedbackiv");
+        _getTransformFeedbackVarying = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void>)Load("glGetTransformFeedbackVarying");
+        _getUniformBlockIndex = (delegate* unmanaged[Cdecl]<ProgramId, byte*, uint>)Load("glGetUniformBlockIndex");
         _getUniformdv = (delegate* unmanaged[Cdecl]<ProgramId, int, double*, void>)Load("glGetUniformdv");
-        _uniformMatrix4x3dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix4x3dv");
-        _uniformMatrix4x2dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix4x2dv");
-        _uniformMatrix3x4dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix3x4dv");
-        _uniformMatrix3x2dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix3x2dv");
-        _uniformMatrix2x4dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix2x4dv");
-        _uniformMatrix2x3dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix2x3dv");
-        _uniformMatrix4dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix4dv");
-        _uniformMatrix3dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix3dv");
-        _uniformMatrix2dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix2dv");
-        _uniform4dv = (delegate* unmanaged[Cdecl]<int, int, double*, void>)Load("glUniform4dv");
-        _uniform3dv = (delegate* unmanaged[Cdecl]<int, int, double*, void>)Load("glUniform3dv");
-        _uniform2dv = (delegate* unmanaged[Cdecl]<int, int, double*, void>)Load("glUniform2dv");
-        _uniform1dv = (delegate* unmanaged[Cdecl]<int, int, double*, void>)Load("glUniform1dv");
-        _uniform4d = (delegate* unmanaged[Cdecl]<int, double, double, double, double, void>)Load("glUniform4d");
-        _blendFuncSeparate = (delegate* unmanaged[Cdecl]<BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void>)Load("glBlendFuncSeparate");
+        _getUniformfv = (delegate* unmanaged[Cdecl]<ProgramId, int, float*, void>)Load("glGetUniformfv");
+        _getUniformIndices = (delegate* unmanaged[Cdecl]<ProgramId, int, byte**, uint*, void>)Load("glGetUniformIndices");
+        _getUniformiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, void>)Load("glGetUniformiv");
+        _getUniformLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetUniformLocation");
+        _getUniformSubroutineuiv = (delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void>)Load("glGetUniformSubroutineuiv");
+        _getUniformuiv = (delegate* unmanaged[Cdecl]<ProgramId, int, uint*, void>)Load("glGetUniformuiv");
+        _getVertexArrayIndexed64iv = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, VertexArrayPName, long*, void>)Load("glGetVertexArrayIndexed64iv");
+        _getVertexArrayIndexediv = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, VertexArrayPName, int*, void>)Load("glGetVertexArrayIndexediv");
+        _getVertexArrayiv = (delegate* unmanaged[Cdecl]<VertexArrayId, VertexArrayPName, int*, void>)Load("glGetVertexArrayiv");
+        _getVertexAttribdv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, double*, void>)Load("glGetVertexAttribdv");
+        _getVertexAttribfv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, float*, void>)Load("glGetVertexAttribfv");
+        _getVertexAttribIiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, int*, void>)Load("glGetVertexAttribIiv");
+        _getVertexAttribIuiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, uint*, void>)Load("glGetVertexAttribIuiv");
+        _getVertexAttribiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, int*, void>)Load("glGetVertexAttribiv");
+        _getVertexAttribLdv = (delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, double*, void>)Load("glGetVertexAttribLdv");
+        _getVertexAttribPointerv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerProperty, void**, void>)Load("glGetVertexAttribPointerv");
+        _hint = (delegate* unmanaged[Cdecl]<HintTarget, HintMode, void>)Load("glHint");
+        _invalidateBufferData = (delegate* unmanaged[Cdecl]<BufferId, void>)Load("glInvalidateBufferData");
+        _invalidateBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void>)Load("glInvalidateBufferSubData");
+        _invalidateFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, int, InvalidateFramebufferAttachment*, void>)Load("glInvalidateFramebuffer");
+        _invalidateNamedFramebufferData = (delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, void>)Load("glInvalidateNamedFramebufferData");
+        _invalidateNamedFramebufferSubData = (delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, int, int, int, int, void>)Load("glInvalidateNamedFramebufferSubData");
+        _invalidateSubFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, int, InvalidateFramebufferAttachment*, int, int, int, int, void>)Load("glInvalidateSubFramebuffer");
+        _invalidateTexImage = (delegate* unmanaged[Cdecl]<TextureId, int, void>)Load("glInvalidateTexImage");
+        _invalidateTexSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, void>)Load("glInvalidateTexSubImage");
+        _isBuffer = (delegate* unmanaged[Cdecl]<BufferId, byte>)Load("glIsBuffer");
+        _isEnabled = (delegate* unmanaged[Cdecl]<EnableCap, byte>)Load("glIsEnabled");
+        _isEnabledi = (delegate* unmanaged[Cdecl]<EnableCap, uint, byte>)Load("glIsEnabledi");
+        _isFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferId, byte>)Load("glIsFramebuffer");
+        _isProgram = (delegate* unmanaged[Cdecl]<ProgramId, byte>)Load("glIsProgram");
+        _isProgramPipeline = (delegate* unmanaged[Cdecl]<ProgramPipelineId, byte>)Load("glIsProgramPipeline");
+        _isQuery = (delegate* unmanaged[Cdecl]<QueryId, byte>)Load("glIsQuery");
+        _isRenderbuffer = (delegate* unmanaged[Cdecl]<RenderbufferId, byte>)Load("glIsRenderbuffer");
+        _isSampler = (delegate* unmanaged[Cdecl]<SamplerId, byte>)Load("glIsSampler");
+        _isShader = (delegate* unmanaged[Cdecl]<ShaderId, byte>)Load("glIsShader");
+        _isSync = (delegate* unmanaged[Cdecl]<nint, byte>)Load("glIsSync");
+        _isTexture = (delegate* unmanaged[Cdecl]<TextureId, byte>)Load("glIsTexture");
+        _isTransformFeedback = (delegate* unmanaged[Cdecl]<TransformFeedbackId, byte>)Load("glIsTransformFeedback");
+        _isVertexArray = (delegate* unmanaged[Cdecl]<VertexArrayId, byte>)Load("glIsVertexArray");
+        _lineWidth = (delegate* unmanaged[Cdecl]<float, void>)Load("glLineWidth");
+        _linkProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glLinkProgram");
+        _logicOp = (delegate* unmanaged[Cdecl]<LogicOpEnum, void>)Load("glLogicOp");
+        _mapBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, BufferAccess, void*>)Load("glMapBuffer");
+        _mapBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, MapBufferAccessMask, void*>)Load("glMapBufferRange");
+        _mapNamedBuffer = (delegate* unmanaged[Cdecl]<BufferId, BufferAccess, void*>)Load("glMapNamedBuffer");
+        _mapNamedBufferRange = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, MapBufferAccessMask, void*>)Load("glMapNamedBufferRange");
+        _memoryBarrier = (delegate* unmanaged[Cdecl]<MemoryBarrierMask, void>)Load("glMemoryBarrier");
+        _memoryBarrierByRegion = (delegate* unmanaged[Cdecl]<MemoryBarrierMask, void>)Load("glMemoryBarrierByRegion");
+        _minSampleShading = (delegate* unmanaged[Cdecl]<float, void>)Load("glMinSampleShading");
         _multiDrawArrays = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, int*, int, void>)Load("glMultiDrawArrays");
+        _multiDrawArraysIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, void*, int, int, void>)Load("glMultiDrawArraysIndirect");
+        _multiDrawArraysIndirectCount = (delegate* unmanaged[Cdecl]<PrimitiveType, void*, nint, int, int, void>)Load("glMultiDrawArraysIndirectCount");
         _multiDrawElements = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, void>)Load("glMultiDrawElements");
+        _multiDrawElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, int*, void>)Load("glMultiDrawElementsBaseVertex");
+        _multiDrawElementsIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, int, int, void>)Load("glMultiDrawElementsIndirect");
+        _multiDrawElementsIndirectCount = (delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, nint, int, int, void>)Load("glMultiDrawElementsIndirectCount");
+        _namedBufferData = (delegate* unmanaged[Cdecl]<BufferId, nint, void*, BufferUsage, void>)Load("glNamedBufferData");
+        _namedBufferStorage = (delegate* unmanaged[Cdecl]<BufferId, nint, void*, BufferStorageMask, void>)Load("glNamedBufferStorage");
+        _namedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void>)Load("glNamedBufferSubData");
+        _namedFramebufferDrawBuffer = (delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void>)Load("glNamedFramebufferDrawBuffer");
+        _namedFramebufferDrawBuffers = (delegate* unmanaged[Cdecl]<FramebufferId, int, ColorBuffer*, void>)Load("glNamedFramebufferDrawBuffers");
+        _namedFramebufferParameteri = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferParameterName, int, void>)Load("glNamedFramebufferParameteri");
+        _namedFramebufferReadBuffer = (delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void>)Load("glNamedFramebufferReadBuffer");
+        _namedFramebufferRenderbuffer = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void>)Load("glNamedFramebufferRenderbuffer");
+        _namedFramebufferTexture = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, void>)Load("glNamedFramebufferTexture");
+        _namedFramebufferTextureLayer = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, int, void>)Load("glNamedFramebufferTextureLayer");
+        _namedRenderbufferStorage = (delegate* unmanaged[Cdecl]<RenderbufferId, InternalFormat, int, int, void>)Load("glNamedRenderbufferStorage");
+        _namedRenderbufferStorageMultisample = (delegate* unmanaged[Cdecl]<RenderbufferId, int, InternalFormat, int, int, void>)Load("glNamedRenderbufferStorageMultisample");
+        _objectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, byte*, void>)Load("glObjectLabel");
+        _objectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, byte*, void>)Load("glObjectPtrLabel");
+        _patchParameterfv = (delegate* unmanaged[Cdecl]<PatchParameterName, float*, void>)Load("glPatchParameterfv");
+        _patchParameteri = (delegate* unmanaged[Cdecl]<PatchParameterName, int, void>)Load("glPatchParameteri");
+        _pauseTransformFeedback = (delegate* unmanaged[Cdecl]<void>)Load("glPauseTransformFeedback");
+        _pixelStoref = (delegate* unmanaged[Cdecl]<PixelStoreParameter, float, void>)Load("glPixelStoref");
+        _pixelStorei = (delegate* unmanaged[Cdecl]<PixelStoreParameter, int, void>)Load("glPixelStorei");
         _pointParameterf = (delegate* unmanaged[Cdecl]<PointParameterName, float, void>)Load("glPointParameterf");
         _pointParameterfv = (delegate* unmanaged[Cdecl]<PointParameterName, float*, void>)Load("glPointParameterfv");
         _pointParameteri = (delegate* unmanaged[Cdecl]<PointParameterName, int, void>)Load("glPointParameteri");
         _pointParameteriv = (delegate* unmanaged[Cdecl]<PointParameterName, int*, void>)Load("glPointParameteriv");
-        _uniform3d = (delegate* unmanaged[Cdecl]<int, double, double, double, void>)Load("glUniform3d");
-        _uniform2d = (delegate* unmanaged[Cdecl]<int, double, double, void>)Load("glUniform2d");
-        _uniform1d = (delegate* unmanaged[Cdecl]<int, double, void>)Load("glUniform1d");
-        _drawElementsIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, void>)Load("glDrawElementsIndirect");
-        _drawArraysIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, void*, void>)Load("glDrawArraysIndirect");
-        _blendFuncSeparatei = (delegate* unmanaged[Cdecl]<uint, BlendingFactor, BlendingFactor, BlendingFactor, BlendingFactor, void>)Load("glBlendFuncSeparatei");
-        _blendFunci = (delegate* unmanaged[Cdecl]<uint, BlendingFactor, BlendingFactor, void>)Load("glBlendFunci");
-        _blendEquationSeparatei = (delegate* unmanaged[Cdecl]<uint, BlendEquationModeEXT, BlendEquationModeEXT, void>)Load("glBlendEquationSeparatei");
-        _blendEquationi = (delegate* unmanaged[Cdecl]<uint, BlendEquationModeEXT, void>)Load("glBlendEquationi");
-        _minSampleShading = (delegate* unmanaged[Cdecl]<float, void>)Load("glMinSampleShading");
-        _vertexAttribP4uiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void>)Load("glVertexAttribP4uiv");
-        _vertexAttribP4ui = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void>)Load("glVertexAttribP4ui");
-        _vertexAttribP3uiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void>)Load("glVertexAttribP3uiv");
-        _vertexAttribP3ui = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void>)Load("glVertexAttribP3ui");
-        _vertexAttribP2uiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void>)Load("glVertexAttribP2uiv");
-        _vertexAttribP2ui = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void>)Load("glVertexAttribP2ui");
-        _vertexAttribP1uiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void>)Load("glVertexAttribP1uiv");
-        _vertexAttribP1ui = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void>)Load("glVertexAttribP1ui");
-        _vertexAttribDivisor = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexAttribDivisor");
-        _getQueryObjectui64v = (delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, ulong*, void>)Load("glGetQueryObjectui64v");
-        _getQueryObjecti64v = (delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, long*, void>)Load("glGetQueryObjecti64v");
+        _pointSize = (delegate* unmanaged[Cdecl]<float, void>)Load("glPointSize");
+        _polygonMode = (delegate* unmanaged[Cdecl]<TriangleFace, PolygonModeEnum, void>)Load("glPolygonMode");
+        _polygonOffset = (delegate* unmanaged[Cdecl]<float, float, void>)Load("glPolygonOffset");
+        _polygonOffsetClamp = (delegate* unmanaged[Cdecl]<float, float, float, void>)Load("glPolygonOffsetClamp");
+        _popDebugGroup = (delegate* unmanaged[Cdecl]<void>)Load("glPopDebugGroup");
+        _primitiveRestartIndex = (delegate* unmanaged[Cdecl]<uint, void>)Load("glPrimitiveRestartIndex");
+        _programBinary = (delegate* unmanaged[Cdecl]<ProgramId, Enum, void*, int, void>)Load("glProgramBinary");
+        _programParameteri = (delegate* unmanaged[Cdecl]<ProgramId, ProgramParameterPName, int, void>)Load("glProgramParameteri");
+        _programUniform1d = (delegate* unmanaged[Cdecl]<ProgramId, int, double, void>)Load("glProgramUniform1d");
+        _programUniform1dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glProgramUniform1dv");
+        _programUniform1f = (delegate* unmanaged[Cdecl]<ProgramId, int, float, void>)Load("glProgramUniform1f");
+        _programUniform1fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glProgramUniform1fv");
+        _programUniform1i = (delegate* unmanaged[Cdecl]<ProgramId, int, int, void>)Load("glProgramUniform1i");
+        _programUniform1iv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glProgramUniform1iv");
+        _programUniform1ui = (delegate* unmanaged[Cdecl]<ProgramId, int, uint, void>)Load("glProgramUniform1ui");
+        _programUniform1uiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glProgramUniform1uiv");
+        _programUniform2d = (delegate* unmanaged[Cdecl]<ProgramId, int, double, double, void>)Load("glProgramUniform2d");
+        _programUniform2dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glProgramUniform2dv");
+        _programUniform2f = (delegate* unmanaged[Cdecl]<ProgramId, int, float, float, void>)Load("glProgramUniform2f");
+        _programUniform2fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glProgramUniform2fv");
+        _programUniform2i = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int, void>)Load("glProgramUniform2i");
+        _programUniform2iv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glProgramUniform2iv");
+        _programUniform2ui = (delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, void>)Load("glProgramUniform2ui");
+        _programUniform2uiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glProgramUniform2uiv");
+        _programUniform3d = (delegate* unmanaged[Cdecl]<ProgramId, int, double, double, double, void>)Load("glProgramUniform3d");
+        _programUniform3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glProgramUniform3dv");
+        _programUniform3f = (delegate* unmanaged[Cdecl]<ProgramId, int, float, float, float, void>)Load("glProgramUniform3f");
+        _programUniform3fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glProgramUniform3fv");
+        _programUniform3i = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int, int, void>)Load("glProgramUniform3i");
+        _programUniform3iv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glProgramUniform3iv");
+        _programUniform3ui = (delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, uint, void>)Load("glProgramUniform3ui");
+        _programUniform3uiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glProgramUniform3uiv");
+        _programUniform4d = (delegate* unmanaged[Cdecl]<ProgramId, int, double, double, double, double, void>)Load("glProgramUniform4d");
+        _programUniform4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, double*, void>)Load("glProgramUniform4dv");
+        _programUniform4f = (delegate* unmanaged[Cdecl]<ProgramId, int, float, float, float, float, void>)Load("glProgramUniform4f");
+        _programUniform4fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, float*, void>)Load("glProgramUniform4fv");
+        _programUniform4i = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int, int, int, void>)Load("glProgramUniform4i");
+        _programUniform4iv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, int*, void>)Load("glProgramUniform4iv");
+        _programUniform4ui = (delegate* unmanaged[Cdecl]<ProgramId, int, uint, uint, uint, uint, void>)Load("glProgramUniform4ui");
+        _programUniform4uiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glProgramUniform4uiv");
+        _programUniformMatrix2dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix2dv");
+        _programUniformMatrix2fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix2fv");
+        _programUniformMatrix2x3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix2x3dv");
+        _programUniformMatrix2x3fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix2x3fv");
+        _programUniformMatrix2x4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix2x4dv");
+        _programUniformMatrix2x4fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix2x4fv");
+        _programUniformMatrix3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix3dv");
+        _programUniformMatrix3fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix3fv");
+        _programUniformMatrix3x2dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix3x2dv");
+        _programUniformMatrix3x2fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix3x2fv");
+        _programUniformMatrix3x4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix3x4dv");
+        _programUniformMatrix3x4fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix3x4fv");
+        _programUniformMatrix4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix4dv");
+        _programUniformMatrix4fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix4fv");
+        _programUniformMatrix4x2dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix4x2dv");
+        _programUniformMatrix4x2fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix4x2fv");
+        _programUniformMatrix4x3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix4x3dv");
+        _programUniformMatrix4x3fv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, float*, void>)Load("glProgramUniformMatrix4x3fv");
+        _provokingVertex = (delegate* unmanaged[Cdecl]<VertexProvokingMode, void>)Load("glProvokingVertex");
+        _pushDebugGroup = (delegate* unmanaged[Cdecl]<DebugSource, uint, int, byte*, void>)Load("glPushDebugGroup");
         _queryCounter = (delegate* unmanaged[Cdecl]<QueryId, QueryCounterTarget, void>)Load("glQueryCounter");
-        _getSamplerParameterIuiv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, uint*, void>)Load("glGetSamplerParameterIuiv");
-        _getSamplerParameterfv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float*, void>)Load("glGetSamplerParameterfv");
-        _getSamplerParameterIiv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void>)Load("glGetSamplerParameterIiv");
-        _getSamplerParameteriv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void>)Load("glGetSamplerParameteriv");
-        _samplerParameterIuiv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, uint*, void>)Load("glSamplerParameterIuiv");
-        _samplerParameterIiv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void>)Load("glSamplerParameterIiv");
-        _samplerParameterfv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float*, void>)Load("glSamplerParameterfv");
+        _readBuffer = (delegate* unmanaged[Cdecl]<ReadBufferMode, void>)Load("glReadBuffer");
+        _readnPixels = (delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, int, void*, void>)Load("glReadnPixels");
+        _readPixels = (delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glReadPixels");
+        _releaseShaderCompiler = (delegate* unmanaged[Cdecl]<void>)Load("glReleaseShaderCompiler");
+        _renderbufferStorage = (delegate* unmanaged[Cdecl]<RenderbufferTarget, InternalFormat, int, int, void>)Load("glRenderbufferStorage");
+        _renderbufferStorageMultisample = (delegate* unmanaged[Cdecl]<RenderbufferTarget, int, InternalFormat, int, int, void>)Load("glRenderbufferStorageMultisample");
+        _resumeTransformFeedback = (delegate* unmanaged[Cdecl]<void>)Load("glResumeTransformFeedback");
+        _sampleCoverage = (delegate* unmanaged[Cdecl]<float, byte, void>)Load("glSampleCoverage");
+        _sampleMaski = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glSampleMaski");
         _samplerParameterf = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float, void>)Load("glSamplerParameterf");
-        _samplerParameteriv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void>)Load("glSamplerParameteriv");
+        _samplerParameterfv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterF, float*, void>)Load("glSamplerParameterfv");
         _samplerParameteri = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int, void>)Load("glSamplerParameteri");
-        _bindSampler = (delegate* unmanaged[Cdecl]<uint, SamplerId, void>)Load("glBindSampler");
-        _isSampler = (delegate* unmanaged[Cdecl]<SamplerId, byte>)Load("glIsSampler");
-        _deleteSamplers = (delegate* unmanaged[Cdecl]<int, SamplerId*, void>)Load("glDeleteSamplers");
-        _genSamplers = (delegate* unmanaged[Cdecl]<int, SamplerId*, void>)Load("glGenSamplers");
-        _getFragDataIndex = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetFragDataIndex");
-        _bindFragDataLocationIndexed = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, byte*, void>)Load("glBindFragDataLocationIndexed");
-        _blendColor = (delegate* unmanaged[Cdecl]<float, float, float, float, void>)Load("glBlendColor");
-        _blendEquation = (delegate* unmanaged[Cdecl]<BlendEquationModeEXT, void>)Load("glBlendEquation");
-        _genQueries = (delegate* unmanaged[Cdecl]<int, QueryId*, void>)Load("glGenQueries");
-        _deleteQueries = (delegate* unmanaged[Cdecl]<int, QueryId*, void>)Load("glDeleteQueries");
-        _isQuery = (delegate* unmanaged[Cdecl]<QueryId, byte>)Load("glIsQuery");
-        _beginQuery = (delegate* unmanaged[Cdecl]<QueryTarget, QueryId, void>)Load("glBeginQuery");
-        _endQuery = (delegate* unmanaged[Cdecl]<QueryTarget, void>)Load("glEndQuery");
-        _getQueryiv = (delegate* unmanaged[Cdecl]<QueryTarget, QueryParameterName, int*, void>)Load("glGetQueryiv");
-        _getQueryObjectiv = (delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, int*, void>)Load("glGetQueryObjectiv");
-        _getQueryObjectuiv = (delegate* unmanaged[Cdecl]<QueryId, QueryObjectParameterName, uint*, void>)Load("glGetQueryObjectuiv");
-        _bindBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, BufferId, void>)Load("glBindBuffer");
-        _deleteBuffers = (delegate* unmanaged[Cdecl]<int, BufferId*, void>)Load("glDeleteBuffers");
-        _genBuffers = (delegate* unmanaged[Cdecl]<int, BufferId*, void>)Load("glGenBuffers");
-        _isBuffer = (delegate* unmanaged[Cdecl]<BufferId, byte>)Load("glIsBuffer");
-        _bufferData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, void*, BufferUsage, void>)Load("glBufferData");
-        _bufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void>)Load("glBufferSubData");
-        _getBufferSubData = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void*, void>)Load("glGetBufferSubData");
-        _mapBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, BufferAccess, void*>)Load("glMapBuffer");
-        _unmapBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, byte>)Load("glUnmapBuffer");
-        _getBufferParameteriv = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, int*, void>)Load("glGetBufferParameteriv");
-        _getBufferPointerv = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPointerName, void**, void>)Load("glGetBufferPointerv");
-        _blendEquationSeparate = (delegate* unmanaged[Cdecl]<BlendEquationModeEXT, BlendEquationModeEXT, void>)Load("glBlendEquationSeparate");
-        _drawBuffers = (delegate* unmanaged[Cdecl]<int, DrawBufferMode*, void>)Load("glDrawBuffers");
-        _stencilOpSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, StencilOpEnum, StencilOpEnum, StencilOpEnum, void>)Load("glStencilOpSeparate");
-        _stencilFuncSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, StencilFunction, int, uint, void>)Load("glStencilFuncSeparate");
-        _stencilMaskSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, uint, void>)Load("glStencilMaskSeparate");
-        _attachShader = (delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void>)Load("glAttachShader");
-        _bindAttribLocation = (delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void>)Load("glBindAttribLocation");
-        _compileShader = (delegate* unmanaged[Cdecl]<ShaderId, void>)Load("glCompileShader");
-        _createProgram = (delegate* unmanaged[Cdecl]<ProgramId>)Load("glCreateProgram");
-        _createShader = (delegate* unmanaged[Cdecl]<ShaderType, ShaderId>)Load("glCreateShader");
-        _deleteProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glDeleteProgram");
-        _deleteShader = (delegate* unmanaged[Cdecl]<ShaderId, void>)Load("glDeleteShader");
-        _detachShader = (delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void>)Load("glDetachShader");
-        _disableVertexAttribArray = (delegate* unmanaged[Cdecl]<uint, void>)Load("glDisableVertexAttribArray");
-        _enableVertexAttribArray = (delegate* unmanaged[Cdecl]<uint, void>)Load("glEnableVertexAttribArray");
-        _getActiveAttrib = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void>)Load("glGetActiveAttrib");
-        _getActiveUniform = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, UniformType*, byte*, void>)Load("glGetActiveUniform");
-        _getAttachedShaders = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, ShaderId*, void>)Load("glGetAttachedShaders");
-        _getAttribLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetAttribLocation");
-        _getProgramiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramProperty, int*, void>)Load("glGetProgramiv");
-        _getProgramInfoLog = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, byte*, void>)Load("glGetProgramInfoLog");
-        _getShaderiv = (delegate* unmanaged[Cdecl]<ShaderId, ShaderParameterName, int*, void>)Load("glGetShaderiv");
-        _getShaderInfoLog = (delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void>)Load("glGetShaderInfoLog");
-        _getShaderSource = (delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void>)Load("glGetShaderSource");
-        _getUniformLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetUniformLocation");
-        _getUniformfv = (delegate* unmanaged[Cdecl]<ProgramId, int, float*, void>)Load("glGetUniformfv");
-        _getUniformiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, void>)Load("glGetUniformiv");
-        _getVertexAttribdv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, double*, void>)Load("glGetVertexAttribdv");
-        _getVertexAttribfv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, float*, void>)Load("glGetVertexAttribfv");
-        _getVertexAttribiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, int*, void>)Load("glGetVertexAttribiv");
-        _getVertexAttribPointerv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerProperty, void**, void>)Load("glGetVertexAttribPointerv");
-        _isProgram = (delegate* unmanaged[Cdecl]<ProgramId, byte>)Load("glIsProgram");
-        _isShader = (delegate* unmanaged[Cdecl]<ShaderId, byte>)Load("glIsShader");
-        _linkProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glLinkProgram");
+        _samplerParameterIiv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void>)Load("glSamplerParameterIiv");
+        _samplerParameterIuiv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, uint*, void>)Load("glSamplerParameterIuiv");
+        _samplerParameteriv = (delegate* unmanaged[Cdecl]<SamplerId, SamplerParameterI, int*, void>)Load("glSamplerParameteriv");
+        _scissor = (delegate* unmanaged[Cdecl]<int, int, int, int, void>)Load("glScissor");
+        _scissorArrayv = (delegate* unmanaged[Cdecl]<uint, int, int*, void>)Load("glScissorArrayv");
+        _scissorIndexed = (delegate* unmanaged[Cdecl]<uint, int, int, int, int, void>)Load("glScissorIndexed");
+        _scissorIndexedv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glScissorIndexedv");
+        _shaderBinary = (delegate* unmanaged[Cdecl]<int, ShaderId*, ShaderBinaryFormat, void*, int, void>)Load("glShaderBinary");
         _shaderSource = (delegate* unmanaged[Cdecl]<ShaderId, int, byte**, int*, void>)Load("glShaderSource");
-        _useProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glUseProgram");
+        _shaderStorageBlockBinding = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void>)Load("glShaderStorageBlockBinding");
+        _specializeShader = (delegate* unmanaged[Cdecl]<ShaderId, byte*, uint, uint*, uint*, void>)Load("glSpecializeShader");
+        _stencilFunc = (delegate* unmanaged[Cdecl]<StencilFunction, int, uint, void>)Load("glStencilFunc");
+        _stencilFuncSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, StencilFunction, int, uint, void>)Load("glStencilFuncSeparate");
+        _stencilMask = (delegate* unmanaged[Cdecl]<uint, void>)Load("glStencilMask");
+        _stencilMaskSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, uint, void>)Load("glStencilMaskSeparate");
+        _stencilOp = (delegate* unmanaged[Cdecl]<StencilOpEnum, StencilOpEnum, StencilOpEnum, void>)Load("glStencilOp");
+        _stencilOpSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, StencilOpEnum, StencilOpEnum, StencilOpEnum, void>)Load("glStencilOpSeparate");
+        _texBuffer = (delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, void>)Load("glTexBuffer");
+        _texBufferRange = (delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, nint, nint, void>)Load("glTexBufferRange");
+        _texImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, PixelFormat, PixelType, void*, void>)Load("glTexImage1D");
+        _texImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexImage2D");
+        _texImage2DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, byte, void>)Load("glTexImage2DMultisample");
+        _texImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexImage3D");
+        _texImage3DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, byte, void>)Load("glTexImage3DMultisample");
+        _texParameterf = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float, void>)Load("glTexParameterf");
+        _texParameterfv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, float*, void>)Load("glTexParameterfv");
+        _texParameteri = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int, void>)Load("glTexParameteri");
+        _texParameterIiv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int*, void>)Load("glTexParameterIiv");
+        _texParameterIuiv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, uint*, void>)Load("glTexParameterIuiv");
+        _texParameteriv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int*, void>)Load("glTexParameteriv");
+        _texStorage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, void>)Load("glTexStorage1D");
+        _texStorage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, void>)Load("glTexStorage2D");
+        _texStorage2DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, byte, void>)Load("glTexStorage2DMultisample");
+        _texStorage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, int, void>)Load("glTexStorage3D");
+        _texStorage3DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, int, byte, void>)Load("glTexStorage3DMultisample");
+        _texSubImage1D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexSubImage1D");
+        _texSubImage2D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexSubImage2D");
+        _texSubImage3D = (delegate* unmanaged[Cdecl]<TextureTarget, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTexSubImage3D");
+        _textureBarrier = (delegate* unmanaged[Cdecl]<void>)Load("glTextureBarrier");
+        _textureBuffer = (delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, void>)Load("glTextureBuffer");
+        _textureBufferRange = (delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, nint, nint, void>)Load("glTextureBufferRange");
+        _textureParameterf = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, float, void>)Load("glTextureParameterf");
+        _textureParameterfv = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, float*, void>)Load("glTextureParameterfv");
+        _textureParameteri = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int, void>)Load("glTextureParameteri");
+        _textureParameterIiv = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int*, void>)Load("glTextureParameterIiv");
+        _textureParameterIuiv = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, uint*, void>)Load("glTextureParameterIuiv");
+        _textureParameteriv = (delegate* unmanaged[Cdecl]<TextureId, TextureParameterName, int*, void>)Load("glTextureParameteriv");
+        _textureStorage1D = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, void>)Load("glTextureStorage1D");
+        _textureStorage2D = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, void>)Load("glTextureStorage2D");
+        _textureStorage2DMultisample = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, byte, void>)Load("glTextureStorage2DMultisample");
+        _textureStorage3D = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, int, void>)Load("glTextureStorage3D");
+        _textureStorage3DMultisample = (delegate* unmanaged[Cdecl]<TextureId, int, SizedInternalFormat, int, int, int, byte, void>)Load("glTextureStorage3DMultisample");
+        _textureSubImage1D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTextureSubImage1D");
+        _textureSubImage2D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTextureSubImage2D");
+        _textureSubImage3D = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glTextureSubImage3D");
+        _textureView = (delegate* unmanaged[Cdecl]<TextureId, TextureTarget, TextureId, SizedInternalFormat, uint, uint, uint, uint, void>)Load("glTextureView");
+        _transformFeedbackBufferBase = (delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, void>)Load("glTransformFeedbackBufferBase");
+        _transformFeedbackBufferRange = (delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, nint, nint, void>)Load("glTransformFeedbackBufferRange");
+        _transformFeedbackVaryings = (delegate* unmanaged[Cdecl]<ProgramId, int, byte**, TransformFeedbackBufferMode, void>)Load("glTransformFeedbackVaryings");
+        _uniform1d = (delegate* unmanaged[Cdecl]<int, double, void>)Load("glUniform1d");
+        _uniform1dv = (delegate* unmanaged[Cdecl]<int, int, double*, void>)Load("glUniform1dv");
         _uniform1f = (delegate* unmanaged[Cdecl]<int, float, void>)Load("glUniform1f");
-        _uniform2f = (delegate* unmanaged[Cdecl]<int, float, float, void>)Load("glUniform2f");
-        _uniform3f = (delegate* unmanaged[Cdecl]<int, float, float, float, void>)Load("glUniform3f");
-        _uniform4f = (delegate* unmanaged[Cdecl]<int, float, float, float, float, void>)Load("glUniform4f");
-        _uniform1i = (delegate* unmanaged[Cdecl]<int, int, void>)Load("glUniform1i");
-        _uniform2i = (delegate* unmanaged[Cdecl]<int, int, int, void>)Load("glUniform2i");
-        _uniform3i = (delegate* unmanaged[Cdecl]<int, int, int, int, void>)Load("glUniform3i");
-        _uniform4i = (delegate* unmanaged[Cdecl]<int, int, int, int, int, void>)Load("glUniform4i");
         _uniform1fv = (delegate* unmanaged[Cdecl]<int, int, float*, void>)Load("glUniform1fv");
-        _uniform2fv = (delegate* unmanaged[Cdecl]<int, int, float*, void>)Load("glUniform2fv");
-        _uniform3fv = (delegate* unmanaged[Cdecl]<int, int, float*, void>)Load("glUniform3fv");
-        _uniform4fv = (delegate* unmanaged[Cdecl]<int, int, float*, void>)Load("glUniform4fv");
+        _uniform1i = (delegate* unmanaged[Cdecl]<int, int, void>)Load("glUniform1i");
         _uniform1iv = (delegate* unmanaged[Cdecl]<int, int, int*, void>)Load("glUniform1iv");
+        _uniform1ui = (delegate* unmanaged[Cdecl]<int, uint, void>)Load("glUniform1ui");
+        _uniform1uiv = (delegate* unmanaged[Cdecl]<int, int, uint*, void>)Load("glUniform1uiv");
+        _uniform2d = (delegate* unmanaged[Cdecl]<int, double, double, void>)Load("glUniform2d");
+        _uniform2dv = (delegate* unmanaged[Cdecl]<int, int, double*, void>)Load("glUniform2dv");
+        _uniform2f = (delegate* unmanaged[Cdecl]<int, float, float, void>)Load("glUniform2f");
+        _uniform2fv = (delegate* unmanaged[Cdecl]<int, int, float*, void>)Load("glUniform2fv");
+        _uniform2i = (delegate* unmanaged[Cdecl]<int, int, int, void>)Load("glUniform2i");
         _uniform2iv = (delegate* unmanaged[Cdecl]<int, int, int*, void>)Load("glUniform2iv");
+        _uniform2ui = (delegate* unmanaged[Cdecl]<int, uint, uint, void>)Load("glUniform2ui");
+        _uniform2uiv = (delegate* unmanaged[Cdecl]<int, int, uint*, void>)Load("glUniform2uiv");
+        _uniform3d = (delegate* unmanaged[Cdecl]<int, double, double, double, void>)Load("glUniform3d");
+        _uniform3dv = (delegate* unmanaged[Cdecl]<int, int, double*, void>)Load("glUniform3dv");
+        _uniform3f = (delegate* unmanaged[Cdecl]<int, float, float, float, void>)Load("glUniform3f");
+        _uniform3fv = (delegate* unmanaged[Cdecl]<int, int, float*, void>)Load("glUniform3fv");
+        _uniform3i = (delegate* unmanaged[Cdecl]<int, int, int, int, void>)Load("glUniform3i");
         _uniform3iv = (delegate* unmanaged[Cdecl]<int, int, int*, void>)Load("glUniform3iv");
+        _uniform3ui = (delegate* unmanaged[Cdecl]<int, uint, uint, uint, void>)Load("glUniform3ui");
+        _uniform3uiv = (delegate* unmanaged[Cdecl]<int, int, uint*, void>)Load("glUniform3uiv");
+        _uniform4d = (delegate* unmanaged[Cdecl]<int, double, double, double, double, void>)Load("glUniform4d");
+        _uniform4dv = (delegate* unmanaged[Cdecl]<int, int, double*, void>)Load("glUniform4dv");
+        _uniform4f = (delegate* unmanaged[Cdecl]<int, float, float, float, float, void>)Load("glUniform4f");
+        _uniform4fv = (delegate* unmanaged[Cdecl]<int, int, float*, void>)Load("glUniform4fv");
+        _uniform4i = (delegate* unmanaged[Cdecl]<int, int, int, int, int, void>)Load("glUniform4i");
         _uniform4iv = (delegate* unmanaged[Cdecl]<int, int, int*, void>)Load("glUniform4iv");
+        _uniform4ui = (delegate* unmanaged[Cdecl]<int, uint, uint, uint, uint, void>)Load("glUniform4ui");
+        _uniform4uiv = (delegate* unmanaged[Cdecl]<int, int, uint*, void>)Load("glUniform4uiv");
+        _uniformBlockBinding = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void>)Load("glUniformBlockBinding");
+        _uniformMatrix2dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix2dv");
         _uniformMatrix2fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix2fv");
+        _uniformMatrix2x3dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix2x3dv");
+        _uniformMatrix2x3fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix2x3fv");
+        _uniformMatrix2x4dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix2x4dv");
+        _uniformMatrix2x4fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix2x4fv");
+        _uniformMatrix3dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix3dv");
         _uniformMatrix3fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix3fv");
+        _uniformMatrix3x2dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix3x2dv");
+        _uniformMatrix3x2fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix3x2fv");
+        _uniformMatrix3x4dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix3x4dv");
+        _uniformMatrix3x4fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix3x4fv");
+        _uniformMatrix4dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix4dv");
         _uniformMatrix4fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix4fv");
+        _uniformMatrix4x2dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix4x2dv");
+        _uniformMatrix4x2fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix4x2fv");
+        _uniformMatrix4x3dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix4x3dv");
+        _uniformMatrix4x3fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix4x3fv");
+        _uniformSubroutinesuiv = (delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void>)Load("glUniformSubroutinesuiv");
+        _unmapBuffer = (delegate* unmanaged[Cdecl]<BufferTarget, byte>)Load("glUnmapBuffer");
+        _unmapNamedBuffer = (delegate* unmanaged[Cdecl]<BufferId, byte>)Load("glUnmapNamedBuffer");
+        _useProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glUseProgram");
+        _useProgramStages = (delegate* unmanaged[Cdecl]<ProgramPipelineId, UseProgramStageMask, ProgramId, void>)Load("glUseProgramStages");
         _validateProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glValidateProgram");
+        _validateProgramPipeline = (delegate* unmanaged[Cdecl]<ProgramPipelineId, void>)Load("glValidateProgramPipeline");
+        _vertexArrayAttribBinding = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void>)Load("glVertexArrayAttribBinding");
+        _vertexArrayAttribFormat = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribType, byte, uint, void>)Load("glVertexArrayAttribFormat");
+        _vertexArrayAttribIFormat = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribIType, uint, void>)Load("glVertexArrayAttribIFormat");
+        _vertexArrayAttribLFormat = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribLType, uint, void>)Load("glVertexArrayAttribLFormat");
+        _vertexArrayBindingDivisor = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void>)Load("glVertexArrayBindingDivisor");
+        _vertexArrayElementBuffer = (delegate* unmanaged[Cdecl]<VertexArrayId, BufferId, void>)Load("glVertexArrayElementBuffer");
+        _vertexArrayVertexBuffer = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, BufferId, nint, int, void>)Load("glVertexArrayVertexBuffer");
+        _vertexArrayVertexBuffers = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, BufferId*, nint, int*, void>)Load("glVertexArrayVertexBuffers");
         _vertexAttrib1d = (delegate* unmanaged[Cdecl]<uint, double, void>)Load("glVertexAttrib1d");
         _vertexAttrib1dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttrib1dv");
         _vertexAttrib1f = (delegate* unmanaged[Cdecl]<uint, float, void>)Load("glVertexAttrib1f");
@@ -1184,6 +1256,12 @@ public unsafe partial class GL
         _vertexAttrib3fv = (delegate* unmanaged[Cdecl]<uint, float*, void>)Load("glVertexAttrib3fv");
         _vertexAttrib3s = (delegate* unmanaged[Cdecl]<uint, short, short, short, void>)Load("glVertexAttrib3s");
         _vertexAttrib3sv = (delegate* unmanaged[Cdecl]<uint, short*, void>)Load("glVertexAttrib3sv");
+        _vertexAttrib4bv = (delegate* unmanaged[Cdecl]<uint, sbyte*, void>)Load("glVertexAttrib4bv");
+        _vertexAttrib4d = (delegate* unmanaged[Cdecl]<uint, double, double, double, double, void>)Load("glVertexAttrib4d");
+        _vertexAttrib4dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttrib4dv");
+        _vertexAttrib4f = (delegate* unmanaged[Cdecl]<uint, float, float, float, float, void>)Load("glVertexAttrib4f");
+        _vertexAttrib4fv = (delegate* unmanaged[Cdecl]<uint, float*, void>)Load("glVertexAttrib4fv");
+        _vertexAttrib4iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttrib4iv");
         _vertexAttrib4Nbv = (delegate* unmanaged[Cdecl]<uint, sbyte*, void>)Load("glVertexAttrib4Nbv");
         _vertexAttrib4Niv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttrib4Niv");
         _vertexAttrib4Nsv = (delegate* unmanaged[Cdecl]<uint, short*, void>)Load("glVertexAttrib4Nsv");
@@ -1191,792 +1269,228 @@ public unsafe partial class GL
         _vertexAttrib4Nubv = (delegate* unmanaged[Cdecl]<uint, byte*, void>)Load("glVertexAttrib4Nubv");
         _vertexAttrib4Nuiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttrib4Nuiv");
         _vertexAttrib4Nusv = (delegate* unmanaged[Cdecl]<uint, ushort*, void>)Load("glVertexAttrib4Nusv");
-        _vertexAttrib4bv = (delegate* unmanaged[Cdecl]<uint, sbyte*, void>)Load("glVertexAttrib4bv");
-        _vertexAttrib4d = (delegate* unmanaged[Cdecl]<uint, double, double, double, double, void>)Load("glVertexAttrib4d");
-        _vertexAttrib4dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttrib4dv");
-        _vertexAttrib4f = (delegate* unmanaged[Cdecl]<uint, float, float, float, float, void>)Load("glVertexAttrib4f");
-        _vertexAttrib4fv = (delegate* unmanaged[Cdecl]<uint, float*, void>)Load("glVertexAttrib4fv");
-        _vertexAttrib4iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttrib4iv");
         _vertexAttrib4s = (delegate* unmanaged[Cdecl]<uint, short, short, short, short, void>)Load("glVertexAttrib4s");
         _vertexAttrib4sv = (delegate* unmanaged[Cdecl]<uint, short*, void>)Load("glVertexAttrib4sv");
         _vertexAttrib4ubv = (delegate* unmanaged[Cdecl]<uint, byte*, void>)Load("glVertexAttrib4ubv");
         _vertexAttrib4uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttrib4uiv");
         _vertexAttrib4usv = (delegate* unmanaged[Cdecl]<uint, ushort*, void>)Load("glVertexAttrib4usv");
-        _vertexAttribPointer = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribPointerType, byte, int, void*, void>)Load("glVertexAttribPointer");
-        _uniformMatrix2x3fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix2x3fv");
-        _uniformMatrix3x2fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix3x2fv");
-        _uniformMatrix2x4fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix2x4fv");
-        _uniformMatrix4x2fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix4x2fv");
-        _uniformMatrix3x4fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix3x4fv");
-        _uniformMatrix4x3fv = (delegate* unmanaged[Cdecl]<int, int, byte, float*, void>)Load("glUniformMatrix4x3fv");
-        _colorMaski = (delegate* unmanaged[Cdecl]<uint, byte, byte, byte, byte, void>)Load("glColorMaski");
-        _getBooleani_v = (delegate* unmanaged[Cdecl]<BufferTarget, uint, byte*, void>)Load("glGetBooleani_v");
-        _getIntegeri_v = (delegate* unmanaged[Cdecl]<GetPName, uint, int*, void>)Load("glGetIntegeri_v");
-        _enablei = (delegate* unmanaged[Cdecl]<EnableCap, uint, void>)Load("glEnablei");
-        _disablei = (delegate* unmanaged[Cdecl]<EnableCap, uint, void>)Load("glDisablei");
-        _isEnabledi = (delegate* unmanaged[Cdecl]<EnableCap, uint, byte>)Load("glIsEnabledi");
-        _beginTransformFeedback = (delegate* unmanaged[Cdecl]<PrimitiveType, void>)Load("glBeginTransformFeedback");
-        _endTransformFeedback = (delegate* unmanaged[Cdecl]<void>)Load("glEndTransformFeedback");
-        _bindBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, nint, nint, void>)Load("glBindBufferRange");
-        _bindBufferBase = (delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, void>)Load("glBindBufferBase");
-        _transformFeedbackVaryings = (delegate* unmanaged[Cdecl]<ProgramId, int, byte**, TransformFeedbackBufferMode, void>)Load("glTransformFeedbackVaryings");
-        _getTransformFeedbackVarying = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void>)Load("glGetTransformFeedbackVarying");
-        _clampColor = (delegate* unmanaged[Cdecl]<ClampColorTarget, ClampColorMode, void>)Load("glClampColor");
-        _beginConditionalRender = (delegate* unmanaged[Cdecl]<uint, ConditionalRenderMode, void>)Load("glBeginConditionalRender");
-        _endConditionalRender = (delegate* unmanaged[Cdecl]<void>)Load("glEndConditionalRender");
-        _vertexAttribIPointer = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, int, void*, void>)Load("glVertexAttribIPointer");
-        _getVertexAttribIiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, int*, void>)Load("glGetVertexAttribIiv");
-        _getVertexAttribIuiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribEnum, uint*, void>)Load("glGetVertexAttribIuiv");
+        _vertexAttribBinding = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexAttribBinding");
+        _vertexAttribDivisor = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexAttribDivisor");
+        _vertexAttribFormat = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribType, byte, uint, void>)Load("glVertexAttribFormat");
         _vertexAttribI1i = (delegate* unmanaged[Cdecl]<uint, int, void>)Load("glVertexAttribI1i");
-        _vertexAttribI2i = (delegate* unmanaged[Cdecl]<uint, int, int, void>)Load("glVertexAttribI2i");
-        _vertexAttribI3i = (delegate* unmanaged[Cdecl]<uint, int, int, int, void>)Load("glVertexAttribI3i");
-        _vertexAttribI4i = (delegate* unmanaged[Cdecl]<uint, int, int, int, int, void>)Load("glVertexAttribI4i");
-        _vertexAttribI1ui = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexAttribI1ui");
-        _vertexAttribI2ui = (delegate* unmanaged[Cdecl]<uint, uint, uint, void>)Load("glVertexAttribI2ui");
-        _vertexAttribI3ui = (delegate* unmanaged[Cdecl]<uint, uint, uint, uint, void>)Load("glVertexAttribI3ui");
-        _vertexAttribI4ui = (delegate* unmanaged[Cdecl]<uint, uint, uint, uint, uint, void>)Load("glVertexAttribI4ui");
         _vertexAttribI1iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttribI1iv");
-        _vertexAttribI2iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttribI2iv");
-        _vertexAttribI3iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttribI3iv");
-        _vertexAttribI4iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttribI4iv");
+        _vertexAttribI1ui = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexAttribI1ui");
         _vertexAttribI1uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttribI1uiv");
+        _vertexAttribI2i = (delegate* unmanaged[Cdecl]<uint, int, int, void>)Load("glVertexAttribI2i");
+        _vertexAttribI2iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttribI2iv");
+        _vertexAttribI2ui = (delegate* unmanaged[Cdecl]<uint, uint, uint, void>)Load("glVertexAttribI2ui");
         _vertexAttribI2uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttribI2uiv");
+        _vertexAttribI3i = (delegate* unmanaged[Cdecl]<uint, int, int, int, void>)Load("glVertexAttribI3i");
+        _vertexAttribI3iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttribI3iv");
+        _vertexAttribI3ui = (delegate* unmanaged[Cdecl]<uint, uint, uint, uint, void>)Load("glVertexAttribI3ui");
         _vertexAttribI3uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttribI3uiv");
-        _vertexAttribI4uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttribI4uiv");
         _vertexAttribI4bv = (delegate* unmanaged[Cdecl]<uint, sbyte*, void>)Load("glVertexAttribI4bv");
+        _vertexAttribI4i = (delegate* unmanaged[Cdecl]<uint, int, int, int, int, void>)Load("glVertexAttribI4i");
+        _vertexAttribI4iv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttribI4iv");
         _vertexAttribI4sv = (delegate* unmanaged[Cdecl]<uint, short*, void>)Load("glVertexAttribI4sv");
         _vertexAttribI4ubv = (delegate* unmanaged[Cdecl]<uint, byte*, void>)Load("glVertexAttribI4ubv");
+        _vertexAttribI4ui = (delegate* unmanaged[Cdecl]<uint, uint, uint, uint, uint, void>)Load("glVertexAttribI4ui");
+        _vertexAttribI4uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttribI4uiv");
         _vertexAttribI4usv = (delegate* unmanaged[Cdecl]<uint, ushort*, void>)Load("glVertexAttribI4usv");
-        _getUniformuiv = (delegate* unmanaged[Cdecl]<ProgramId, int, uint*, void>)Load("glGetUniformuiv");
-        _bindFragDataLocation = (delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void>)Load("glBindFragDataLocation");
-        _getFragDataLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetFragDataLocation");
-        _uniform1ui = (delegate* unmanaged[Cdecl]<int, uint, void>)Load("glUniform1ui");
-        _uniform2ui = (delegate* unmanaged[Cdecl]<int, uint, uint, void>)Load("glUniform2ui");
-        _uniform3ui = (delegate* unmanaged[Cdecl]<int, uint, uint, uint, void>)Load("glUniform3ui");
-        _uniform4ui = (delegate* unmanaged[Cdecl]<int, uint, uint, uint, uint, void>)Load("glUniform4ui");
-        _uniform1uiv = (delegate* unmanaged[Cdecl]<int, int, uint*, void>)Load("glUniform1uiv");
-        _uniform2uiv = (delegate* unmanaged[Cdecl]<int, int, uint*, void>)Load("glUniform2uiv");
-        _uniform3uiv = (delegate* unmanaged[Cdecl]<int, int, uint*, void>)Load("glUniform3uiv");
-        _uniform4uiv = (delegate* unmanaged[Cdecl]<int, int, uint*, void>)Load("glUniform4uiv");
-        _texParameterIiv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, int*, void>)Load("glTexParameterIiv");
-        _texParameterIuiv = (delegate* unmanaged[Cdecl]<TextureTarget, TextureParameterName, uint*, void>)Load("glTexParameterIuiv");
-        _getTexParameterIiv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, int*, void>)Load("glGetTexParameterIiv");
-        _getTexParameterIuiv = (delegate* unmanaged[Cdecl]<TextureTarget, GetTextureParameter, uint*, void>)Load("glGetTexParameterIuiv");
-        _clearBufferiv = (delegate* unmanaged[Cdecl]<Buffer, int, int*, void>)Load("glClearBufferiv");
-        _clearBufferuiv = (delegate* unmanaged[Cdecl]<Buffer, int, uint*, void>)Load("glClearBufferuiv");
-        _clearBufferfv = (delegate* unmanaged[Cdecl]<Buffer, int, float*, void>)Load("glClearBufferfv");
-        _clearBufferfi = (delegate* unmanaged[Cdecl]<Buffer, int, float, int, void>)Load("glClearBufferfi");
-        _getStringi = (delegate* unmanaged[Cdecl]<StringName, uint, nint>)Load("glGetStringi");
-        _isRenderbuffer = (delegate* unmanaged[Cdecl]<RenderbufferId, byte>)Load("glIsRenderbuffer");
-        _bindRenderbuffer = (delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferId, void>)Load("glBindRenderbuffer");
-        _deleteRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glDeleteRenderbuffers");
-        _genRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glGenRenderbuffers");
-        _renderbufferStorage = (delegate* unmanaged[Cdecl]<RenderbufferTarget, InternalFormat, int, int, void>)Load("glRenderbufferStorage");
-        _getRenderbufferParameteriv = (delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferParameterName, int*, void>)Load("glGetRenderbufferParameteriv");
-        _isFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferId, byte>)Load("glIsFramebuffer");
-        _bindFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferId, void>)Load("glBindFramebuffer");
-        _deleteFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glDeleteFramebuffers");
-        _genFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glGenFramebuffers");
-        _checkFramebufferStatus = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferStatus>)Load("glCheckFramebufferStatus");
-        _framebufferTexture1D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void>)Load("glFramebufferTexture1D");
-        _framebufferTexture2D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void>)Load("glFramebufferTexture2D");
-        _framebufferTexture3D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, int, void>)Load("glFramebufferTexture3D");
-        _framebufferRenderbuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void>)Load("glFramebufferRenderbuffer");
-        _getFramebufferAttachmentParameteriv = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void>)Load("glGetFramebufferAttachmentParameteriv");
-        _generateMipmap = (delegate* unmanaged[Cdecl]<TextureTarget, void>)Load("glGenerateMipmap");
-        _blitFramebuffer = (delegate* unmanaged[Cdecl]<int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void>)Load("glBlitFramebuffer");
-        _renderbufferStorageMultisample = (delegate* unmanaged[Cdecl]<RenderbufferTarget, int, InternalFormat, int, int, void>)Load("glRenderbufferStorageMultisample");
-        _framebufferTextureLayer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureId, int, int, void>)Load("glFramebufferTextureLayer");
-        _mapBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, MapBufferAccessMask, void*>)Load("glMapBufferRange");
-        _flushMappedBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, nint, nint, void>)Load("glFlushMappedBufferRange");
-        _bindVertexArray = (delegate* unmanaged[Cdecl]<VertexArrayId, void>)Load("glBindVertexArray");
-        _deleteVertexArrays = (delegate* unmanaged[Cdecl]<int, VertexArrayId*, void>)Load("glDeleteVertexArrays");
-        _genVertexArrays = (delegate* unmanaged[Cdecl]<int, VertexArrayId*, void>)Load("glGenVertexArrays");
-        _isVertexArray = (delegate* unmanaged[Cdecl]<VertexArrayId, byte>)Load("glIsVertexArray");
-        _drawArraysInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, int, int, int, void>)Load("glDrawArraysInstanced");
-        _drawElementsInstanced = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void>)Load("glDrawElementsInstanced");
-        _texBuffer = (delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, void>)Load("glTexBuffer");
-        _primitiveRestartIndex = (delegate* unmanaged[Cdecl]<uint, void>)Load("glPrimitiveRestartIndex");
-        _copyBufferSubData = (delegate* unmanaged[Cdecl]<CopyBufferSubDataTarget, CopyBufferSubDataTarget, nint, nint, nint, void>)Load("glCopyBufferSubData");
-        _getUniformIndices = (delegate* unmanaged[Cdecl]<ProgramId, int, byte**, uint*, void>)Load("glGetUniformIndices");
-        _getActiveUniformsiv = (delegate* unmanaged[Cdecl]<ProgramId, int, uint*, UniformPName, int*, void>)Load("glGetActiveUniformsiv");
-        _getActiveUniformName = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void>)Load("glGetActiveUniformName");
-        _getUniformBlockIndex = (delegate* unmanaged[Cdecl]<ProgramId, byte*, uint>)Load("glGetUniformBlockIndex");
-        _getActiveUniformBlockiv = (delegate* unmanaged[Cdecl]<ProgramId, uint, UniformBlockPName, int*, void>)Load("glGetActiveUniformBlockiv");
-        _getActiveUniformBlockName = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void>)Load("glGetActiveUniformBlockName");
-        _uniformBlockBinding = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void>)Load("glUniformBlockBinding");
-        _drawElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void>)Load("glDrawElementsBaseVertex");
-        _drawRangeElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, int, void>)Load("glDrawRangeElementsBaseVertex");
-        _drawElementsInstancedBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, int, void>)Load("glDrawElementsInstancedBaseVertex");
-        _multiDrawElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int*, DrawElementsType, void**, int, int*, void>)Load("glMultiDrawElementsBaseVertex");
-        _provokingVertex = (delegate* unmanaged[Cdecl]<VertexProvokingMode, void>)Load("glProvokingVertex");
-        _fenceSync = (delegate* unmanaged[Cdecl]<SyncCondition, SyncBehaviorFlags, nint>)Load("glFenceSync");
-        _isSync = (delegate* unmanaged[Cdecl]<nint, byte>)Load("glIsSync");
-        _deleteSync = (delegate* unmanaged[Cdecl]<nint, void>)Load("glDeleteSync");
-        _clientWaitSync = (delegate* unmanaged[Cdecl]<nint, SyncObjectMask, ulong, SyncStatus>)Load("glClientWaitSync");
+        _vertexAttribIFormat = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, uint, void>)Load("glVertexAttribIFormat");
+        _vertexAttribIPointer = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribIType, int, void*, void>)Load("glVertexAttribIPointer");
+        _vertexAttribL1d = (delegate* unmanaged[Cdecl]<uint, double, void>)Load("glVertexAttribL1d");
+        _vertexAttribL1dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttribL1dv");
+        _vertexAttribL2d = (delegate* unmanaged[Cdecl]<uint, double, double, void>)Load("glVertexAttribL2d");
+        _vertexAttribL2dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttribL2dv");
+        _vertexAttribL3d = (delegate* unmanaged[Cdecl]<uint, double, double, double, void>)Load("glVertexAttribL3d");
+        _vertexAttribL3dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttribL3dv");
+        _vertexAttribL4d = (delegate* unmanaged[Cdecl]<uint, double, double, double, double, void>)Load("glVertexAttribL4d");
+        _vertexAttribL4dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttribL4dv");
+        _vertexAttribLFormat = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribLType, uint, void>)Load("glVertexAttribLFormat");
+        _vertexAttribLPointer = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribLType, int, void*, void>)Load("glVertexAttribLPointer");
+        _vertexAttribP1ui = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void>)Load("glVertexAttribP1ui");
+        _vertexAttribP1uiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void>)Load("glVertexAttribP1uiv");
+        _vertexAttribP2ui = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void>)Load("glVertexAttribP2ui");
+        _vertexAttribP2uiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void>)Load("glVertexAttribP2uiv");
+        _vertexAttribP3ui = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void>)Load("glVertexAttribP3ui");
+        _vertexAttribP3uiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void>)Load("glVertexAttribP3uiv");
+        _vertexAttribP4ui = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint, void>)Load("glVertexAttribP4ui");
+        _vertexAttribP4uiv = (delegate* unmanaged[Cdecl]<uint, VertexAttribPointerType, byte, uint*, void>)Load("glVertexAttribP4uiv");
+        _vertexAttribPointer = (delegate* unmanaged[Cdecl]<uint, int, VertexAttribPointerType, byte, int, void*, void>)Load("glVertexAttribPointer");
+        _vertexBindingDivisor = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexBindingDivisor");
+        _viewport = (delegate* unmanaged[Cdecl]<int, int, int, int, void>)Load("glViewport");
+        _viewportArrayv = (delegate* unmanaged[Cdecl]<uint, int, float*, void>)Load("glViewportArrayv");
+        _viewportIndexedf = (delegate* unmanaged[Cdecl]<uint, float, float, float, float, void>)Load("glViewportIndexedf");
+        _viewportIndexedfv = (delegate* unmanaged[Cdecl]<uint, float*, void>)Load("glViewportIndexedfv");
         _waitSync = (delegate* unmanaged[Cdecl]<nint, SyncBehaviorFlags, ulong, void>)Load("glWaitSync");
-        _getInteger64v = (delegate* unmanaged[Cdecl]<GetPName, long*, void>)Load("glGetInteger64v");
-        _getSynciv = (delegate* unmanaged[Cdecl]<nint, SyncParameterName, int, int*, int*, void>)Load("glGetSynciv");
-        _getInteger64i_v = (delegate* unmanaged[Cdecl]<GetPName, uint, long*, void>)Load("glGetInteger64i_v");
-        _getBufferParameteri64v = (delegate* unmanaged[Cdecl]<BufferTarget, BufferPName, long*, void>)Load("glGetBufferParameteri64v");
-        _framebufferTexture = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureId, int, void>)Load("glFramebufferTexture");
-        _texImage2DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, byte, void>)Load("glTexImage2DMultisample");
-        _texImage3DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, InternalFormat, int, int, int, byte, void>)Load("glTexImage3DMultisample");
-        _getMultisamplefv = (delegate* unmanaged[Cdecl]<GetMultisamplePNameNV, uint, float*, void>)Load("glGetMultisamplefv");
-        _sampleMaski = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glSampleMaski");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CullFace(TriangleFace mode)
+    public void ActiveShaderProgram(ProgramPipelineId pipeline, ProgramId program)
     {
-        _cullFace(mode);
+        _activeShaderProgram(pipeline, program);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FrontFace(FrontFaceDirection mode)
+    public void ActiveTexture(TextureUnit texture)
     {
-        _frontFace(mode);
+        _activeTexture(texture);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Hint(HintTarget target, HintMode mode)
+    public void AttachShader(ProgramId program, ShaderId shader)
     {
-        _hint(target, mode);
+        _attachShader(program, shader);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void LineWidth(float width)
+    public void BeginConditionalRender(uint id, ConditionalRenderMode mode)
     {
-        _lineWidth(width);
+        _beginConditionalRender(id, mode);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PointSize(float size)
+    public void BeginQuery(QueryTarget target, QueryId id)
     {
-        _pointSize(size);
+        _beginQuery(target, id);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PolygonMode(TriangleFace face, PolygonModeEnum mode)
+    public void BeginQueryIndexed(QueryTarget target, uint index, QueryId id)
     {
-        _polygonMode(face, mode);
+        _beginQueryIndexed(target, index, id);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Scissor(int x, int y, int width, int height)
+    public void BeginTransformFeedback(PrimitiveType primitiveMode)
     {
-        _scissor(x, y, width, height);
+        _beginTransformFeedback(primitiveMode);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexParameterf(TextureTarget target, TextureParameterName pname, float param)
+    public void BindAttribLocation(ProgramId program, uint index, byte* name)
     {
-        _texParameterf(target, pname, param);
+        _bindAttribLocation(program, index, name);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexParameterfv(TextureTarget target, TextureParameterName pname, float* @params)
+    public void BindBuffer(BufferTarget target, BufferId buffer)
     {
-        _texParameterfv(target, pname, @params);
+        _bindBuffer(target, buffer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexParameteri(TextureTarget target, TextureParameterName pname, int param)
+    public void BindBufferBase(BufferTarget target, uint index, BufferId buffer)
     {
-        _texParameteri(target, pname, param);
+        _bindBufferBase(target, index, buffer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexParameteriv(TextureTarget target, TextureParameterName pname, int* @params)
+    public void BindBufferRange(BufferTarget target, uint index, BufferId buffer, nint offset, nint size)
     {
-        _texParameteriv(target, pname, @params);
+        _bindBufferRange(target, index, buffer, offset, size);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexImage1D(TextureTarget target, int level, InternalFormat internalformat, int width, int border, PixelFormat format, PixelType type, void* pixels)
+    public void BindBuffersBase(BufferTarget target, uint first, int count, BufferId* buffers)
     {
-        _texImage1D(target, level, internalformat, width, border, format, type, pixels);
+        _bindBuffersBase(target, first, count, buffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexImage2D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, void* pixels)
+    public void BindBuffersRange(BufferTarget target, uint first, int count, BufferId* buffers, nint offsets, nint sizes)
     {
-        _texImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+        _bindBuffersRange(target, first, count, buffers, offsets, sizes);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawBuffer(DrawBufferMode buf)
+    public void BindFragDataLocation(ProgramId program, uint color, byte* name)
     {
-        _drawBuffer(buf);
+        _bindFragDataLocation(program, color, name);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Clear(ClearBufferMask mask)
+    public void BindFragDataLocationIndexed(ProgramId program, uint colorNumber, uint index, byte* name)
     {
-        _clear(mask);
+        _bindFragDataLocationIndexed(program, colorNumber, index, name);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearColor(float red, float green, float blue, float alpha)
+    public void BindFramebuffer(FramebufferTarget target, FramebufferId framebuffer)
     {
-        _clearColor(red, green, blue, alpha);
+        _bindFramebuffer(target, framebuffer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearStencil(int s)
+    public void BindImageTexture(uint unit, TextureId texture, int level, bool layered, int layer, BufferAccess access, InternalFormat format)
     {
-        _clearStencil(s);
+        _bindImageTexture(unit, texture, level, ((layered) ? (byte)1 : (byte)0), layer, access, format);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearDepth(double depth)
+    public void BindImageTextures(uint first, int count, TextureId* textures)
     {
-        _clearDepth(depth);
+        _bindImageTextures(first, count, textures);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void StencilMask(uint mask)
+    public void BindProgramPipeline(ProgramPipelineId pipeline)
     {
-        _stencilMask(mask);
+        _bindProgramPipeline(pipeline);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ColorMask(bool red, bool green, bool blue, bool alpha)
+    public void BindRenderbuffer(RenderbufferTarget target, RenderbufferId renderbuffer)
     {
-        _colorMask(((red) ? (byte)1 : (byte)0), ((green) ? (byte)1 : (byte)0), ((blue) ? (byte)1 : (byte)0), ((alpha) ? (byte)1 : (byte)0));
+        _bindRenderbuffer(target, renderbuffer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DepthMask(bool flag)
+    public void BindSampler(uint unit, SamplerId sampler)
     {
-        _depthMask(((flag) ? (byte)1 : (byte)0));
+        _bindSampler(unit, sampler);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Disable(EnableCap cap)
+    public void BindSamplers(uint first, int count, SamplerId* samplers)
     {
-        _disable(cap);
+        _bindSamplers(first, count, samplers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Enable(EnableCap cap)
+    public void BindTexture(TextureTarget target, TextureId texture)
     {
-        _enable(cap);
+        _bindTexture(target, texture);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Finish()
+    public void BindTextures(uint first, int count, TextureId* textures)
     {
-        _finish();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Flush()
-    {
-        _flush();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendFunc(BlendingFactor sfactor, BlendingFactor dfactor)
-    {
-        _blendFunc(sfactor, dfactor);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void LogicOp(LogicOpEnum opcode)
-    {
-        _logicOp(opcode);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void StencilFunc(StencilFunction func, int @ref, uint mask)
-    {
-        _stencilFunc(func, @ref, mask);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void StencilOp(StencilOpEnum fail, StencilOpEnum zfail, StencilOpEnum zpass)
-    {
-        _stencilOp(fail, zfail, zpass);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DepthFunc(DepthFunction func)
-    {
-        _depthFunc(func);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PixelStoref(PixelStoreParameter pname, float param)
-    {
-        _pixelStoref(pname, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PixelStorei(PixelStoreParameter pname, int param)
-    {
-        _pixelStorei(pname, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadBuffer(ReadBufferMode src)
-    {
-        _readBuffer(src);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadPixels(int x, int y, int width, int height, PixelFormat format, PixelType type, void* pixels)
-    {
-        _readPixels(x, y, width, height, format, type, pixels);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBooleanv(GetPName pname, byte* data)
-    {
-        _getBooleanv(pname, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetDoublev(GetPName pname, double* data)
-    {
-        _getDoublev(pname, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ErrorCode GetError()
-    {
-        var result = _getError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetFloatv(GetPName pname, float* data)
-    {
-        _getFloatv(pname, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetIntegerv(GetPName pname, int* data)
-    {
-        _getIntegerv(pname, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string? GetString(StringName name)
-    {
-        var result = _getString(name);
-        CheckError();
-        return Marshal.PtrToStringAnsi(result);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTexImage(TextureTarget target, int level, PixelFormat format, PixelType type, void* pixels)
-    {
-        _getTexImage(target, level, format, type, pixels);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTexParameterfv(TextureTarget target, GetTextureParameter pname, float* @params)
-    {
-        _getTexParameterfv(target, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTexParameteriv(TextureTarget target, GetTextureParameter pname, int* @params)
-    {
-        _getTexParameteriv(target, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTexLevelParameterfv(TextureTarget target, int level, GetTextureParameter pname, float* @params)
-    {
-        _getTexLevelParameterfv(target, level, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTexLevelParameteriv(TextureTarget target, int level, GetTextureParameter pname, int* @params)
-    {
-        _getTexLevelParameteriv(target, level, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsEnabled(EnableCap cap)
-    {
-        var result = _isEnabled(cap);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DepthRange(double n, double f)
-    {
-        _depthRange(n, f);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Viewport(int x, int y, int width, int height)
-    {
-        _viewport(x, y, width, height);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PolygonOffsetClamp(float factor, float units, float clamp)
-    {
-        _polygonOffsetClamp(factor, units, clamp);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MultiDrawElementsIndirectCount(PrimitiveType mode, DrawElementsType type, void* indirect, nint drawcount, int maxdrawcount, int stride)
-    {
-        _multiDrawElementsIndirectCount(mode, type, indirect, drawcount, maxdrawcount, stride);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MultiDrawArraysIndirectCount(PrimitiveType mode, void* indirect, nint drawcount, int maxdrawcount, int stride)
-    {
-        _multiDrawArraysIndirectCount(mode, indirect, drawcount, maxdrawcount, stride);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SpecializeShader(ShaderId shader, byte* pEntryPoint, uint numSpecializationConstants, uint* pConstantIndex, uint* pConstantValue)
-    {
-        _specializeShader(shader, pEntryPoint, numSpecializationConstants, pConstantIndex, pConstantValue);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureBarrier()
-    {
-        _textureBarrier();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReadnPixels(int x, int y, int width, int height, PixelFormat format, PixelType type, int bufSize, void* data)
-    {
-        _readnPixels(x, y, width, height, format, type, bufSize, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetnUniformuiv(ProgramId program, int location, int bufSize, uint* @params)
-    {
-        _getnUniformuiv(program, location, bufSize, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetnUniformiv(ProgramId program, int location, int bufSize, int* @params)
-    {
-        _getnUniformiv(program, location, bufSize, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetnUniformfv(ProgramId program, int location, int bufSize, float* @params)
-    {
-        _getnUniformfv(program, location, bufSize, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetnUniformdv(ProgramId program, int location, int bufSize, double* @params)
-    {
-        _getnUniformdv(program, location, bufSize, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetnTexImage(TextureTarget target, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
-    {
-        _getnTexImage(target, level, format, type, bufSize, pixels);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetnCompressedTexImage(TextureTarget target, int lod, int bufSize, void* pixels)
-    {
-        _getnCompressedTexImage(target, lod, bufSize, pixels);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GraphicsResetStatus GetGraphicsResetStatus()
-    {
-        var result = _getGraphicsResetStatus();
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetCompressedTextureSubImage(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int bufSize, void* pixels)
-    {
-        _getCompressedTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, bufSize, pixels);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTextureSubImage(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, int bufSize, void* pixels)
-    {
-        _getTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, bufSize, pixels);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MemoryBarrierByRegion(MemoryBarrierMask barriers)
-    {
-        _memoryBarrierByRegion(barriers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryBufferObjectuiv(QueryId id, BufferId buffer, QueryObjectParameterName pname, nint offset)
-    {
-        _getQueryBufferObjectuiv(id, buffer, pname, offset);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryBufferObjectui64v(QueryId id, BufferId buffer, QueryObjectParameterName pname, nint offset)
-    {
-        _getQueryBufferObjectui64v(id, buffer, pname, offset);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryBufferObjectiv(QueryId id, BufferId buffer, QueryObjectParameterName pname, nint offset)
-    {
-        _getQueryBufferObjectiv(id, buffer, pname, offset);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryBufferObjecti64v(QueryId id, BufferId buffer, QueryObjectParameterName pname, nint offset)
-    {
-        _getQueryBufferObjecti64v(id, buffer, pname, offset);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateQueries(QueryTarget target, int n, QueryId* ids)
-    {
-        _createQueries(target, n, ids);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateProgramPipelines(int n, ProgramPipelineId* pipelines)
-    {
-        _createProgramPipelines(n, pipelines);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateSamplers(int n, SamplerId* samplers)
-    {
-        _createSamplers(n, samplers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexArrayIndexed64iv(VertexArrayId vaobj, uint index, VertexArrayPName pname, long* param)
-    {
-        _getVertexArrayIndexed64iv(vaobj, index, pname, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexArrayIndexediv(VertexArrayId vaobj, uint index, VertexArrayPName pname, int* param)
-    {
-        _getVertexArrayIndexediv(vaobj, index, pname, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexArrayiv(VertexArrayId vaobj, VertexArrayPName pname, int* param)
-    {
-        _getVertexArrayiv(vaobj, pname, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayBindingDivisor(VertexArrayId vaobj, uint bindingindex, uint divisor)
-    {
-        _vertexArrayBindingDivisor(vaobj, bindingindex, divisor);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayAttribLFormat(VertexArrayId vaobj, uint attribindex, int size, VertexAttribLType type, uint relativeoffset)
-    {
-        _vertexArrayAttribLFormat(vaobj, attribindex, size, type, relativeoffset);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayAttribIFormat(VertexArrayId vaobj, uint attribindex, int size, VertexAttribIType type, uint relativeoffset)
-    {
-        _vertexArrayAttribIFormat(vaobj, attribindex, size, type, relativeoffset);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayAttribFormat(VertexArrayId vaobj, uint attribindex, int size, VertexAttribType type, bool normalized, uint relativeoffset)
-    {
-        _vertexArrayAttribFormat(vaobj, attribindex, size, type, ((normalized) ? (byte)1 : (byte)0), relativeoffset);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayAttribBinding(VertexArrayId vaobj, uint attribindex, uint bindingindex)
-    {
-        _vertexArrayAttribBinding(vaobj, attribindex, bindingindex);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayVertexBuffers(VertexArrayId vaobj, uint first, int count, BufferId* buffers, nint offsets, int* strides)
-    {
-        _vertexArrayVertexBuffers(vaobj, first, count, buffers, offsets, strides);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayVertexBuffer(VertexArrayId vaobj, uint bindingindex, BufferId buffer, nint offset, int stride)
-    {
-        _vertexArrayVertexBuffer(vaobj, bindingindex, buffer, offset, stride);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayElementBuffer(VertexArrayId vaobj, BufferId buffer)
-    {
-        _vertexArrayElementBuffer(vaobj, buffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void EnableVertexArrayAttrib(VertexArrayId vaobj, uint index)
-    {
-        _enableVertexArrayAttrib(vaobj, index);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DisableVertexArrayAttrib(VertexArrayId vaobj, uint index)
-    {
-        _disableVertexArrayAttrib(vaobj, index);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateVertexArrays(int n, VertexArrayId* arrays)
-    {
-        _createVertexArrays(n, arrays);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTextureParameteriv(TextureId texture, GetTextureParameter pname, int* @params)
-    {
-        _getTextureParameteriv(texture, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTextureParameterIuiv(TextureId texture, GetTextureParameter pname, uint* @params)
-    {
-        _getTextureParameterIuiv(texture, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTextureParameterIiv(TextureId texture, GetTextureParameter pname, int* @params)
-    {
-        _getTextureParameterIiv(texture, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTextureParameterfv(TextureId texture, GetTextureParameter pname, float* @params)
-    {
-        _getTextureParameterfv(texture, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTextureLevelParameteriv(TextureId texture, int level, GetTextureParameter pname, int* @params)
-    {
-        _getTextureLevelParameteriv(texture, level, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTextureLevelParameterfv(TextureId texture, int level, GetTextureParameter pname, float* @params)
-    {
-        _getTextureLevelParameterfv(texture, level, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetCompressedTextureImage(TextureId texture, int level, int bufSize, void* pixels)
-    {
-        _getCompressedTextureImage(texture, level, bufSize, pixels);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTextureImage(TextureId texture, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
-    {
-        _getTextureImage(texture, level, format, type, bufSize, pixels);
+        _bindTextures(first, count, textures);
         CheckError();
     }
 
@@ -1988,213 +1502,137 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenerateTextureMipmap(TextureId texture)
+    public void BindTransformFeedback(BindTransformFeedbackTarget target, TransformFeedbackId id)
     {
-        _generateTextureMipmap(texture);
+        _bindTransformFeedback(target, id);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureParameteriv(TextureId texture, TextureParameterName pname, int* param)
+    public void BindVertexArray(VertexArrayId array)
     {
-        _textureParameteriv(texture, pname, param);
+        _bindVertexArray(array);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureParameterIuiv(TextureId texture, TextureParameterName pname, uint* @params)
+    public void BindVertexBuffer(uint bindingindex, BufferId buffer, nint offset, int stride)
     {
-        _textureParameterIuiv(texture, pname, @params);
+        _bindVertexBuffer(bindingindex, buffer, offset, stride);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureParameterIiv(TextureId texture, TextureParameterName pname, int* @params)
+    public void BindVertexBuffers(uint first, int count, BufferId* buffers, nint offsets, int* strides)
     {
-        _textureParameterIiv(texture, pname, @params);
+        _bindVertexBuffers(first, count, buffers, offsets, strides);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureParameteri(TextureId texture, TextureParameterName pname, int param)
+    public void BlendColor(float red, float green, float blue, float alpha)
     {
-        _textureParameteri(texture, pname, param);
+        _blendColor(red, green, blue, alpha);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureParameterfv(TextureId texture, TextureParameterName pname, float* param)
+    public void BlendEquation(BlendEquationModeEXT mode)
     {
-        _textureParameterfv(texture, pname, param);
+        _blendEquation(mode);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureParameterf(TextureId texture, TextureParameterName pname, float param)
+    public void BlendEquationi(uint buf, BlendEquationModeEXT mode)
     {
-        _textureParameterf(texture, pname, param);
+        _blendEquationi(buf, mode);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CopyTextureSubImage3D(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
+    public void BlendEquationSeparate(BlendEquationModeEXT modeRGB, BlendEquationModeEXT modeAlpha)
     {
-        _copyTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, x, y, width, height);
+        _blendEquationSeparate(modeRGB, modeAlpha);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CopyTextureSubImage2D(TextureId texture, int level, int xoffset, int yoffset, int x, int y, int width, int height)
+    public void BlendEquationSeparatei(uint buf, BlendEquationModeEXT modeRGB, BlendEquationModeEXT modeAlpha)
     {
-        _copyTextureSubImage2D(texture, level, xoffset, yoffset, x, y, width, height);
+        _blendEquationSeparatei(buf, modeRGB, modeAlpha);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CopyTextureSubImage1D(TextureId texture, int level, int xoffset, int x, int y, int width)
+    public void BlendFunc(BlendingFactor sfactor, BlendingFactor dfactor)
     {
-        _copyTextureSubImage1D(texture, level, xoffset, x, y, width);
+        _blendFunc(sfactor, dfactor);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTextureSubImage3D(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, InternalFormat format, int imageSize, void* data)
+    public void BlendFunci(uint buf, BlendingFactor src, BlendingFactor dst)
     {
-        _compressedTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
+        _blendFunci(buf, src, dst);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTextureSubImage2D(TextureId texture, int level, int xoffset, int yoffset, int width, int height, InternalFormat format, int imageSize, void* data)
+    public void BlendFuncSeparate(BlendingFactor sfactorRGB, BlendingFactor dfactorRGB, BlendingFactor sfactorAlpha, BlendingFactor dfactorAlpha)
     {
-        _compressedTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, imageSize, data);
+        _blendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTextureSubImage1D(TextureId texture, int level, int xoffset, int width, InternalFormat format, int imageSize, void* data)
+    public void BlendFuncSeparatei(uint buf, BlendingFactor srcRGB, BlendingFactor dstRGB, BlendingFactor srcAlpha, BlendingFactor dstAlpha)
     {
-        _compressedTextureSubImage1D(texture, level, xoffset, width, format, imageSize, data);
+        _blendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureSubImage3D(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
+    public void BlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
     {
-        _textureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+        _blitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureSubImage2D(TextureId texture, int level, int xoffset, int yoffset, int width, int height, PixelFormat format, PixelType type, void* pixels)
+    public void BlitNamedFramebuffer(FramebufferId readFramebuffer, FramebufferId drawFramebuffer, int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
     {
-        _textureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels);
+        _blitNamedFramebuffer(readFramebuffer, drawFramebuffer, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureSubImage1D(TextureId texture, int level, int xoffset, int width, PixelFormat format, PixelType type, void* pixels)
+    public void BufferData(BufferTarget target, nint size, void* data, BufferUsage usage)
     {
-        _textureSubImage1D(texture, level, xoffset, width, format, type, pixels);
+        _bufferData(target, size, data, usage);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureStorage3DMultisample(TextureId texture, int samples, SizedInternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
+    public void BufferStorage(BufferStorageTarget target, nint size, void* data, BufferStorageMask flags)
     {
-        _textureStorage3DMultisample(texture, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        _bufferStorage(target, size, data, flags);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureStorage2DMultisample(TextureId texture, int samples, SizedInternalFormat internalformat, int width, int height, bool fixedsamplelocations)
+    public void BufferSubData(BufferTarget target, nint offset, nint size, void* data)
     {
-        _textureStorage2DMultisample(texture, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        _bufferSubData(target, offset, size, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureStorage3D(TextureId texture, int levels, SizedInternalFormat internalformat, int width, int height, int depth)
+    public FramebufferStatus CheckFramebufferStatus(FramebufferTarget target)
     {
-        _textureStorage3D(texture, levels, internalformat, width, height, depth);
+        var result = _checkFramebufferStatus(target);
         CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureStorage2D(TextureId texture, int levels, SizedInternalFormat internalformat, int width, int height)
-    {
-        _textureStorage2D(texture, levels, internalformat, width, height);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureStorage1D(TextureId texture, int levels, SizedInternalFormat internalformat, int width)
-    {
-        _textureStorage1D(texture, levels, internalformat, width);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureBufferRange(TextureId texture, SizedInternalFormat internalformat, BufferId buffer, nint offset, nint size)
-    {
-        _textureBufferRange(texture, internalformat, buffer, offset, size);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureBuffer(TextureId texture, SizedInternalFormat internalformat, BufferId buffer)
-    {
-        _textureBuffer(texture, internalformat, buffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateTextures(TextureTarget target, int n, TextureId* textures)
-    {
-        _createTextures(target, n, textures);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedRenderbufferParameteriv(RenderbufferId renderbuffer, RenderbufferParameterName pname, int* @params)
-    {
-        _getNamedRenderbufferParameteriv(renderbuffer, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedRenderbufferStorageMultisample(RenderbufferId renderbuffer, int samples, InternalFormat internalformat, int width, int height)
-    {
-        _namedRenderbufferStorageMultisample(renderbuffer, samples, internalformat, width, height);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedRenderbufferStorage(RenderbufferId renderbuffer, InternalFormat internalformat, int width, int height)
-    {
-        _namedRenderbufferStorage(renderbuffer, internalformat, width, height);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateRenderbuffers(int n, RenderbufferId* renderbuffers)
-    {
-        _createRenderbuffers(n, renderbuffers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedFramebufferAttachmentParameteriv(FramebufferId framebuffer, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
-    {
-        _getNamedFramebufferAttachmentParameteriv(framebuffer, attachment, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedFramebufferParameteriv(FramebufferId framebuffer, GetFramebufferParameter pname, int* param)
-    {
-        _getNamedFramebufferParameteriv(framebuffer, pname, param);
-        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -2206,9 +1644,93 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlitNamedFramebuffer(FramebufferId readFramebuffer, FramebufferId drawFramebuffer, int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
+    public void ClampColor(ClampColorTarget target, ClampColorMode clamp)
     {
-        _blitNamedFramebuffer(readFramebuffer, drawFramebuffer, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+        _clampColor(target, clamp);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Clear(ClearBufferMask mask)
+    {
+        _clear(mask);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearBufferData(BufferStorageTarget target, SizedInternalFormat internalformat, PixelFormat format, PixelType type, void* data)
+    {
+        _clearBufferData(target, internalformat, format, type, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearBufferfi(Buffer buffer, int drawbuffer, float depth, int stencil)
+    {
+        _clearBufferfi(buffer, drawbuffer, depth, stencil);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearBufferfv(Buffer buffer, int drawbuffer, float* value)
+    {
+        _clearBufferfv(buffer, drawbuffer, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearBufferiv(Buffer buffer, int drawbuffer, int* value)
+    {
+        _clearBufferiv(buffer, drawbuffer, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearBufferSubData(BufferTarget target, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
+    {
+        _clearBufferSubData(target, internalformat, offset, size, format, type, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearBufferuiv(Buffer buffer, int drawbuffer, uint* value)
+    {
+        _clearBufferuiv(buffer, drawbuffer, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearColor(float red, float green, float blue, float alpha)
+    {
+        _clearColor(red, green, blue, alpha);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearDepth(double depth)
+    {
+        _clearDepth(depth);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearDepthf(float d)
+    {
+        _clearDepthf(d);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearNamedBufferData(BufferId buffer, SizedInternalFormat internalformat, PixelFormat format, PixelType type, void* data)
+    {
+        _clearNamedBufferData(buffer, internalformat, format, type, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearNamedBufferSubData(BufferId buffer, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
+    {
+        _clearNamedBufferSubData(buffer, internalformat, offset, size, format, type, data);
         CheckError();
     }
 
@@ -2227,13 +1749,6 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearNamedFramebufferuiv(FramebufferId framebuffer, Buffer buffer, int drawbuffer, uint* value)
-    {
-        _clearNamedFramebufferuiv(framebuffer, buffer, drawbuffer, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ClearNamedFramebufferiv(FramebufferId framebuffer, Buffer buffer, int drawbuffer, int* value)
     {
         _clearNamedFramebufferiv(framebuffer, buffer, drawbuffer, value);
@@ -2241,278 +1756,16 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateNamedFramebufferSubData(FramebufferId framebuffer, int numAttachments, FramebufferAttachment* attachments, int x, int y, int width, int height)
+    public void ClearNamedFramebufferuiv(FramebufferId framebuffer, Buffer buffer, int drawbuffer, uint* value)
     {
-        _invalidateNamedFramebufferSubData(framebuffer, numAttachments, attachments, x, y, width, height);
+        _clearNamedFramebufferuiv(framebuffer, buffer, drawbuffer, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateNamedFramebufferData(FramebufferId framebuffer, int numAttachments, FramebufferAttachment* attachments)
+    public void ClearStencil(int s)
     {
-        _invalidateNamedFramebufferData(framebuffer, numAttachments, attachments);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferReadBuffer(FramebufferId framebuffer, ColorBuffer src)
-    {
-        _namedFramebufferReadBuffer(framebuffer, src);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferDrawBuffers(FramebufferId framebuffer, int n, ColorBuffer* bufs)
-    {
-        _namedFramebufferDrawBuffers(framebuffer, n, bufs);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferDrawBuffer(FramebufferId framebuffer, ColorBuffer buf)
-    {
-        _namedFramebufferDrawBuffer(framebuffer, buf);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferTextureLayer(FramebufferId framebuffer, FramebufferAttachment attachment, TextureId texture, int level, int layer)
-    {
-        _namedFramebufferTextureLayer(framebuffer, attachment, texture, level, layer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferTexture(FramebufferId framebuffer, FramebufferAttachment attachment, TextureId texture, int level)
-    {
-        _namedFramebufferTexture(framebuffer, attachment, texture, level);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferParameteri(FramebufferId framebuffer, FramebufferParameterName pname, int param)
-    {
-        _namedFramebufferParameteri(framebuffer, pname, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferRenderbuffer(FramebufferId framebuffer, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, RenderbufferId renderbuffer)
-    {
-        _namedFramebufferRenderbuffer(framebuffer, attachment, renderbuffertarget, renderbuffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateFramebuffers(int n, FramebufferId* framebuffers)
-    {
-        _createFramebuffers(n, framebuffers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedBufferSubData(BufferId buffer, nint offset, nint size, void* data)
-    {
-        _getNamedBufferSubData(buffer, offset, size, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedBufferPointerv(BufferId buffer, BufferPointerName pname, void** @params)
-    {
-        _getNamedBufferPointerv(buffer, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedBufferParameteri64v(BufferId buffer, BufferPName pname, long* @params)
-    {
-        _getNamedBufferParameteri64v(buffer, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedBufferParameteriv(BufferId buffer, BufferPName pname, int* @params)
-    {
-        _getNamedBufferParameteriv(buffer, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FlushMappedNamedBufferRange(BufferId buffer, nint offset, nint length)
-    {
-        _flushMappedNamedBufferRange(buffer, offset, length);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool UnmapNamedBuffer(BufferId buffer)
-    {
-        var result = _unmapNamedBuffer(buffer);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void* MapNamedBufferRange(BufferId buffer, nint offset, nint length, MapBufferAccessMask access)
-    {
-        var result = _mapNamedBufferRange(buffer, offset, length, access);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void* MapNamedBuffer(BufferId buffer, BufferAccess access)
-    {
-        var result = _mapNamedBuffer(buffer, access);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearNamedBufferSubData(BufferId buffer, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
-    {
-        _clearNamedBufferSubData(buffer, internalformat, offset, size, format, type, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearNamedBufferData(BufferId buffer, SizedInternalFormat internalformat, PixelFormat format, PixelType type, void* data)
-    {
-        _clearNamedBufferData(buffer, internalformat, format, type, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CopyNamedBufferSubData(BufferId readBuffer, BufferId writeBuffer, nint readOffset, nint writeOffset, nint size)
-    {
-        _copyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset, size);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedBufferSubData(BufferId buffer, nint offset, nint size, void* data)
-    {
-        _namedBufferSubData(buffer, offset, size, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedBufferData(BufferId buffer, nint size, void* data, BufferUsage usage)
-    {
-        _namedBufferData(buffer, size, data, usage);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedBufferStorage(BufferId buffer, nint size, void* data, BufferStorageMask flags)
-    {
-        _namedBufferStorage(buffer, size, data, flags);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateBuffers(int n, BufferId* buffers)
-    {
-        _createBuffers(n, buffers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTransformFeedbacki64_v(TransformFeedbackId xfb, TransformFeedbackPName pname, uint index, long* param)
-    {
-        _getTransformFeedbacki64_v(xfb, pname, index, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTransformFeedbacki_v(TransformFeedbackId xfb, TransformFeedbackPName pname, uint index, int* param)
-    {
-        _getTransformFeedbacki_v(xfb, pname, index, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTransformFeedbackiv(TransformFeedbackId xfb, TransformFeedbackPName pname, int* param)
-    {
-        _getTransformFeedbackiv(xfb, pname, param);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TransformFeedbackBufferRange(TransformFeedbackId xfb, uint index, BufferId buffer, nint offset, nint size)
-    {
-        _transformFeedbackBufferRange(xfb, index, buffer, offset, size);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TransformFeedbackBufferBase(TransformFeedbackId xfb, uint index, BufferId buffer)
-    {
-        _transformFeedbackBufferBase(xfb, index, buffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateTransformFeedbacks(int n, TransformFeedbackId* ids)
-    {
-        _createTransformFeedbacks(n, ids);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClipControl(ClipControlOrigin origin, ClipControlDepth depth)
-    {
-        _clipControl(origin, depth);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindVertexBuffers(uint first, int count, BufferId* buffers, nint offsets, int* strides)
-    {
-        _bindVertexBuffers(first, count, buffers, offsets, strides);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindImageTextures(uint first, int count, TextureId* textures)
-    {
-        _bindImageTextures(first, count, textures);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindSamplers(uint first, int count, SamplerId* samplers)
-    {
-        _bindSamplers(first, count, samplers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindTextures(uint first, int count, TextureId* textures)
-    {
-        _bindTextures(first, count, textures);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBuffersRange(BufferTarget target, uint first, int count, BufferId* buffers, nint offsets, nint sizes)
-    {
-        _bindBuffersRange(target, first, count, buffers, offsets, sizes);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBuffersBase(BufferTarget target, uint first, int count, BufferId* buffers)
-    {
-        _bindBuffersBase(target, first, count, buffers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearTexSubImage(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* data)
-    {
-        _clearTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
+        _clearStencil(s);
         CheckError();
     }
 
@@ -2524,286 +1777,115 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BufferStorage(BufferStorageTarget target, nint size, void* data, BufferStorageMask flags)
+    public void ClearTexSubImage(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* data)
     {
-        _bufferStorage(target, size, data, flags);
+        _clearTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetPointerv(GetPointervPName pname, void** @params)
+    public SyncStatus ClientWaitSync(nint sync, SyncObjectMask flags, ulong timeout)
     {
-        _getPointerv(pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetObjectPtrLabel(void* ptr, int bufSize, int* length, byte* label)
-    {
-        _getObjectPtrLabel(ptr, bufSize, length, label);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ObjectPtrLabel(void* ptr, int length, byte* label)
-    {
-        _objectPtrLabel(ptr, length, label);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetObjectLabel(ObjectIdentifier identifier, uint name, int bufSize, int* length, byte* label)
-    {
-        _getObjectLabel(identifier, name, bufSize, length, label);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ObjectLabel(ObjectIdentifier identifier, uint name, int length, byte* label)
-    {
-        _objectLabel(identifier, name, length, label);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PopDebugGroup()
-    {
-        _popDebugGroup();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PushDebugGroup(DebugSource source, uint id, int length, byte* message)
-    {
-        _pushDebugGroup(source, id, length, message);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint GetDebugMessageLog(uint count, int bufSize, DebugSource* sources, DebugType* types, uint* ids, DebugSeverity* severities, int* lengths, byte* messageLog)
-    {
-        var result = _getDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
+        var result = _clientWaitSync(sync, flags, timeout);
         CheckError();
         return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DebugMessageCallback(DebugProc callback, void* userParam)
+    public void ClipControl(ClipControlOrigin origin, ClipControlDepth depth)
     {
-        _debugMessageCallback(callback, userParam);
+        _clipControl(origin, depth);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DebugMessageInsert(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, byte* buf)
+    public void ColorMask(bool red, bool green, bool blue, bool alpha)
     {
-        _debugMessageInsert(source, type, id, severity, length, buf);
+        _colorMask(((red) ? (byte)1 : (byte)0), ((green) ? (byte)1 : (byte)0), ((blue) ? (byte)1 : (byte)0), ((alpha) ? (byte)1 : (byte)0));
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DebugMessageControl(DebugSource source, DebugType type, DebugSeverity severity, int count, uint* ids, bool enabled)
+    public void ColorMaski(uint index, bool r, bool g, bool b, bool a)
     {
-        _debugMessageControl(source, type, severity, count, ids, ((enabled) ? (byte)1 : (byte)0));
+        _colorMaski(index, ((r) ? (byte)1 : (byte)0), ((g) ? (byte)1 : (byte)0), ((b) ? (byte)1 : (byte)0), ((a) ? (byte)1 : (byte)0));
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexBindingDivisor(uint bindingindex, uint divisor)
+    public void CompileShader(ShaderId shader)
     {
-        _vertexBindingDivisor(bindingindex, divisor);
+        _compileShader(shader);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribBinding(uint attribindex, uint bindingindex)
+    public void CompressedTexImage1D(TextureTarget target, int level, InternalFormat internalformat, int width, int border, int imageSize, void* data)
     {
-        _vertexAttribBinding(attribindex, bindingindex);
+        _compressedTexImage1D(target, level, internalformat, width, border, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribLFormat(uint attribindex, int size, VertexAttribLType type, uint relativeoffset)
+    public void CompressedTexImage2D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int border, int imageSize, void* data)
     {
-        _vertexAttribLFormat(attribindex, size, type, relativeoffset);
+        _compressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribIFormat(uint attribindex, int size, VertexAttribIType type, uint relativeoffset)
+    public void CompressedTexImage3D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int depth, int border, int imageSize, void* data)
     {
-        _vertexAttribIFormat(attribindex, size, type, relativeoffset);
+        _compressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribFormat(uint attribindex, int size, VertexAttribType type, bool normalized, uint relativeoffset)
+    public void CompressedTexSubImage1D(TextureTarget target, int level, int xoffset, int width, InternalFormat format, int imageSize, void* data)
     {
-        _vertexAttribFormat(attribindex, size, type, ((normalized) ? (byte)1 : (byte)0), relativeoffset);
+        _compressedTexSubImage1D(target, level, xoffset, width, format, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindVertexBuffer(uint bindingindex, BufferId buffer, nint offset, int stride)
+    public void CompressedTexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int width, int height, InternalFormat format, int imageSize, void* data)
     {
-        _bindVertexBuffer(bindingindex, buffer, offset, stride);
+        _compressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TextureView(TextureId texture, TextureTarget target, TextureId origtexture, SizedInternalFormat internalformat, uint minlevel, uint numlevels, uint minlayer, uint numlayers)
+    public void CompressedTexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, InternalFormat format, int imageSize, void* data)
     {
-        _textureView(texture, target, origtexture, internalformat, minlevel, numlevels, minlayer, numlayers);
+        _compressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexStorage3DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
+    public void CompressedTextureSubImage1D(TextureId texture, int level, int xoffset, int width, InternalFormat format, int imageSize, void* data)
     {
-        _texStorage3DMultisample(target, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        _compressedTextureSubImage1D(texture, level, xoffset, width, format, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexStorage2DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, bool fixedsamplelocations)
+    public void CompressedTextureSubImage2D(TextureId texture, int level, int xoffset, int yoffset, int width, int height, InternalFormat format, int imageSize, void* data)
     {
-        _texStorage2DMultisample(target, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        _compressedTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexBufferRange(TextureTarget target, SizedInternalFormat internalformat, BufferId buffer, nint offset, nint size)
+    public void CompressedTextureSubImage3D(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, InternalFormat format, int imageSize, void* data)
     {
-        _texBufferRange(target, internalformat, buffer, offset, size);
+        _compressedTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ShaderStorageBlockBinding(ProgramId program, uint storageBlockIndex, uint storageBlockBinding)
+    public void CopyBufferSubData(CopyBufferSubDataTarget readTarget, CopyBufferSubDataTarget writeTarget, nint readOffset, nint writeOffset, nint size)
     {
-        _shaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetProgramResourceLocationIndex(ProgramId program, ProgramInterface programInterface, byte* name)
-    {
-        var result = _getProgramResourceLocationIndex(program, programInterface, name);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetProgramResourceLocation(ProgramId program, ProgramInterface programInterface, byte* name)
-    {
-        var result = _getProgramResourceLocation(program, programInterface, name);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramResourceiv(ProgramId program, ProgramInterface programInterface, uint index, int propCount, ProgramResourceProperty* props, int count, int* length, int* @params)
-    {
-        _getProgramResourceiv(program, programInterface, index, propCount, props, count, length, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramResourceName(ProgramId program, ProgramInterface programInterface, uint index, int bufSize, int* length, byte* name)
-    {
-        _getProgramResourceName(program, programInterface, index, bufSize, length, name);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint GetProgramResourceIndex(ProgramId program, ProgramInterface programInterface, byte* name)
-    {
-        var result = _getProgramResourceIndex(program, programInterface, name);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramInterfaceiv(ProgramId program, ProgramInterface programInterface, ProgramInterfacePName pname, int* @params)
-    {
-        _getProgramInterfaceiv(program, programInterface, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MultiDrawElementsIndirect(PrimitiveType mode, DrawElementsType type, void* indirect, int drawcount, int stride)
-    {
-        _multiDrawElementsIndirect(mode, type, indirect, drawcount, stride);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MultiDrawArraysIndirect(PrimitiveType mode, void* indirect, int drawcount, int stride)
-    {
-        _multiDrawArraysIndirect(mode, indirect, drawcount, stride);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateSubFramebuffer(FramebufferTarget target, int numAttachments, InvalidateFramebufferAttachment* attachments, int x, int y, int width, int height)
-    {
-        _invalidateSubFramebuffer(target, numAttachments, attachments, x, y, width, height);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateFramebuffer(FramebufferTarget target, int numAttachments, InvalidateFramebufferAttachment* attachments)
-    {
-        _invalidateFramebuffer(target, numAttachments, attachments);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateBufferData(BufferId buffer)
-    {
-        _invalidateBufferData(buffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateBufferSubData(BufferId buffer, nint offset, nint length)
-    {
-        _invalidateBufferSubData(buffer, offset, length);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateTexImage(TextureId texture, int level)
-    {
-        _invalidateTexImage(texture, level);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateTexSubImage(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth)
-    {
-        _invalidateTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetInternalformati64v(TextureTarget target, InternalFormat internalformat, InternalFormatPName pname, int count, long* @params)
-    {
-        _getInternalformati64v(target, internalformat, pname, count, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetFramebufferParameteriv(FramebufferTarget target, FramebufferAttachmentParameterName pname, int* @params)
-    {
-        _getFramebufferParameteriv(target, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FramebufferParameteri(FramebufferTarget target, FramebufferParameterName pname, int param)
-    {
-        _framebufferParameteri(target, pname, param);
+        _copyBufferSubData(readTarget, writeTarget, readOffset, writeOffset, size);
         CheckError();
     }
 
@@ -2815,632 +1897,9 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DispatchComputeIndirect(nint indirect)
+    public void CopyNamedBufferSubData(BufferId readBuffer, BufferId writeBuffer, nint readOffset, nint writeOffset, nint size)
     {
-        _dispatchComputeIndirect(indirect);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DispatchCompute(uint num_groups_x, uint num_groups_y, uint num_groups_z)
-    {
-        _dispatchCompute(num_groups_x, num_groups_y, num_groups_z);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearBufferSubData(BufferTarget target, SizedInternalFormat internalformat, nint offset, nint size, PixelFormat format, PixelType type, void* data)
-    {
-        _clearBufferSubData(target, internalformat, offset, size, format, type, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearBufferData(BufferStorageTarget target, SizedInternalFormat internalformat, PixelFormat format, PixelType type, void* data)
-    {
-        _clearBufferData(target, internalformat, format, type, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawTransformFeedbackStreamInstanced(PrimitiveType mode, TransformFeedbackId id, uint stream, int instancecount)
-    {
-        _drawTransformFeedbackStreamInstanced(mode, id, stream, instancecount);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawTransformFeedbackInstanced(PrimitiveType mode, TransformFeedbackId id, int instancecount)
-    {
-        _drawTransformFeedbackInstanced(mode, id, instancecount);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexStorage3D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width, int height, int depth)
-    {
-        _texStorage3D(target, levels, internalformat, width, height, depth);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexStorage2D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width, int height)
-    {
-        _texStorage2D(target, levels, internalformat, width, height);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexStorage1D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width)
-    {
-        _texStorage1D(target, levels, internalformat, width);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MemoryBarrier(MemoryBarrierMask barriers)
-    {
-        _memoryBarrier(barriers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindImageTexture(uint unit, TextureId texture, int level, bool layered, int layer, BufferAccess access, InternalFormat format)
-    {
-        _bindImageTexture(unit, texture, level, ((layered) ? (byte)1 : (byte)0), layer, access, format);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveAtomicCounterBufferiv(ProgramId program, uint bufferIndex, AtomicCounterBufferPName pname, int* @params)
-    {
-        _getActiveAtomicCounterBufferiv(program, bufferIndex, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetInternalformativ(TextureTarget target, InternalFormat internalformat, InternalFormatPName pname, int count, int* @params)
-    {
-        _getInternalformativ(target, internalformat, pname, count, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawElementsInstancedBaseVertexBaseInstance(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, int basevertex, uint baseinstance)
-    {
-        _drawElementsInstancedBaseVertexBaseInstance(mode, count, type, indices, instancecount, basevertex, baseinstance);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawElementsInstancedBaseInstance(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, uint baseinstance)
-    {
-        _drawElementsInstancedBaseInstance(mode, count, type, indices, instancecount, baseinstance);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawArraysInstancedBaseInstance(PrimitiveType mode, int first, int count, int instancecount, uint baseinstance)
-    {
-        _drawArraysInstancedBaseInstance(mode, first, count, instancecount, baseinstance);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetDoublei_v(GetPName target, uint index, double* data)
-    {
-        _getDoublei_v(target, index, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetFloati_v(GetPName target, uint index, float* data)
-    {
-        _getFloati_v(target, index, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DepthRangeIndexed(uint index, double n, double f)
-    {
-        _depthRangeIndexed(index, n, f);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DepthRangeArrayv(uint first, int count, double* v)
-    {
-        _depthRangeArrayv(first, count, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ScissorIndexedv(uint index, int* v)
-    {
-        _scissorIndexedv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ScissorIndexed(uint index, int left, int bottom, int width, int height)
-    {
-        _scissorIndexed(index, left, bottom, width, height);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ScissorArrayv(uint first, int count, int* v)
-    {
-        _scissorArrayv(first, count, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ViewportIndexedfv(uint index, float* v)
-    {
-        _viewportIndexedfv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ViewportIndexedf(uint index, float x, float y, float w, float h)
-    {
-        _viewportIndexedf(index, x, y, w, h);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ViewportArrayv(uint first, int count, float* v)
-    {
-        _viewportArrayv(first, count, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribLdv(uint index, VertexAttribEnum pname, double* @params)
-    {
-        _getVertexAttribLdv(index, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribLPointer(uint index, int size, VertexAttribLType type, int stride, void* pointer)
-    {
-        _vertexAttribLPointer(index, size, type, stride, pointer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribL4dv(uint index, double* v)
-    {
-        _vertexAttribL4dv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribL3dv(uint index, double* v)
-    {
-        _vertexAttribL3dv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribL2dv(uint index, double* v)
-    {
-        _vertexAttribL2dv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribL1dv(uint index, double* v)
-    {
-        _vertexAttribL1dv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribL4d(uint index, double x, double y, double z, double w)
-    {
-        _vertexAttribL4d(index, x, y, z, w);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribL3d(uint index, double x, double y, double z)
-    {
-        _vertexAttribL3d(index, x, y, z);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribL2d(uint index, double x, double y)
-    {
-        _vertexAttribL2d(index, x, y);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribL1d(uint index, double x)
-    {
-        _vertexAttribL1d(index, x);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramPipelineInfoLog(ProgramPipelineId pipeline, int bufSize, int* length, byte* infoLog)
-    {
-        _getProgramPipelineInfoLog(pipeline, bufSize, length, infoLog);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ValidateProgramPipeline(ProgramPipelineId pipeline)
-    {
-        _validateProgramPipeline(pipeline);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4x3dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix4x3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3x4dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix3x4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4x2dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix4x2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2x4dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix2x4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3x2dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix3x2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2x3dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix2x3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4x3fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix4x3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3x4fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix3x4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4x2fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix4x2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2x4fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix2x4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3x2fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix3x2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2x3fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix2x3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2dv(ProgramId program, int location, int count, bool transpose, double* value)
-    {
-        _programUniformMatrix2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix4fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix3fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniformMatrix2fv(ProgramId program, int location, int count, bool transpose, float* value)
-    {
-        _programUniformMatrix2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform4uiv(ProgramId program, int location, int count, uint* value)
-    {
-        _programUniform4uiv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform4ui(ProgramId program, int location, uint v0, uint v1, uint v2, uint v3)
-    {
-        _programUniform4ui(program, location, v0, v1, v2, v3);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform4dv(ProgramId program, int location, int count, double* value)
-    {
-        _programUniform4dv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform4d(ProgramId program, int location, double v0, double v1, double v2, double v3)
-    {
-        _programUniform4d(program, location, v0, v1, v2, v3);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform4fv(ProgramId program, int location, int count, float* value)
-    {
-        _programUniform4fv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform4f(ProgramId program, int location, float v0, float v1, float v2, float v3)
-    {
-        _programUniform4f(program, location, v0, v1, v2, v3);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform4iv(ProgramId program, int location, int count, int* value)
-    {
-        _programUniform4iv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform4i(ProgramId program, int location, int v0, int v1, int v2, int v3)
-    {
-        _programUniform4i(program, location, v0, v1, v2, v3);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform3uiv(ProgramId program, int location, int count, uint* value)
-    {
-        _programUniform3uiv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform3ui(ProgramId program, int location, uint v0, uint v1, uint v2)
-    {
-        _programUniform3ui(program, location, v0, v1, v2);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform3dv(ProgramId program, int location, int count, double* value)
-    {
-        _programUniform3dv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform3d(ProgramId program, int location, double v0, double v1, double v2)
-    {
-        _programUniform3d(program, location, v0, v1, v2);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform3fv(ProgramId program, int location, int count, float* value)
-    {
-        _programUniform3fv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform3f(ProgramId program, int location, float v0, float v1, float v2)
-    {
-        _programUniform3f(program, location, v0, v1, v2);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform3iv(ProgramId program, int location, int count, int* value)
-    {
-        _programUniform3iv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform3i(ProgramId program, int location, int v0, int v1, int v2)
-    {
-        _programUniform3i(program, location, v0, v1, v2);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform2uiv(ProgramId program, int location, int count, uint* value)
-    {
-        _programUniform2uiv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform2ui(ProgramId program, int location, uint v0, uint v1)
-    {
-        _programUniform2ui(program, location, v0, v1);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform2dv(ProgramId program, int location, int count, double* value)
-    {
-        _programUniform2dv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform2d(ProgramId program, int location, double v0, double v1)
-    {
-        _programUniform2d(program, location, v0, v1);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform2fv(ProgramId program, int location, int count, float* value)
-    {
-        _programUniform2fv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform2f(ProgramId program, int location, float v0, float v1)
-    {
-        _programUniform2f(program, location, v0, v1);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform2iv(ProgramId program, int location, int count, int* value)
-    {
-        _programUniform2iv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform2i(ProgramId program, int location, int v0, int v1)
-    {
-        _programUniform2i(program, location, v0, v1);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform1uiv(ProgramId program, int location, int count, uint* value)
-    {
-        _programUniform1uiv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform1ui(ProgramId program, int location, uint v0)
-    {
-        _programUniform1ui(program, location, v0);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform1dv(ProgramId program, int location, int count, double* value)
-    {
-        _programUniform1dv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform1d(ProgramId program, int location, double v0)
-    {
-        _programUniform1d(program, location, v0);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform1fv(ProgramId program, int location, int count, float* value)
-    {
-        _programUniform1fv(program, location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform1f(ProgramId program, int location, float v0)
-    {
-        _programUniform1f(program, location, v0);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawArrays(PrimitiveType mode, int first, int count)
-    {
-        _drawArrays(mode, first, count);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawElements(PrimitiveType mode, int count, DrawElementsType type, void* indices)
-    {
-        _drawElements(mode, count, type, indices);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindProgramPipeline(ProgramPipelineId pipeline)
-    {
-        _bindProgramPipeline(pipeline);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PolygonOffset(float factor, float units)
-    {
-        _polygonOffset(factor, units);
+        _copyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset, size);
         CheckError();
     }
 
@@ -3473,89 +1932,89 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexSubImage1D(TextureTarget target, int level, int xoffset, int width, PixelFormat format, PixelType type, void* pixels)
+    public void CopyTexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
     {
-        _texSubImage1D(target, level, xoffset, width, format, type, pixels);
+        _copyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int width, int height, PixelFormat format, PixelType type, void* pixels)
+    public void CopyTextureSubImage1D(TextureId texture, int level, int xoffset, int x, int y, int width)
     {
-        _texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+        _copyTextureSubImage1D(texture, level, xoffset, x, y, width);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindTexture(TextureTarget target, TextureId texture)
+    public void CopyTextureSubImage2D(TextureId texture, int level, int xoffset, int yoffset, int x, int y, int width, int height)
     {
-        _bindTexture(target, texture);
+        _copyTextureSubImage2D(texture, level, xoffset, yoffset, x, y, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteTextures(int n, TextureId* textures)
+    public void CopyTextureSubImage3D(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
     {
-        _deleteTextures(n, textures);
+        _copyTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, x, y, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenTextures(int n, TextureId* textures)
+    public void CreateBuffers(int n, BufferId* buffers)
     {
-        _genTextures(n, textures);
+        _createBuffers(n, buffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsTexture(TextureId texture)
+    public void CreateFramebuffers(int n, FramebufferId* framebuffers)
     {
-        var result = _isTexture(texture);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform1iv(ProgramId program, int location, int count, int* value)
-    {
-        _programUniform1iv(program, location, count, value);
+        _createFramebuffers(n, framebuffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramUniform1i(ProgramId program, int location, int v0)
+    public ProgramId CreateProgram()
     {
-        _programUniform1i(program, location, v0);
+        var result = _createProgram();
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void CreateProgramPipelines(int n, ProgramPipelineId* pipelines)
+    {
+        _createProgramPipelines(n, pipelines);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramPipelineiv(ProgramPipelineId pipeline, PipelineParameterName pname, int* @params)
+    public void CreateQueries(QueryTarget target, int n, QueryId* ids)
     {
-        _getProgramPipelineiv(pipeline, pname, @params);
+        _createQueries(target, n, ids);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsProgramPipeline(ProgramPipelineId pipeline)
+    public void CreateRenderbuffers(int n, RenderbufferId* renderbuffers)
     {
-        var result = _isProgramPipeline(pipeline);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenProgramPipelines(int n, ProgramPipelineId* pipelines)
-    {
-        _genProgramPipelines(n, pipelines);
+        _createRenderbuffers(n, renderbuffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteProgramPipelines(int n, ProgramPipelineId* pipelines)
+    public void CreateSamplers(int n, SamplerId* samplers)
     {
-        _deleteProgramPipelines(n, pipelines);
+        _createSamplers(n, samplers);
         CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ShaderId CreateShader(ShaderType type)
+    {
+        var result = _createShader(type);
+        CheckError();
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3567,227 +2026,121 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ActiveShaderProgram(ProgramPipelineId pipeline, ProgramId program)
+    public void CreateTextures(TextureTarget target, int n, TextureId* textures)
     {
-        _activeShaderProgram(pipeline, program);
+        _createTextures(target, n, textures);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UseProgramStages(ProgramPipelineId pipeline, UseProgramStageMask stages, ProgramId program)
+    public void CreateTransformFeedbacks(int n, TransformFeedbackId* ids)
     {
-        _useProgramStages(pipeline, stages, program);
+        _createTransformFeedbacks(n, ids);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramParameteri(ProgramId program, ProgramParameterPName pname, int value)
+    public void CreateVertexArrays(int n, VertexArrayId* arrays)
     {
-        _programParameteri(program, pname, value);
+        _createVertexArrays(n, arrays);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProgramBinary(ProgramId program, Enum binaryFormat, void* binary, int length)
+    public void CullFace(TriangleFace mode)
     {
-        _programBinary(program, binaryFormat, binary, length);
+        _cullFace(mode);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramBinary(ProgramId program, int bufSize, int* length, Enum* binaryFormat, void* binary)
+    public void DebugMessageCallback(DebugProc callback, void* userParam)
     {
-        _getProgramBinary(program, bufSize, length, binaryFormat, binary);
+        _debugMessageCallback(callback, userParam);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearDepthf(float d)
+    public void DebugMessageControl(DebugSource source, DebugType type, DebugSeverity severity, int count, uint* ids, bool enabled)
     {
-        _clearDepthf(d);
+        _debugMessageControl(source, type, severity, count, ids, ((enabled) ? (byte)1 : (byte)0));
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DepthRangef(float n, float f)
+    public void DebugMessageInsert(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, byte* buf)
     {
-        _depthRangef(n, f);
+        _debugMessageInsert(source, type, id, severity, length, buf);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetShaderPrecisionFormat(ShaderType shadertype, PrecisionType precisiontype, int* range, int* precision)
+    public void DeleteBuffers(int n, BufferId* buffers)
     {
-        _getShaderPrecisionFormat(shadertype, precisiontype, range, precision);
+        _deleteBuffers(n, buffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ShaderBinary(int count, ShaderId* shaders, ShaderBinaryFormat binaryFormat, void* binary, int length)
+    public void DeleteFramebuffers(int n, FramebufferId* framebuffers)
     {
-        _shaderBinary(count, shaders, binaryFormat, binary, length);
+        _deleteFramebuffers(n, framebuffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawRangeElements(PrimitiveType mode, uint start, uint end, int count, DrawElementsType type, void* indices)
+    public void DeleteProgram(ProgramId program)
     {
-        _drawRangeElements(mode, start, end, count, type, indices);
+        _deleteProgram(program);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexImage3D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int depth, int border, PixelFormat format, PixelType type, void* pixels)
+    public void DeleteProgramPipelines(int n, ProgramPipelineId* pipelines)
     {
-        _texImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
+        _deleteProgramPipelines(n, pipelines);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
+    public void DeleteQueries(int n, QueryId* ids)
     {
-        _texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+        _deleteQueries(n, ids);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CopyTexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int x, int y, int width, int height)
+    public void DeleteRenderbuffers(int n, RenderbufferId* renderbuffers)
     {
-        _copyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
+        _deleteRenderbuffers(n, renderbuffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ActiveTexture(TextureUnit texture)
+    public void DeleteSamplers(int count, SamplerId* samplers)
     {
-        _activeTexture(texture);
+        _deleteSamplers(count, samplers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SampleCoverage(float value, bool invert)
+    public void DeleteShader(ShaderId shader)
     {
-        _sampleCoverage(value, ((invert) ? (byte)1 : (byte)0));
+        _deleteShader(shader);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTexImage3D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int depth, int border, int imageSize, void* data)
+    public void DeleteSync(nint sync)
     {
-        _compressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data);
+        _deleteSync(sync);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTexImage2D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int border, int imageSize, void* data)
+    public void DeleteTextures(int n, TextureId* textures)
     {
-        _compressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTexImage1D(TextureTarget target, int level, InternalFormat internalformat, int width, int border, int imageSize, void* data)
-    {
-        _compressedTexImage1D(target, level, internalformat, width, border, imageSize, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, InternalFormat format, int imageSize, void* data)
-    {
-        _compressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int width, int height, InternalFormat format, int imageSize, void* data)
-    {
-        _compressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompressedTexSubImage1D(TextureTarget target, int level, int xoffset, int width, InternalFormat format, int imageSize, void* data)
-    {
-        _compressedTexSubImage1D(target, level, xoffset, width, format, imageSize, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetCompressedTexImage(TextureTarget target, int level, void* img)
-    {
-        _getCompressedTexImage(target, level, img);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ReleaseShaderCompiler()
-    {
-        _releaseShaderCompiler();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryIndexediv(QueryTarget target, uint index, QueryParameterName pname, int* @params)
-    {
-        _getQueryIndexediv(target, index, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void EndQueryIndexed(QueryTarget target, uint index)
-    {
-        _endQueryIndexed(target, index);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BeginQueryIndexed(QueryTarget target, uint index, QueryId id)
-    {
-        _beginQueryIndexed(target, index, id);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawTransformFeedbackStream(PrimitiveType mode, TransformFeedbackId id, uint stream)
-    {
-        _drawTransformFeedbackStream(mode, id, stream);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawTransformFeedback(PrimitiveType mode, TransformFeedbackId id)
-    {
-        _drawTransformFeedback(mode, id);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ResumeTransformFeedback()
-    {
-        _resumeTransformFeedback();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PauseTransformFeedback()
-    {
-        _pauseTransformFeedback();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsTransformFeedback(TransformFeedbackId id)
-    {
-        var result = _isTransformFeedback(id);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenTransformFeedbacks(int n, TransformFeedbackId* ids)
-    {
-        _genTransformFeedbacks(n, ids);
+        _deleteTextures(n, textures);
         CheckError();
     }
 
@@ -3799,44 +2152,472 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindTransformFeedback(BindTransformFeedbackTarget target, TransformFeedbackId id)
+    public void DeleteVertexArrays(int n, VertexArrayId* arrays)
     {
-        _bindTransformFeedback(target, id);
+        _deleteVertexArrays(n, arrays);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PatchParameterfv(PatchParameterName pname, float* values)
+    public void DepthFunc(DepthFunction func)
     {
-        _patchParameterfv(pname, values);
+        _depthFunc(func);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PatchParameteri(PatchParameterName pname, int value)
+    public void DepthMask(bool flag)
     {
-        _patchParameteri(pname, value);
+        _depthMask(((flag) ? (byte)1 : (byte)0));
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramStageiv(ProgramId program, ShaderType shadertype, ProgramStagePName pname, int* values)
+    public void DepthRange(double n, double f)
     {
-        _getProgramStageiv(program, shadertype, pname, values);
+        _depthRange(n, f);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetUniformSubroutineuiv(ShaderType shadertype, int location, uint* @params)
+    public void DepthRangeArrayv(uint first, int count, double* v)
     {
-        _getUniformSubroutineuiv(shadertype, location, @params);
+        _depthRangeArrayv(first, count, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformSubroutinesuiv(ShaderType shadertype, int count, uint* indices)
+    public void DepthRangef(float n, float f)
     {
-        _uniformSubroutinesuiv(shadertype, count, indices);
+        _depthRangef(n, f);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DepthRangeIndexed(uint index, double n, double f)
+    {
+        _depthRangeIndexed(index, n, f);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DetachShader(ProgramId program, ShaderId shader)
+    {
+        _detachShader(program, shader);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Disable(EnableCap cap)
+    {
+        _disable(cap);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Disablei(EnableCap target, uint index)
+    {
+        _disablei(target, index);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DisableVertexArrayAttrib(VertexArrayId vaobj, uint index)
+    {
+        _disableVertexArrayAttrib(vaobj, index);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DisableVertexAttribArray(uint index)
+    {
+        _disableVertexAttribArray(index);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DispatchCompute(uint num_groups_x, uint num_groups_y, uint num_groups_z)
+    {
+        _dispatchCompute(num_groups_x, num_groups_y, num_groups_z);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DispatchComputeIndirect(nint indirect)
+    {
+        _dispatchComputeIndirect(indirect);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawArrays(PrimitiveType mode, int first, int count)
+    {
+        _drawArrays(mode, first, count);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawArraysIndirect(PrimitiveType mode, void* indirect)
+    {
+        _drawArraysIndirect(mode, indirect);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawArraysInstanced(PrimitiveType mode, int first, int count, int instancecount)
+    {
+        _drawArraysInstanced(mode, first, count, instancecount);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawArraysInstancedBaseInstance(PrimitiveType mode, int first, int count, int instancecount, uint baseinstance)
+    {
+        _drawArraysInstancedBaseInstance(mode, first, count, instancecount, baseinstance);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawBuffer(DrawBufferMode buf)
+    {
+        _drawBuffer(buf);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawBuffers(int n, DrawBufferMode* bufs)
+    {
+        _drawBuffers(n, bufs);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawElements(PrimitiveType mode, int count, DrawElementsType type, void* indices)
+    {
+        _drawElements(mode, count, type, indices);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawElementsBaseVertex(PrimitiveType mode, int count, DrawElementsType type, void* indices, int basevertex)
+    {
+        _drawElementsBaseVertex(mode, count, type, indices, basevertex);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawElementsIndirect(PrimitiveType mode, DrawElementsType type, void* indirect)
+    {
+        _drawElementsIndirect(mode, type, indirect);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawElementsInstanced(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount)
+    {
+        _drawElementsInstanced(mode, count, type, indices, instancecount);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawElementsInstancedBaseInstance(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, uint baseinstance)
+    {
+        _drawElementsInstancedBaseInstance(mode, count, type, indices, instancecount, baseinstance);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawElementsInstancedBaseVertex(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, int basevertex)
+    {
+        _drawElementsInstancedBaseVertex(mode, count, type, indices, instancecount, basevertex);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawElementsInstancedBaseVertexBaseInstance(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, int basevertex, uint baseinstance)
+    {
+        _drawElementsInstancedBaseVertexBaseInstance(mode, count, type, indices, instancecount, basevertex, baseinstance);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawRangeElements(PrimitiveType mode, uint start, uint end, int count, DrawElementsType type, void* indices)
+    {
+        _drawRangeElements(mode, start, end, count, type, indices);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawRangeElementsBaseVertex(PrimitiveType mode, uint start, uint end, int count, DrawElementsType type, void* indices, int basevertex)
+    {
+        _drawRangeElementsBaseVertex(mode, start, end, count, type, indices, basevertex);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawTransformFeedback(PrimitiveType mode, TransformFeedbackId id)
+    {
+        _drawTransformFeedback(mode, id);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawTransformFeedbackInstanced(PrimitiveType mode, TransformFeedbackId id, int instancecount)
+    {
+        _drawTransformFeedbackInstanced(mode, id, instancecount);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawTransformFeedbackStream(PrimitiveType mode, TransformFeedbackId id, uint stream)
+    {
+        _drawTransformFeedbackStream(mode, id, stream);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawTransformFeedbackStreamInstanced(PrimitiveType mode, TransformFeedbackId id, uint stream, int instancecount)
+    {
+        _drawTransformFeedbackStreamInstanced(mode, id, stream, instancecount);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Enable(EnableCap cap)
+    {
+        _enable(cap);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Enablei(EnableCap target, uint index)
+    {
+        _enablei(target, index);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EnableVertexArrayAttrib(VertexArrayId vaobj, uint index)
+    {
+        _enableVertexArrayAttrib(vaobj, index);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EnableVertexAttribArray(uint index)
+    {
+        _enableVertexAttribArray(index);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EndConditionalRender()
+    {
+        _endConditionalRender();
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EndQuery(QueryTarget target)
+    {
+        _endQuery(target);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EndQueryIndexed(QueryTarget target, uint index)
+    {
+        _endQueryIndexed(target, index);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EndTransformFeedback()
+    {
+        _endTransformFeedback();
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public nint FenceSync(SyncCondition condition, SyncBehaviorFlags flags)
+    {
+        var result = _fenceSync(condition, flags);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Finish()
+    {
+        _finish();
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Flush()
+    {
+        _flush();
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FlushMappedBufferRange(BufferTarget target, nint offset, nint length)
+    {
+        _flushMappedBufferRange(target, offset, length);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FlushMappedNamedBufferRange(BufferId buffer, nint offset, nint length)
+    {
+        _flushMappedNamedBufferRange(buffer, offset, length);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FramebufferParameteri(FramebufferTarget target, FramebufferParameterName pname, int param)
+    {
+        _framebufferParameteri(target, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FramebufferRenderbuffer(FramebufferTarget target, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, RenderbufferId renderbuffer)
+    {
+        _framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FramebufferTexture(FramebufferTarget target, FramebufferAttachment attachment, TextureId texture, int level)
+    {
+        _framebufferTexture(target, attachment, texture, level);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FramebufferTexture1D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, TextureId texture, int level)
+    {
+        _framebufferTexture1D(target, attachment, textarget, texture, level);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FramebufferTexture2D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, TextureId texture, int level)
+    {
+        _framebufferTexture2D(target, attachment, textarget, texture, level);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FramebufferTexture3D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, TextureId texture, int level, int zoffset)
+    {
+        _framebufferTexture3D(target, attachment, textarget, texture, level, zoffset);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FramebufferTextureLayer(FramebufferTarget target, FramebufferAttachment attachment, TextureId texture, int level, int layer)
+    {
+        _framebufferTextureLayer(target, attachment, texture, level, layer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FrontFace(FrontFaceDirection mode)
+    {
+        _frontFace(mode);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenBuffers(int n, BufferId* buffers)
+    {
+        _genBuffers(n, buffers);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenerateMipmap(TextureTarget target)
+    {
+        _generateMipmap(target);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenerateTextureMipmap(TextureId texture)
+    {
+        _generateTextureMipmap(texture);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenFramebuffers(int n, FramebufferId* framebuffers)
+    {
+        _genFramebuffers(n, framebuffers);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenProgramPipelines(int n, ProgramPipelineId* pipelines)
+    {
+        _genProgramPipelines(n, pipelines);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenQueries(int n, QueryId* ids)
+    {
+        _genQueries(n, ids);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenRenderbuffers(int n, RenderbufferId* renderbuffers)
+    {
+        _genRenderbuffers(n, renderbuffers);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenSamplers(int count, SamplerId* samplers)
+    {
+        _genSamplers(count, samplers);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenTextures(int n, TextureId* textures)
+    {
+        _genTextures(n, textures);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenTransformFeedbacks(int n, TransformFeedbackId* ids)
+    {
+        _genTransformFeedbacks(n, ids);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GenVertexArrays(int n, VertexArrayId* arrays)
+    {
+        _genVertexArrays(n, arrays);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetActiveAtomicCounterBufferiv(ProgramId program, uint bufferIndex, AtomicCounterBufferPName pname, int* @params)
+    {
+        _getActiveAtomicCounterBufferiv(program, bufferIndex, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetActiveAttrib(ProgramId program, uint index, int bufSize, int* length, int* size, AttributeType* type, byte* name)
+    {
+        _getActiveAttrib(program, index, bufSize, length, size, type, name);
         CheckError();
     }
 
@@ -3848,6 +2629,13 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetActiveSubroutineUniformiv(ProgramId program, ShaderType shadertype, uint index, SubroutineParameterName pname, int* values)
+    {
+        _getActiveSubroutineUniformiv(program, shadertype, index, pname, values);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetActiveSubroutineUniformName(ProgramId program, ShaderType shadertype, uint index, int bufSize, int* length, byte* name)
     {
         _getActiveSubroutineUniformName(program, shadertype, index, bufSize, length, name);
@@ -3855,10 +2643,594 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveSubroutineUniformiv(ProgramId program, ShaderType shadertype, uint index, SubroutineParameterName pname, int* values)
+    public void GetActiveUniform(ProgramId program, uint index, int bufSize, int* length, int* size, UniformType* type, byte* name)
     {
-        _getActiveSubroutineUniformiv(program, shadertype, index, pname, values);
+        _getActiveUniform(program, index, bufSize, length, size, type, name);
         CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetActiveUniformBlockiv(ProgramId program, uint uniformBlockIndex, UniformBlockPName pname, int* @params)
+    {
+        _getActiveUniformBlockiv(program, uniformBlockIndex, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetActiveUniformBlockName(ProgramId program, uint uniformBlockIndex, int bufSize, int* length, byte* uniformBlockName)
+    {
+        _getActiveUniformBlockName(program, uniformBlockIndex, bufSize, length, uniformBlockName);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetActiveUniformName(ProgramId program, uint uniformIndex, int bufSize, int* length, byte* uniformName)
+    {
+        _getActiveUniformName(program, uniformIndex, bufSize, length, uniformName);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetActiveUniformsiv(ProgramId program, int uniformCount, uint* uniformIndices, UniformPName pname, int* @params)
+    {
+        _getActiveUniformsiv(program, uniformCount, uniformIndices, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetAttachedShaders(ProgramId program, int maxCount, int* count, ShaderId* shaders)
+    {
+        _getAttachedShaders(program, maxCount, count, shaders);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetAttribLocation(ProgramId program, byte* name)
+    {
+        var result = _getAttribLocation(program, name);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetBooleani_v(BufferTarget target, uint index, byte* data)
+    {
+        _getBooleani_v(target, index, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetBooleanv(GetPName pname, byte* data)
+    {
+        _getBooleanv(pname, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetBufferParameteri64v(BufferTarget target, BufferPName pname, long* @params)
+    {
+        _getBufferParameteri64v(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetBufferParameteriv(BufferTarget target, BufferPName pname, int* @params)
+    {
+        _getBufferParameteriv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetBufferPointerv(BufferTarget target, BufferPointerName pname, void** @params)
+    {
+        _getBufferPointerv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetBufferSubData(BufferTarget target, nint offset, nint size, void* data)
+    {
+        _getBufferSubData(target, offset, size, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetCompressedTexImage(TextureTarget target, int level, void* img)
+    {
+        _getCompressedTexImage(target, level, img);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetCompressedTextureImage(TextureId texture, int level, int bufSize, void* pixels)
+    {
+        _getCompressedTextureImage(texture, level, bufSize, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetCompressedTextureSubImage(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int bufSize, void* pixels)
+    {
+        _getCompressedTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, bufSize, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public uint GetDebugMessageLog(uint count, int bufSize, DebugSource* sources, DebugType* types, uint* ids, DebugSeverity* severities, int* lengths, byte* messageLog)
+    {
+        var result = _getDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetDoublei_v(GetPName target, uint index, double* data)
+    {
+        _getDoublei_v(target, index, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetDoublev(GetPName pname, double* data)
+    {
+        _getDoublev(pname, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ErrorCode GetError()
+    {
+        var result = _getError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetFloati_v(GetPName target, uint index, float* data)
+    {
+        _getFloati_v(target, index, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetFloatv(GetPName pname, float* data)
+    {
+        _getFloatv(pname, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetFragDataIndex(ProgramId program, byte* name)
+    {
+        var result = _getFragDataIndex(program, name);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetFragDataLocation(ProgramId program, byte* name)
+    {
+        var result = _getFragDataLocation(program, name);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetFramebufferAttachmentParameteriv(FramebufferTarget target, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
+    {
+        _getFramebufferAttachmentParameteriv(target, attachment, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetFramebufferParameteriv(FramebufferTarget target, FramebufferAttachmentParameterName pname, int* @params)
+    {
+        _getFramebufferParameteriv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GraphicsResetStatus GetGraphicsResetStatus()
+    {
+        var result = _getGraphicsResetStatus();
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetInteger64i_v(GetPName target, uint index, long* data)
+    {
+        _getInteger64i_v(target, index, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetInteger64v(GetPName pname, long* data)
+    {
+        _getInteger64v(pname, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetIntegeri_v(GetPName target, uint index, int* data)
+    {
+        _getIntegeri_v(target, index, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetIntegerv(GetPName pname, int* data)
+    {
+        _getIntegerv(pname, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetInternalformati64v(TextureTarget target, InternalFormat internalformat, InternalFormatPName pname, int count, long* @params)
+    {
+        _getInternalformati64v(target, internalformat, pname, count, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetInternalformativ(TextureTarget target, InternalFormat internalformat, InternalFormatPName pname, int count, int* @params)
+    {
+        _getInternalformativ(target, internalformat, pname, count, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetMultisamplefv(GetMultisamplePNameNV pname, uint index, float* val)
+    {
+        _getMultisamplefv(pname, index, val);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetNamedBufferParameteri64v(BufferId buffer, BufferPName pname, long* @params)
+    {
+        _getNamedBufferParameteri64v(buffer, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetNamedBufferParameteriv(BufferId buffer, BufferPName pname, int* @params)
+    {
+        _getNamedBufferParameteriv(buffer, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetNamedBufferPointerv(BufferId buffer, BufferPointerName pname, void** @params)
+    {
+        _getNamedBufferPointerv(buffer, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetNamedBufferSubData(BufferId buffer, nint offset, nint size, void* data)
+    {
+        _getNamedBufferSubData(buffer, offset, size, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetNamedFramebufferAttachmentParameteriv(FramebufferId framebuffer, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
+    {
+        _getNamedFramebufferAttachmentParameteriv(framebuffer, attachment, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetNamedFramebufferParameteriv(FramebufferId framebuffer, GetFramebufferParameter pname, int* param)
+    {
+        _getNamedFramebufferParameteriv(framebuffer, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetNamedRenderbufferParameteriv(RenderbufferId renderbuffer, RenderbufferParameterName pname, int* @params)
+    {
+        _getNamedRenderbufferParameteriv(renderbuffer, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetnCompressedTexImage(TextureTarget target, int lod, int bufSize, void* pixels)
+    {
+        _getnCompressedTexImage(target, lod, bufSize, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetnTexImage(TextureTarget target, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
+    {
+        _getnTexImage(target, level, format, type, bufSize, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetnUniformdv(ProgramId program, int location, int bufSize, double* @params)
+    {
+        _getnUniformdv(program, location, bufSize, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetnUniformfv(ProgramId program, int location, int bufSize, float* @params)
+    {
+        _getnUniformfv(program, location, bufSize, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetnUniformiv(ProgramId program, int location, int bufSize, int* @params)
+    {
+        _getnUniformiv(program, location, bufSize, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetnUniformuiv(ProgramId program, int location, int bufSize, uint* @params)
+    {
+        _getnUniformuiv(program, location, bufSize, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetObjectLabel(ObjectIdentifier identifier, uint name, int bufSize, int* length, byte* label)
+    {
+        _getObjectLabel(identifier, name, bufSize, length, label);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetObjectPtrLabel(void* ptr, int bufSize, int* length, byte* label)
+    {
+        _getObjectPtrLabel(ptr, bufSize, length, label);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetPointerv(GetPointervPName pname, void** @params)
+    {
+        _getPointerv(pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramBinary(ProgramId program, int bufSize, int* length, Enum* binaryFormat, void* binary)
+    {
+        _getProgramBinary(program, bufSize, length, binaryFormat, binary);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramInfoLog(ProgramId program, int bufSize, int* length, byte* infoLog)
+    {
+        _getProgramInfoLog(program, bufSize, length, infoLog);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramInterfaceiv(ProgramId program, ProgramInterface programInterface, ProgramInterfacePName pname, int* @params)
+    {
+        _getProgramInterfaceiv(program, programInterface, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramiv(ProgramId program, ProgramProperty pname, int* @params)
+    {
+        _getProgramiv(program, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramPipelineInfoLog(ProgramPipelineId pipeline, int bufSize, int* length, byte* infoLog)
+    {
+        _getProgramPipelineInfoLog(pipeline, bufSize, length, infoLog);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramPipelineiv(ProgramPipelineId pipeline, PipelineParameterName pname, int* @params)
+    {
+        _getProgramPipelineiv(pipeline, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public uint GetProgramResourceIndex(ProgramId program, ProgramInterface programInterface, byte* name)
+    {
+        var result = _getProgramResourceIndex(program, programInterface, name);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramResourceiv(ProgramId program, ProgramInterface programInterface, uint index, int propCount, ProgramResourceProperty* props, int count, int* length, int* @params)
+    {
+        _getProgramResourceiv(program, programInterface, index, propCount, props, count, length, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetProgramResourceLocation(ProgramId program, ProgramInterface programInterface, byte* name)
+    {
+        var result = _getProgramResourceLocation(program, programInterface, name);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetProgramResourceLocationIndex(ProgramId program, ProgramInterface programInterface, byte* name)
+    {
+        var result = _getProgramResourceLocationIndex(program, programInterface, name);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramResourceName(ProgramId program, ProgramInterface programInterface, uint index, int bufSize, int* length, byte* name)
+    {
+        _getProgramResourceName(program, programInterface, index, bufSize, length, name);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetProgramStageiv(ProgramId program, ShaderType shadertype, ProgramStagePName pname, int* values)
+    {
+        _getProgramStageiv(program, shadertype, pname, values);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryBufferObjecti64v(QueryId id, BufferId buffer, QueryObjectParameterName pname, nint offset)
+    {
+        _getQueryBufferObjecti64v(id, buffer, pname, offset);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryBufferObjectiv(QueryId id, BufferId buffer, QueryObjectParameterName pname, nint offset)
+    {
+        _getQueryBufferObjectiv(id, buffer, pname, offset);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryBufferObjectui64v(QueryId id, BufferId buffer, QueryObjectParameterName pname, nint offset)
+    {
+        _getQueryBufferObjectui64v(id, buffer, pname, offset);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryBufferObjectuiv(QueryId id, BufferId buffer, QueryObjectParameterName pname, nint offset)
+    {
+        _getQueryBufferObjectuiv(id, buffer, pname, offset);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryIndexediv(QueryTarget target, uint index, QueryParameterName pname, int* @params)
+    {
+        _getQueryIndexediv(target, index, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryiv(QueryTarget target, QueryParameterName pname, int* @params)
+    {
+        _getQueryiv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryObjecti64v(QueryId id, QueryObjectParameterName pname, long* @params)
+    {
+        _getQueryObjecti64v(id, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryObjectiv(QueryId id, QueryObjectParameterName pname, int* @params)
+    {
+        _getQueryObjectiv(id, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryObjectui64v(QueryId id, QueryObjectParameterName pname, ulong* @params)
+    {
+        _getQueryObjectui64v(id, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetQueryObjectuiv(QueryId id, QueryObjectParameterName pname, uint* @params)
+    {
+        _getQueryObjectuiv(id, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetRenderbufferParameteriv(RenderbufferTarget target, RenderbufferParameterName pname, int* @params)
+    {
+        _getRenderbufferParameteriv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetSamplerParameterfv(SamplerId sampler, SamplerParameterF pname, float* @params)
+    {
+        _getSamplerParameterfv(sampler, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetSamplerParameterIiv(SamplerId sampler, SamplerParameterI pname, int* @params)
+    {
+        _getSamplerParameterIiv(sampler, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetSamplerParameterIuiv(SamplerId sampler, SamplerParameterI pname, uint* @params)
+    {
+        _getSamplerParameterIuiv(sampler, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetSamplerParameteriv(SamplerId sampler, SamplerParameterI pname, int* @params)
+    {
+        _getSamplerParameteriv(sampler, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetShaderInfoLog(ShaderId shader, int bufSize, int* length, byte* infoLog)
+    {
+        _getShaderInfoLog(shader, bufSize, length, infoLog);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetShaderiv(ShaderId shader, ShaderParameterName pname, int* @params)
+    {
+        _getShaderiv(shader, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetShaderPrecisionFormat(ShaderType shadertype, PrecisionType precisiontype, int* range, int* precision)
+    {
+        _getShaderPrecisionFormat(shadertype, precisiontype, range, precision);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetShaderSource(ShaderId shader, int bufSize, int* length, byte* source)
+    {
+        _getShaderSource(shader, bufSize, length, source);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public string? GetString(StringName name)
+    {
+        var result = _getString(name);
+        CheckError();
+        return Marshal.PtrToStringAnsi(result);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public string? GetStringi(StringName name, uint index)
+    {
+        var result = _getStringi(name, index);
+        CheckError();
+        return Marshal.PtrToStringAnsi(result);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3878,6 +3250,154 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetSynciv(nint sync, SyncParameterName pname, int count, int* length, int* values)
+    {
+        _getSynciv(sync, pname, count, length, values);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTexImage(TextureTarget target, int level, PixelFormat format, PixelType type, void* pixels)
+    {
+        _getTexImage(target, level, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTexLevelParameterfv(TextureTarget target, int level, GetTextureParameter pname, float* @params)
+    {
+        _getTexLevelParameterfv(target, level, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTexLevelParameteriv(TextureTarget target, int level, GetTextureParameter pname, int* @params)
+    {
+        _getTexLevelParameteriv(target, level, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTexParameterfv(TextureTarget target, GetTextureParameter pname, float* @params)
+    {
+        _getTexParameterfv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTexParameterIiv(TextureTarget target, GetTextureParameter pname, int* @params)
+    {
+        _getTexParameterIiv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTexParameterIuiv(TextureTarget target, GetTextureParameter pname, uint* @params)
+    {
+        _getTexParameterIuiv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTexParameteriv(TextureTarget target, GetTextureParameter pname, int* @params)
+    {
+        _getTexParameteriv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTextureImage(TextureId texture, int level, PixelFormat format, PixelType type, int bufSize, void* pixels)
+    {
+        _getTextureImage(texture, level, format, type, bufSize, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTextureLevelParameterfv(TextureId texture, int level, GetTextureParameter pname, float* @params)
+    {
+        _getTextureLevelParameterfv(texture, level, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTextureLevelParameteriv(TextureId texture, int level, GetTextureParameter pname, int* @params)
+    {
+        _getTextureLevelParameteriv(texture, level, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTextureParameterfv(TextureId texture, GetTextureParameter pname, float* @params)
+    {
+        _getTextureParameterfv(texture, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTextureParameterIiv(TextureId texture, GetTextureParameter pname, int* @params)
+    {
+        _getTextureParameterIiv(texture, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTextureParameterIuiv(TextureId texture, GetTextureParameter pname, uint* @params)
+    {
+        _getTextureParameterIuiv(texture, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTextureParameteriv(TextureId texture, GetTextureParameter pname, int* @params)
+    {
+        _getTextureParameteriv(texture, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTextureSubImage(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, int bufSize, void* pixels)
+    {
+        _getTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, bufSize, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTransformFeedbacki_v(TransformFeedbackId xfb, TransformFeedbackPName pname, uint index, int* param)
+    {
+        _getTransformFeedbacki_v(xfb, pname, index, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTransformFeedbacki64_v(TransformFeedbackId xfb, TransformFeedbackPName pname, uint index, long* param)
+    {
+        _getTransformFeedbacki64_v(xfb, pname, index, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTransformFeedbackiv(TransformFeedbackId xfb, TransformFeedbackPName pname, int* param)
+    {
+        _getTransformFeedbackiv(xfb, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetTransformFeedbackVarying(ProgramId program, uint index, int bufSize, int* length, int* size, AttributeType* type, byte* name)
+    {
+        _getTransformFeedbackVarying(program, index, bufSize, length, size, type, name);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public uint GetUniformBlockIndex(ProgramId program, byte* uniformBlockName)
+    {
+        var result = _getUniformBlockIndex(program, uniformBlockName);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetUniformdv(ProgramId program, int location, double* @params)
     {
         _getUniformdv(program, location, @params);
@@ -3885,107 +3405,364 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4x3dv(int location, int count, bool transpose, double* value)
+    public void GetUniformfv(ProgramId program, int location, float* @params)
     {
-        _uniformMatrix4x3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _getUniformfv(program, location, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4x2dv(int location, int count, bool transpose, double* value)
+    public void GetUniformIndices(ProgramId program, int uniformCount, byte** uniformNames, uint* uniformIndices)
     {
-        _uniformMatrix4x2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _getUniformIndices(program, uniformCount, uniformNames, uniformIndices);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3x4dv(int location, int count, bool transpose, double* value)
+    public void GetUniformiv(ProgramId program, int location, int* @params)
     {
-        _uniformMatrix3x4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _getUniformiv(program, location, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3x2dv(int location, int count, bool transpose, double* value)
+    public int GetUniformLocation(ProgramId program, byte* name)
     {
-        _uniformMatrix3x2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        var result = _getUniformLocation(program, name);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetUniformSubroutineuiv(ShaderType shadertype, int location, uint* @params)
+    {
+        _getUniformSubroutineuiv(shadertype, location, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2x4dv(int location, int count, bool transpose, double* value)
+    public void GetUniformuiv(ProgramId program, int location, uint* @params)
     {
-        _uniformMatrix2x4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _getUniformuiv(program, location, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2x3dv(int location, int count, bool transpose, double* value)
+    public void GetVertexArrayIndexed64iv(VertexArrayId vaobj, uint index, VertexArrayPName pname, long* param)
     {
-        _uniformMatrix2x3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _getVertexArrayIndexed64iv(vaobj, index, pname, param);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4dv(int location, int count, bool transpose, double* value)
+    public void GetVertexArrayIndexediv(VertexArrayId vaobj, uint index, VertexArrayPName pname, int* param)
     {
-        _uniformMatrix4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _getVertexArrayIndexediv(vaobj, index, pname, param);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3dv(int location, int count, bool transpose, double* value)
+    public void GetVertexArrayiv(VertexArrayId vaobj, VertexArrayPName pname, int* param)
     {
-        _uniformMatrix3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _getVertexArrayiv(vaobj, pname, param);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2dv(int location, int count, bool transpose, double* value)
+    public void GetVertexAttribdv(uint index, VertexAttribProperty pname, double* @params)
     {
-        _uniformMatrix2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _getVertexAttribdv(index, pname, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform4dv(int location, int count, double* value)
+    public void GetVertexAttribfv(uint index, VertexAttribProperty pname, float* @params)
     {
-        _uniform4dv(location, count, value);
+        _getVertexAttribfv(index, pname, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform3dv(int location, int count, double* value)
+    public void GetVertexAttribIiv(uint index, VertexAttribEnum pname, int* @params)
     {
-        _uniform3dv(location, count, value);
+        _getVertexAttribIiv(index, pname, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform2dv(int location, int count, double* value)
+    public void GetVertexAttribIuiv(uint index, VertexAttribEnum pname, uint* @params)
     {
-        _uniform2dv(location, count, value);
+        _getVertexAttribIuiv(index, pname, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform1dv(int location, int count, double* value)
+    public void GetVertexAttribiv(uint index, VertexAttribProperty pname, int* @params)
     {
-        _uniform1dv(location, count, value);
+        _getVertexAttribiv(index, pname, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform4d(int location, double x, double y, double z, double w)
+    public void GetVertexAttribLdv(uint index, VertexAttribEnum pname, double* @params)
     {
-        _uniform4d(location, x, y, z, w);
+        _getVertexAttribLdv(index, pname, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendFuncSeparate(BlendingFactor sfactorRGB, BlendingFactor dfactorRGB, BlendingFactor sfactorAlpha, BlendingFactor dfactorAlpha)
+    public void GetVertexAttribPointerv(uint index, VertexAttribPointerProperty pname, void** pointer)
     {
-        _blendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+        _getVertexAttribPointerv(index, pname, pointer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Hint(HintTarget target, HintMode mode)
+    {
+        _hint(target, mode);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateBufferData(BufferId buffer)
+    {
+        _invalidateBufferData(buffer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateBufferSubData(BufferId buffer, nint offset, nint length)
+    {
+        _invalidateBufferSubData(buffer, offset, length);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateFramebuffer(FramebufferTarget target, int numAttachments, InvalidateFramebufferAttachment* attachments)
+    {
+        _invalidateFramebuffer(target, numAttachments, attachments);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateNamedFramebufferData(FramebufferId framebuffer, int numAttachments, FramebufferAttachment* attachments)
+    {
+        _invalidateNamedFramebufferData(framebuffer, numAttachments, attachments);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateNamedFramebufferSubData(FramebufferId framebuffer, int numAttachments, FramebufferAttachment* attachments, int x, int y, int width, int height)
+    {
+        _invalidateNamedFramebufferSubData(framebuffer, numAttachments, attachments, x, y, width, height);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateSubFramebuffer(FramebufferTarget target, int numAttachments, InvalidateFramebufferAttachment* attachments, int x, int y, int width, int height)
+    {
+        _invalidateSubFramebuffer(target, numAttachments, attachments, x, y, width, height);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateTexImage(TextureId texture, int level)
+    {
+        _invalidateTexImage(texture, level);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateTexSubImage(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth)
+    {
+        _invalidateTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsBuffer(BufferId buffer)
+    {
+        var result = _isBuffer(buffer);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsEnabled(EnableCap cap)
+    {
+        var result = _isEnabled(cap);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsEnabledi(EnableCap target, uint index)
+    {
+        var result = _isEnabledi(target, index);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsFramebuffer(FramebufferId framebuffer)
+    {
+        var result = _isFramebuffer(framebuffer);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsProgram(ProgramId program)
+    {
+        var result = _isProgram(program);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsProgramPipeline(ProgramPipelineId pipeline)
+    {
+        var result = _isProgramPipeline(pipeline);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsQuery(QueryId id)
+    {
+        var result = _isQuery(id);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsRenderbuffer(RenderbufferId renderbuffer)
+    {
+        var result = _isRenderbuffer(renderbuffer);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsSampler(SamplerId sampler)
+    {
+        var result = _isSampler(sampler);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsShader(ShaderId shader)
+    {
+        var result = _isShader(shader);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsSync(nint sync)
+    {
+        var result = _isSync(sync);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsTexture(TextureId texture)
+    {
+        var result = _isTexture(texture);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsTransformFeedback(TransformFeedbackId id)
+    {
+        var result = _isTransformFeedback(id);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsVertexArray(VertexArrayId array)
+    {
+        var result = _isVertexArray(array);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void LineWidth(float width)
+    {
+        _lineWidth(width);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void LinkProgram(ProgramId program)
+    {
+        _linkProgram(program);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void LogicOp(LogicOpEnum opcode)
+    {
+        _logicOp(opcode);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void* MapBuffer(BufferTarget target, BufferAccess access)
+    {
+        var result = _mapBuffer(target, access);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void* MapBufferRange(BufferTarget target, nint offset, nint length, MapBufferAccessMask access)
+    {
+        var result = _mapBufferRange(target, offset, length, access);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void* MapNamedBuffer(BufferId buffer, BufferAccess access)
+    {
+        var result = _mapNamedBuffer(buffer, access);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void* MapNamedBufferRange(BufferId buffer, nint offset, nint length, MapBufferAccessMask access)
+    {
+        var result = _mapNamedBufferRange(buffer, offset, length, access);
+        CheckError();
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MemoryBarrier(MemoryBarrierMask barriers)
+    {
+        _memoryBarrier(barriers);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MemoryBarrierByRegion(MemoryBarrierMask barriers)
+    {
+        _memoryBarrierByRegion(barriers);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MinSampleShading(float value)
+    {
+        _minSampleShading(value);
         CheckError();
     }
 
@@ -3997,9 +3774,177 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MultiDrawArraysIndirect(PrimitiveType mode, void* indirect, int drawcount, int stride)
+    {
+        _multiDrawArraysIndirect(mode, indirect, drawcount, stride);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MultiDrawArraysIndirectCount(PrimitiveType mode, void* indirect, nint drawcount, int maxdrawcount, int stride)
+    {
+        _multiDrawArraysIndirectCount(mode, indirect, drawcount, maxdrawcount, stride);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MultiDrawElements(PrimitiveType mode, int* count, DrawElementsType type, void** indices, int drawcount)
     {
         _multiDrawElements(mode, count, type, indices, drawcount);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MultiDrawElementsBaseVertex(PrimitiveType mode, int* count, DrawElementsType type, void** indices, int drawcount, int* basevertex)
+    {
+        _multiDrawElementsBaseVertex(mode, count, type, indices, drawcount, basevertex);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MultiDrawElementsIndirect(PrimitiveType mode, DrawElementsType type, void* indirect, int drawcount, int stride)
+    {
+        _multiDrawElementsIndirect(mode, type, indirect, drawcount, stride);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MultiDrawElementsIndirectCount(PrimitiveType mode, DrawElementsType type, void* indirect, nint drawcount, int maxdrawcount, int stride)
+    {
+        _multiDrawElementsIndirectCount(mode, type, indirect, drawcount, maxdrawcount, stride);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedBufferData(BufferId buffer, nint size, void* data, BufferUsage usage)
+    {
+        _namedBufferData(buffer, size, data, usage);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedBufferStorage(BufferId buffer, nint size, void* data, BufferStorageMask flags)
+    {
+        _namedBufferStorage(buffer, size, data, flags);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedBufferSubData(BufferId buffer, nint offset, nint size, void* data)
+    {
+        _namedBufferSubData(buffer, offset, size, data);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedFramebufferDrawBuffer(FramebufferId framebuffer, ColorBuffer buf)
+    {
+        _namedFramebufferDrawBuffer(framebuffer, buf);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedFramebufferDrawBuffers(FramebufferId framebuffer, int n, ColorBuffer* bufs)
+    {
+        _namedFramebufferDrawBuffers(framebuffer, n, bufs);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedFramebufferParameteri(FramebufferId framebuffer, FramebufferParameterName pname, int param)
+    {
+        _namedFramebufferParameteri(framebuffer, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedFramebufferReadBuffer(FramebufferId framebuffer, ColorBuffer src)
+    {
+        _namedFramebufferReadBuffer(framebuffer, src);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedFramebufferRenderbuffer(FramebufferId framebuffer, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, RenderbufferId renderbuffer)
+    {
+        _namedFramebufferRenderbuffer(framebuffer, attachment, renderbuffertarget, renderbuffer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedFramebufferTexture(FramebufferId framebuffer, FramebufferAttachment attachment, TextureId texture, int level)
+    {
+        _namedFramebufferTexture(framebuffer, attachment, texture, level);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedFramebufferTextureLayer(FramebufferId framebuffer, FramebufferAttachment attachment, TextureId texture, int level, int layer)
+    {
+        _namedFramebufferTextureLayer(framebuffer, attachment, texture, level, layer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedRenderbufferStorage(RenderbufferId renderbuffer, InternalFormat internalformat, int width, int height)
+    {
+        _namedRenderbufferStorage(renderbuffer, internalformat, width, height);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void NamedRenderbufferStorageMultisample(RenderbufferId renderbuffer, int samples, InternalFormat internalformat, int width, int height)
+    {
+        _namedRenderbufferStorageMultisample(renderbuffer, samples, internalformat, width, height);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ObjectLabel(ObjectIdentifier identifier, uint name, int length, byte* label)
+    {
+        _objectLabel(identifier, name, length, label);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ObjectPtrLabel(void* ptr, int length, byte* label)
+    {
+        _objectPtrLabel(ptr, length, label);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void PatchParameterfv(PatchParameterName pname, float* values)
+    {
+        _patchParameterfv(pname, values);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void PatchParameteri(PatchParameterName pname, int value)
+    {
+        _patchParameteri(pname, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void PauseTransformFeedback()
+    {
+        _pauseTransformFeedback();
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void PixelStoref(PixelStoreParameter pname, float param)
+    {
+        _pixelStoref(pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void PixelStorei(PixelStoreParameter pname, int param)
+    {
+        _pixelStorei(pname, param);
         CheckError();
     }
 
@@ -4032,149 +3977,422 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform3d(int location, double x, double y, double z)
+    public void PointSize(float size)
     {
-        _uniform3d(location, x, y, z);
+        _pointSize(size);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform2d(int location, double x, double y)
+    public void PolygonMode(TriangleFace face, PolygonModeEnum mode)
     {
-        _uniform2d(location, x, y);
+        _polygonMode(face, mode);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform1d(int location, double x)
+    public void PolygonOffset(float factor, float units)
     {
-        _uniform1d(location, x);
+        _polygonOffset(factor, units);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawElementsIndirect(PrimitiveType mode, DrawElementsType type, void* indirect)
+    public void PolygonOffsetClamp(float factor, float units, float clamp)
     {
-        _drawElementsIndirect(mode, type, indirect);
+        _polygonOffsetClamp(factor, units, clamp);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawArraysIndirect(PrimitiveType mode, void* indirect)
+    public void PopDebugGroup()
     {
-        _drawArraysIndirect(mode, indirect);
+        _popDebugGroup();
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendFuncSeparatei(uint buf, BlendingFactor srcRGB, BlendingFactor dstRGB, BlendingFactor srcAlpha, BlendingFactor dstAlpha)
+    public void PrimitiveRestartIndex(uint index)
     {
-        _blendFuncSeparatei(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+        _primitiveRestartIndex(index);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendFunci(uint buf, BlendingFactor src, BlendingFactor dst)
+    public void ProgramBinary(ProgramId program, Enum binaryFormat, void* binary, int length)
     {
-        _blendFunci(buf, src, dst);
+        _programBinary(program, binaryFormat, binary, length);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendEquationSeparatei(uint buf, BlendEquationModeEXT modeRGB, BlendEquationModeEXT modeAlpha)
+    public void ProgramParameteri(ProgramId program, ProgramParameterPName pname, int value)
     {
-        _blendEquationSeparatei(buf, modeRGB, modeAlpha);
+        _programParameteri(program, pname, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendEquationi(uint buf, BlendEquationModeEXT mode)
+    public void ProgramUniform1d(ProgramId program, int location, double v0)
     {
-        _blendEquationi(buf, mode);
+        _programUniform1d(program, location, v0);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MinSampleShading(float value)
+    public void ProgramUniform1dv(ProgramId program, int location, int count, double* value)
     {
-        _minSampleShading(value);
+        _programUniform1dv(program, location, count, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP4uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
+    public void ProgramUniform1f(ProgramId program, int location, float v0)
     {
-        _vertexAttribP4uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        _programUniform1f(program, location, v0);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP4ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
+    public void ProgramUniform1fv(ProgramId program, int location, int count, float* value)
     {
-        _vertexAttribP4ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        _programUniform1fv(program, location, count, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP3uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
+    public void ProgramUniform1i(ProgramId program, int location, int v0)
     {
-        _vertexAttribP3uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        _programUniform1i(program, location, v0);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP3ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
+    public void ProgramUniform1iv(ProgramId program, int location, int count, int* value)
     {
-        _vertexAttribP3ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        _programUniform1iv(program, location, count, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP2uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
+    public void ProgramUniform1ui(ProgramId program, int location, uint v0)
     {
-        _vertexAttribP2uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        _programUniform1ui(program, location, v0);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP2ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
+    public void ProgramUniform1uiv(ProgramId program, int location, int count, uint* value)
     {
-        _vertexAttribP2ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        _programUniform1uiv(program, location, count, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP1uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
+    public void ProgramUniform2d(ProgramId program, int location, double v0, double v1)
     {
-        _vertexAttribP1uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        _programUniform2d(program, location, v0, v1);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribP1ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
+    public void ProgramUniform2dv(ProgramId program, int location, int count, double* value)
     {
-        _vertexAttribP1ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
+        _programUniform2dv(program, location, count, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribDivisor(uint index, uint divisor)
+    public void ProgramUniform2f(ProgramId program, int location, float v0, float v1)
     {
-        _vertexAttribDivisor(index, divisor);
+        _programUniform2f(program, location, v0, v1);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryObjectui64v(QueryId id, QueryObjectParameterName pname, ulong* @params)
+    public void ProgramUniform2fv(ProgramId program, int location, int count, float* value)
     {
-        _getQueryObjectui64v(id, pname, @params);
+        _programUniform2fv(program, location, count, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryObjecti64v(QueryId id, QueryObjectParameterName pname, long* @params)
+    public void ProgramUniform2i(ProgramId program, int location, int v0, int v1)
     {
-        _getQueryObjecti64v(id, pname, @params);
+        _programUniform2i(program, location, v0, v1);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform2iv(ProgramId program, int location, int count, int* value)
+    {
+        _programUniform2iv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform2ui(ProgramId program, int location, uint v0, uint v1)
+    {
+        _programUniform2ui(program, location, v0, v1);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform2uiv(ProgramId program, int location, int count, uint* value)
+    {
+        _programUniform2uiv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform3d(ProgramId program, int location, double v0, double v1, double v2)
+    {
+        _programUniform3d(program, location, v0, v1, v2);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform3dv(ProgramId program, int location, int count, double* value)
+    {
+        _programUniform3dv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform3f(ProgramId program, int location, float v0, float v1, float v2)
+    {
+        _programUniform3f(program, location, v0, v1, v2);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform3fv(ProgramId program, int location, int count, float* value)
+    {
+        _programUniform3fv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform3i(ProgramId program, int location, int v0, int v1, int v2)
+    {
+        _programUniform3i(program, location, v0, v1, v2);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform3iv(ProgramId program, int location, int count, int* value)
+    {
+        _programUniform3iv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform3ui(ProgramId program, int location, uint v0, uint v1, uint v2)
+    {
+        _programUniform3ui(program, location, v0, v1, v2);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform3uiv(ProgramId program, int location, int count, uint* value)
+    {
+        _programUniform3uiv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform4d(ProgramId program, int location, double v0, double v1, double v2, double v3)
+    {
+        _programUniform4d(program, location, v0, v1, v2, v3);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform4dv(ProgramId program, int location, int count, double* value)
+    {
+        _programUniform4dv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform4f(ProgramId program, int location, float v0, float v1, float v2, float v3)
+    {
+        _programUniform4f(program, location, v0, v1, v2, v3);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform4fv(ProgramId program, int location, int count, float* value)
+    {
+        _programUniform4fv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform4i(ProgramId program, int location, int v0, int v1, int v2, int v3)
+    {
+        _programUniform4i(program, location, v0, v1, v2, v3);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform4iv(ProgramId program, int location, int count, int* value)
+    {
+        _programUniform4iv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform4ui(ProgramId program, int location, uint v0, uint v1, uint v2, uint v3)
+    {
+        _programUniform4ui(program, location, v0, v1, v2, v3);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniform4uiv(ProgramId program, int location, int count, uint* value)
+    {
+        _programUniform4uiv(program, location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix2dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix2fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix2x3dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix2x3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix2x3fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix2x3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix2x4dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix2x4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix2x4fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix2x4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix3dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix3fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix3x2dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix3x2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix3x2fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix3x2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix3x4dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix3x4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix3x4fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix3x4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix4dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix4dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix4fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix4fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix4x2dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix4x2dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix4x2fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix4x2fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix4x3dv(ProgramId program, int location, int count, bool transpose, double* value)
+    {
+        _programUniformMatrix4x3dv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProgramUniformMatrix4x3fv(ProgramId program, int location, int count, bool transpose, float* value)
+    {
+        _programUniformMatrix4x3fv(program, location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ProvokingVertex(VertexProvokingMode mode)
+    {
+        _provokingVertex(mode);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void PushDebugGroup(DebugSource source, uint id, int length, byte* message)
+    {
+        _pushDebugGroup(source, id, length, message);
         CheckError();
     }
 
@@ -4186,51 +4404,65 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetSamplerParameterIuiv(SamplerId sampler, SamplerParameterI pname, uint* @params)
+    public void ReadBuffer(ReadBufferMode src)
     {
-        _getSamplerParameterIuiv(sampler, pname, @params);
+        _readBuffer(src);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetSamplerParameterfv(SamplerId sampler, SamplerParameterF pname, float* @params)
+    public void ReadnPixels(int x, int y, int width, int height, PixelFormat format, PixelType type, int bufSize, void* data)
     {
-        _getSamplerParameterfv(sampler, pname, @params);
+        _readnPixels(x, y, width, height, format, type, bufSize, data);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetSamplerParameterIiv(SamplerId sampler, SamplerParameterI pname, int* @params)
+    public void ReadPixels(int x, int y, int width, int height, PixelFormat format, PixelType type, void* pixels)
     {
-        _getSamplerParameterIiv(sampler, pname, @params);
+        _readPixels(x, y, width, height, format, type, pixels);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetSamplerParameteriv(SamplerId sampler, SamplerParameterI pname, int* @params)
+    public void ReleaseShaderCompiler()
     {
-        _getSamplerParameteriv(sampler, pname, @params);
+        _releaseShaderCompiler();
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SamplerParameterIuiv(SamplerId sampler, SamplerParameterI pname, uint* param)
+    public void RenderbufferStorage(RenderbufferTarget target, InternalFormat internalformat, int width, int height)
     {
-        _samplerParameterIuiv(sampler, pname, param);
+        _renderbufferStorage(target, internalformat, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SamplerParameterIiv(SamplerId sampler, SamplerParameterI pname, int* param)
+    public void RenderbufferStorageMultisample(RenderbufferTarget target, int samples, InternalFormat internalformat, int width, int height)
     {
-        _samplerParameterIiv(sampler, pname, param);
+        _renderbufferStorageMultisample(target, samples, internalformat, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SamplerParameterfv(SamplerId sampler, SamplerParameterF pname, float* param)
+    public void ResumeTransformFeedback()
     {
-        _samplerParameterfv(sampler, pname, param);
+        _resumeTransformFeedback();
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SampleCoverage(float value, bool invert)
+    {
+        _sampleCoverage(value, ((invert) ? (byte)1 : (byte)0));
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SampleMaski(uint maskNumber, uint mask)
+    {
+        _sampleMaski(maskNumber, mask);
         CheckError();
     }
 
@@ -4242,9 +4474,9 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SamplerParameteriv(SamplerId sampler, SamplerParameterI pname, int* param)
+    public void SamplerParameterfv(SamplerId sampler, SamplerParameterF pname, float* param)
     {
-        _samplerParameteriv(sampler, pname, param);
+        _samplerParameterfv(sampler, pname, param);
         CheckError();
     }
 
@@ -4256,441 +4488,58 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindSampler(uint unit, SamplerId sampler)
+    public void SamplerParameterIiv(SamplerId sampler, SamplerParameterI pname, int* param)
     {
-        _bindSampler(unit, sampler);
+        _samplerParameterIiv(sampler, pname, param);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsSampler(SamplerId sampler)
+    public void SamplerParameterIuiv(SamplerId sampler, SamplerParameterI pname, uint* param)
     {
-        var result = _isSampler(sampler);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteSamplers(int count, SamplerId* samplers)
-    {
-        _deleteSamplers(count, samplers);
+        _samplerParameterIuiv(sampler, pname, param);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenSamplers(int count, SamplerId* samplers)
+    public void SamplerParameteriv(SamplerId sampler, SamplerParameterI pname, int* param)
     {
-        _genSamplers(count, samplers);
+        _samplerParameteriv(sampler, pname, param);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetFragDataIndex(ProgramId program, byte* name)
+    public void Scissor(int x, int y, int width, int height)
     {
-        var result = _getFragDataIndex(program, name);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindFragDataLocationIndexed(ProgramId program, uint colorNumber, uint index, byte* name)
-    {
-        _bindFragDataLocationIndexed(program, colorNumber, index, name);
+        _scissor(x, y, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendColor(float red, float green, float blue, float alpha)
+    public void ScissorArrayv(uint first, int count, int* v)
     {
-        _blendColor(red, green, blue, alpha);
+        _scissorArrayv(first, count, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendEquation(BlendEquationModeEXT mode)
+    public void ScissorIndexed(uint index, int left, int bottom, int width, int height)
     {
-        _blendEquation(mode);
+        _scissorIndexed(index, left, bottom, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenQueries(int n, QueryId* ids)
+    public void ScissorIndexedv(uint index, int* v)
     {
-        _genQueries(n, ids);
+        _scissorIndexedv(index, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteQueries(int n, QueryId* ids)
+    public void ShaderBinary(int count, ShaderId* shaders, ShaderBinaryFormat binaryFormat, void* binary, int length)
     {
-        _deleteQueries(n, ids);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsQuery(QueryId id)
-    {
-        var result = _isQuery(id);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BeginQuery(QueryTarget target, QueryId id)
-    {
-        _beginQuery(target, id);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void EndQuery(QueryTarget target)
-    {
-        _endQuery(target);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryiv(QueryTarget target, QueryParameterName pname, int* @params)
-    {
-        _getQueryiv(target, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryObjectiv(QueryId id, QueryObjectParameterName pname, int* @params)
-    {
-        _getQueryObjectiv(id, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetQueryObjectuiv(QueryId id, QueryObjectParameterName pname, uint* @params)
-    {
-        _getQueryObjectuiv(id, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBuffer(BufferTarget target, BufferId buffer)
-    {
-        _bindBuffer(target, buffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteBuffers(int n, BufferId* buffers)
-    {
-        _deleteBuffers(n, buffers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenBuffers(int n, BufferId* buffers)
-    {
-        _genBuffers(n, buffers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsBuffer(BufferId buffer)
-    {
-        var result = _isBuffer(buffer);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BufferData(BufferTarget target, nint size, void* data, BufferUsage usage)
-    {
-        _bufferData(target, size, data, usage);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BufferSubData(BufferTarget target, nint offset, nint size, void* data)
-    {
-        _bufferSubData(target, offset, size, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBufferSubData(BufferTarget target, nint offset, nint size, void* data)
-    {
-        _getBufferSubData(target, offset, size, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void* MapBuffer(BufferTarget target, BufferAccess access)
-    {
-        var result = _mapBuffer(target, access);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool UnmapBuffer(BufferTarget target)
-    {
-        var result = _unmapBuffer(target);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBufferParameteriv(BufferTarget target, BufferPName pname, int* @params)
-    {
-        _getBufferParameteriv(target, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBufferPointerv(BufferTarget target, BufferPointerName pname, void** @params)
-    {
-        _getBufferPointerv(target, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlendEquationSeparate(BlendEquationModeEXT modeRGB, BlendEquationModeEXT modeAlpha)
-    {
-        _blendEquationSeparate(modeRGB, modeAlpha);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawBuffers(int n, DrawBufferMode* bufs)
-    {
-        _drawBuffers(n, bufs);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void StencilOpSeparate(TriangleFace face, StencilOpEnum sfail, StencilOpEnum dpfail, StencilOpEnum dppass)
-    {
-        _stencilOpSeparate(face, sfail, dpfail, dppass);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void StencilFuncSeparate(TriangleFace face, StencilFunction func, int @ref, uint mask)
-    {
-        _stencilFuncSeparate(face, func, @ref, mask);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void StencilMaskSeparate(TriangleFace face, uint mask)
-    {
-        _stencilMaskSeparate(face, mask);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void AttachShader(ProgramId program, ShaderId shader)
-    {
-        _attachShader(program, shader);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindAttribLocation(ProgramId program, uint index, byte* name)
-    {
-        _bindAttribLocation(program, index, name);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CompileShader(ShaderId shader)
-    {
-        _compileShader(shader);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ProgramId CreateProgram()
-    {
-        var result = _createProgram();
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ShaderId CreateShader(ShaderType type)
-    {
-        var result = _createShader(type);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteProgram(ProgramId program)
-    {
-        _deleteProgram(program);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteShader(ShaderId shader)
-    {
-        _deleteShader(shader);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DetachShader(ProgramId program, ShaderId shader)
-    {
-        _detachShader(program, shader);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DisableVertexAttribArray(uint index)
-    {
-        _disableVertexAttribArray(index);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void EnableVertexAttribArray(uint index)
-    {
-        _enableVertexAttribArray(index);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveAttrib(ProgramId program, uint index, int bufSize, int* length, int* size, AttributeType* type, byte* name)
-    {
-        _getActiveAttrib(program, index, bufSize, length, size, type, name);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveUniform(ProgramId program, uint index, int bufSize, int* length, int* size, UniformType* type, byte* name)
-    {
-        _getActiveUniform(program, index, bufSize, length, size, type, name);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetAttachedShaders(ProgramId program, int maxCount, int* count, ShaderId* shaders)
-    {
-        _getAttachedShaders(program, maxCount, count, shaders);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetAttribLocation(ProgramId program, byte* name)
-    {
-        var result = _getAttribLocation(program, name);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramiv(ProgramId program, ProgramProperty pname, int* @params)
-    {
-        _getProgramiv(program, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramInfoLog(ProgramId program, int bufSize, int* length, byte* infoLog)
-    {
-        _getProgramInfoLog(program, bufSize, length, infoLog);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetShaderiv(ShaderId shader, ShaderParameterName pname, int* @params)
-    {
-        _getShaderiv(shader, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetShaderInfoLog(ShaderId shader, int bufSize, int* length, byte* infoLog)
-    {
-        _getShaderInfoLog(shader, bufSize, length, infoLog);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetShaderSource(ShaderId shader, int bufSize, int* length, byte* source)
-    {
-        _getShaderSource(shader, bufSize, length, source);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetUniformLocation(ProgramId program, byte* name)
-    {
-        var result = _getUniformLocation(program, name);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetUniformfv(ProgramId program, int location, float* @params)
-    {
-        _getUniformfv(program, location, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetUniformiv(ProgramId program, int location, int* @params)
-    {
-        _getUniformiv(program, location, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribdv(uint index, VertexAttribProperty pname, double* @params)
-    {
-        _getVertexAttribdv(index, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribfv(uint index, VertexAttribProperty pname, float* @params)
-    {
-        _getVertexAttribfv(index, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribiv(uint index, VertexAttribProperty pname, int* @params)
-    {
-        _getVertexAttribiv(index, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribPointerv(uint index, VertexAttribPointerProperty pname, void** pointer)
-    {
-        _getVertexAttribPointerv(index, pname, pointer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsProgram(ProgramId program)
-    {
-        var result = _isProgram(program);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsShader(ShaderId shader)
-    {
-        var result = _isShader(shader);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void LinkProgram(ProgramId program)
-    {
-        _linkProgram(program);
+        _shaderBinary(count, shaders, binaryFormat, binary, length);
         CheckError();
     }
 
@@ -4702,9 +4551,366 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UseProgram(ProgramId program)
+    public void ShaderStorageBlockBinding(ProgramId program, uint storageBlockIndex, uint storageBlockBinding)
     {
-        _useProgram(program);
+        _shaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SpecializeShader(ShaderId shader, byte* pEntryPoint, uint numSpecializationConstants, uint* pConstantIndex, uint* pConstantValue)
+    {
+        _specializeShader(shader, pEntryPoint, numSpecializationConstants, pConstantIndex, pConstantValue);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void StencilFunc(StencilFunction func, int @ref, uint mask)
+    {
+        _stencilFunc(func, @ref, mask);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void StencilFuncSeparate(TriangleFace face, StencilFunction func, int @ref, uint mask)
+    {
+        _stencilFuncSeparate(face, func, @ref, mask);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void StencilMask(uint mask)
+    {
+        _stencilMask(mask);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void StencilMaskSeparate(TriangleFace face, uint mask)
+    {
+        _stencilMaskSeparate(face, mask);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void StencilOp(StencilOpEnum fail, StencilOpEnum zfail, StencilOpEnum zpass)
+    {
+        _stencilOp(fail, zfail, zpass);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void StencilOpSeparate(TriangleFace face, StencilOpEnum sfail, StencilOpEnum dpfail, StencilOpEnum dppass)
+    {
+        _stencilOpSeparate(face, sfail, dpfail, dppass);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexBuffer(TextureTarget target, SizedInternalFormat internalformat, BufferId buffer)
+    {
+        _texBuffer(target, internalformat, buffer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexBufferRange(TextureTarget target, SizedInternalFormat internalformat, BufferId buffer, nint offset, nint size)
+    {
+        _texBufferRange(target, internalformat, buffer, offset, size);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexImage1D(TextureTarget target, int level, InternalFormat internalformat, int width, int border, PixelFormat format, PixelType type, void* pixels)
+    {
+        _texImage1D(target, level, internalformat, width, border, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexImage2D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, void* pixels)
+    {
+        _texImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexImage2DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, bool fixedsamplelocations)
+    {
+        _texImage2DMultisample(target, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexImage3D(TextureTarget target, int level, InternalFormat internalformat, int width, int height, int depth, int border, PixelFormat format, PixelType type, void* pixels)
+    {
+        _texImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexImage3DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
+    {
+        _texImage3DMultisample(target, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexParameterf(TextureTarget target, TextureParameterName pname, float param)
+    {
+        _texParameterf(target, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexParameterfv(TextureTarget target, TextureParameterName pname, float* @params)
+    {
+        _texParameterfv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexParameteri(TextureTarget target, TextureParameterName pname, int param)
+    {
+        _texParameteri(target, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexParameterIiv(TextureTarget target, TextureParameterName pname, int* @params)
+    {
+        _texParameterIiv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexParameterIuiv(TextureTarget target, TextureParameterName pname, uint* @params)
+    {
+        _texParameterIuiv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexParameteriv(TextureTarget target, TextureParameterName pname, int* @params)
+    {
+        _texParameteriv(target, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexStorage1D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width)
+    {
+        _texStorage1D(target, levels, internalformat, width);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexStorage2D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width, int height)
+    {
+        _texStorage2D(target, levels, internalformat, width, height);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexStorage2DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, bool fixedsamplelocations)
+    {
+        _texStorage2DMultisample(target, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexStorage3D(TextureTarget target, int levels, SizedInternalFormat internalformat, int width, int height, int depth)
+    {
+        _texStorage3D(target, levels, internalformat, width, height, depth);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexStorage3DMultisample(TextureTarget target, int samples, SizedInternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
+    {
+        _texStorage3DMultisample(target, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexSubImage1D(TextureTarget target, int level, int xoffset, int width, PixelFormat format, PixelType type, void* pixels)
+    {
+        _texSubImage1D(target, level, xoffset, width, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, int width, int height, PixelFormat format, PixelType type, void* pixels)
+    {
+        _texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
+    {
+        _texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureBarrier()
+    {
+        _textureBarrier();
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureBuffer(TextureId texture, SizedInternalFormat internalformat, BufferId buffer)
+    {
+        _textureBuffer(texture, internalformat, buffer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureBufferRange(TextureId texture, SizedInternalFormat internalformat, BufferId buffer, nint offset, nint size)
+    {
+        _textureBufferRange(texture, internalformat, buffer, offset, size);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureParameterf(TextureId texture, TextureParameterName pname, float param)
+    {
+        _textureParameterf(texture, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureParameterfv(TextureId texture, TextureParameterName pname, float* param)
+    {
+        _textureParameterfv(texture, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureParameteri(TextureId texture, TextureParameterName pname, int param)
+    {
+        _textureParameteri(texture, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureParameterIiv(TextureId texture, TextureParameterName pname, int* @params)
+    {
+        _textureParameterIiv(texture, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureParameterIuiv(TextureId texture, TextureParameterName pname, uint* @params)
+    {
+        _textureParameterIuiv(texture, pname, @params);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureParameteriv(TextureId texture, TextureParameterName pname, int* param)
+    {
+        _textureParameteriv(texture, pname, param);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureStorage1D(TextureId texture, int levels, SizedInternalFormat internalformat, int width)
+    {
+        _textureStorage1D(texture, levels, internalformat, width);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureStorage2D(TextureId texture, int levels, SizedInternalFormat internalformat, int width, int height)
+    {
+        _textureStorage2D(texture, levels, internalformat, width, height);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureStorage2DMultisample(TextureId texture, int samples, SizedInternalFormat internalformat, int width, int height, bool fixedsamplelocations)
+    {
+        _textureStorage2DMultisample(texture, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureStorage3D(TextureId texture, int levels, SizedInternalFormat internalformat, int width, int height, int depth)
+    {
+        _textureStorage3D(texture, levels, internalformat, width, height, depth);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureStorage3DMultisample(TextureId texture, int samples, SizedInternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
+    {
+        _textureStorage3DMultisample(texture, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureSubImage1D(TextureId texture, int level, int xoffset, int width, PixelFormat format, PixelType type, void* pixels)
+    {
+        _textureSubImage1D(texture, level, xoffset, width, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureSubImage2D(TextureId texture, int level, int xoffset, int yoffset, int width, int height, PixelFormat format, PixelType type, void* pixels)
+    {
+        _textureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureSubImage3D(TextureId texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, PixelFormat format, PixelType type, void* pixels)
+    {
+        _textureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TextureView(TextureId texture, TextureTarget target, TextureId origtexture, SizedInternalFormat internalformat, uint minlevel, uint numlevels, uint minlayer, uint numlayers)
+    {
+        _textureView(texture, target, origtexture, internalformat, minlevel, numlevels, minlayer, numlayers);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TransformFeedbackBufferBase(TransformFeedbackId xfb, uint index, BufferId buffer)
+    {
+        _transformFeedbackBufferBase(xfb, index, buffer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TransformFeedbackBufferRange(TransformFeedbackId xfb, uint index, BufferId buffer, nint offset, nint size)
+    {
+        _transformFeedbackBufferRange(xfb, index, buffer, offset, size);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void TransformFeedbackVaryings(ProgramId program, int count, byte** varyings, TransformFeedbackBufferMode bufferMode)
+    {
+        _transformFeedbackVaryings(program, count, varyings, bufferMode);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform1d(int location, double x)
+    {
+        _uniform1d(location, x);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform1dv(int location, int count, double* value)
+    {
+        _uniform1dv(location, count, value);
         CheckError();
     }
 
@@ -4716,23 +4922,9 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform2f(int location, float v0, float v1)
+    public void Uniform1fv(int location, int count, float* value)
     {
-        _uniform2f(location, v0, v1);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform3f(int location, float v0, float v1, float v2)
-    {
-        _uniform3f(location, v0, v1, v2);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform4f(int location, float v0, float v1, float v2, float v3)
-    {
-        _uniform4f(location, v0, v1, v2, v3);
+        _uniform1fv(location, count, value);
         CheckError();
     }
 
@@ -4744,30 +4936,44 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform2i(int location, int v0, int v1)
+    public void Uniform1iv(int location, int count, int* value)
     {
-        _uniform2i(location, v0, v1);
+        _uniform1iv(location, count, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform3i(int location, int v0, int v1, int v2)
+    public void Uniform1ui(int location, uint v0)
     {
-        _uniform3i(location, v0, v1, v2);
+        _uniform1ui(location, v0);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform4i(int location, int v0, int v1, int v2, int v3)
+    public void Uniform1uiv(int location, int count, uint* value)
     {
-        _uniform4i(location, v0, v1, v2, v3);
+        _uniform1uiv(location, count, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform1fv(int location, int count, float* value)
+    public void Uniform2d(int location, double x, double y)
     {
-        _uniform1fv(location, count, value);
+        _uniform2d(location, x, y);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform2dv(int location, int count, double* value)
+    {
+        _uniform2dv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform2f(int location, float v0, float v1)
+    {
+        _uniform2f(location, v0, v1);
         CheckError();
     }
 
@@ -4779,23 +4985,9 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform3fv(int location, int count, float* value)
+    public void Uniform2i(int location, int v0, int v1)
     {
-        _uniform3fv(location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform4fv(int location, int count, float* value)
-    {
-        _uniform4fv(location, count, value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform1iv(int location, int count, int* value)
-    {
-        _uniform1iv(location, count, value);
+        _uniform2i(location, v0, v1);
         CheckError();
     }
 
@@ -4807,9 +4999,107 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform2ui(int location, uint v0, uint v1)
+    {
+        _uniform2ui(location, v0, v1);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform2uiv(int location, int count, uint* value)
+    {
+        _uniform2uiv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform3d(int location, double x, double y, double z)
+    {
+        _uniform3d(location, x, y, z);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform3dv(int location, int count, double* value)
+    {
+        _uniform3dv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform3f(int location, float v0, float v1, float v2)
+    {
+        _uniform3f(location, v0, v1, v2);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform3fv(int location, int count, float* value)
+    {
+        _uniform3fv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform3i(int location, int v0, int v1, int v2)
+    {
+        _uniform3i(location, v0, v1, v2);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Uniform3iv(int location, int count, int* value)
     {
         _uniform3iv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform3ui(int location, uint v0, uint v1, uint v2)
+    {
+        _uniform3ui(location, v0, v1, v2);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform3uiv(int location, int count, uint* value)
+    {
+        _uniform3uiv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform4d(int location, double x, double y, double z, double w)
+    {
+        _uniform4d(location, x, y, z, w);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform4dv(int location, int count, double* value)
+    {
+        _uniform4dv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform4f(int location, float v0, float v1, float v2, float v3)
+    {
+        _uniform4f(location, v0, v1, v2, v3);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform4fv(int location, int count, float* value)
+    {
+        _uniform4fv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform4i(int location, int v0, int v1, int v2, int v3)
+    {
+        _uniform4i(location, v0, v1, v2, v3);
         CheckError();
     }
 
@@ -4821,9 +5111,72 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform4ui(int location, uint v0, uint v1, uint v2, uint v3)
+    {
+        _uniform4ui(location, v0, v1, v2, v3);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Uniform4uiv(int location, int count, uint* value)
+    {
+        _uniform4uiv(location, count, value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformBlockBinding(ProgramId program, uint uniformBlockIndex, uint uniformBlockBinding)
+    {
+        _uniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix2dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix2fv(int location, int count, bool transpose, float* value)
     {
         _uniformMatrix2fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix2x3dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix2x3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix2x3fv(int location, int count, bool transpose, float* value)
+    {
+        _uniformMatrix2x3fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix2x4dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix2x4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix2x4fv(int location, int count, bool transpose, float* value)
+    {
+        _uniformMatrix2x4fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix3dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
         CheckError();
     }
 
@@ -4835,6 +5188,41 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix3x2dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix3x2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix3x2fv(int location, int count, bool transpose, float* value)
+    {
+        _uniformMatrix3x2fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix3x4dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix3x4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix3x4fv(int location, int count, bool transpose, float* value)
+    {
+        _uniformMatrix3x4fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix4dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix4dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UniformMatrix4fv(int location, int count, bool transpose, float* value)
     {
         _uniformMatrix4fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
@@ -4842,9 +5230,137 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix4x2dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix4x2dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix4x2fv(int location, int count, bool transpose, float* value)
+    {
+        _uniformMatrix4x2fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix4x3dv(int location, int count, bool transpose, double* value)
+    {
+        _uniformMatrix4x3dv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformMatrix4x3fv(int location, int count, bool transpose, float* value)
+    {
+        _uniformMatrix4x3fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UniformSubroutinesuiv(ShaderType shadertype, int count, uint* indices)
+    {
+        _uniformSubroutinesuiv(shadertype, count, indices);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool UnmapBuffer(BufferTarget target)
+    {
+        var result = _unmapBuffer(target);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool UnmapNamedBuffer(BufferId buffer)
+    {
+        var result = _unmapNamedBuffer(buffer);
+        CheckError();
+        return ((result) == (byte)1);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UseProgram(ProgramId program)
+    {
+        _useProgram(program);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void UseProgramStages(ProgramPipelineId pipeline, UseProgramStageMask stages, ProgramId program)
+    {
+        _useProgramStages(pipeline, stages, program);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ValidateProgram(ProgramId program)
     {
         _validateProgram(program);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ValidateProgramPipeline(ProgramPipelineId pipeline)
+    {
+        _validateProgramPipeline(pipeline);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexArrayAttribBinding(VertexArrayId vaobj, uint attribindex, uint bindingindex)
+    {
+        _vertexArrayAttribBinding(vaobj, attribindex, bindingindex);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexArrayAttribFormat(VertexArrayId vaobj, uint attribindex, int size, VertexAttribType type, bool normalized, uint relativeoffset)
+    {
+        _vertexArrayAttribFormat(vaobj, attribindex, size, type, ((normalized) ? (byte)1 : (byte)0), relativeoffset);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexArrayAttribIFormat(VertexArrayId vaobj, uint attribindex, int size, VertexAttribIType type, uint relativeoffset)
+    {
+        _vertexArrayAttribIFormat(vaobj, attribindex, size, type, relativeoffset);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexArrayAttribLFormat(VertexArrayId vaobj, uint attribindex, int size, VertexAttribLType type, uint relativeoffset)
+    {
+        _vertexArrayAttribLFormat(vaobj, attribindex, size, type, relativeoffset);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexArrayBindingDivisor(VertexArrayId vaobj, uint bindingindex, uint divisor)
+    {
+        _vertexArrayBindingDivisor(vaobj, bindingindex, divisor);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexArrayElementBuffer(VertexArrayId vaobj, BufferId buffer)
+    {
+        _vertexArrayElementBuffer(vaobj, buffer);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexArrayVertexBuffer(VertexArrayId vaobj, uint bindingindex, BufferId buffer, nint offset, int stride)
+    {
+        _vertexArrayVertexBuffer(vaobj, bindingindex, buffer, offset, stride);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexArrayVertexBuffers(VertexArrayId vaobj, uint first, int count, BufferId* buffers, nint offsets, int* strides)
+    {
+        _vertexArrayVertexBuffers(vaobj, first, count, buffers, offsets, strides);
         CheckError();
     }
 
@@ -4975,6 +5491,48 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttrib4bv(uint index, sbyte* v)
+    {
+        _vertexAttrib4bv(index, v);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttrib4d(uint index, double x, double y, double z, double w)
+    {
+        _vertexAttrib4d(index, x, y, z, w);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttrib4dv(uint index, double* v)
+    {
+        _vertexAttrib4dv(index, v);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttrib4f(uint index, float x, float y, float z, float w)
+    {
+        _vertexAttrib4f(index, x, y, z, w);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttrib4fv(uint index, float* v)
+    {
+        _vertexAttrib4fv(index, v);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttrib4iv(uint index, int* v)
+    {
+        _vertexAttrib4iv(index, v);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4Nbv(uint index, sbyte* v)
     {
         _vertexAttrib4Nbv(index, v);
@@ -5024,48 +5582,6 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttrib4bv(uint index, sbyte* v)
-    {
-        _vertexAttrib4bv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttrib4d(uint index, double x, double y, double z, double w)
-    {
-        _vertexAttrib4d(index, x, y, z, w);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttrib4dv(uint index, double* v)
-    {
-        _vertexAttrib4dv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttrib4f(uint index, float x, float y, float z, float w)
-    {
-        _vertexAttrib4f(index, x, y, z, w);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttrib4fv(uint index, float* v)
-    {
-        _vertexAttrib4fv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttrib4iv(uint index, int* v)
-    {
-        _vertexAttrib4iv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttrib4s(uint index, short x, short y, short z, short w)
     {
         _vertexAttrib4s(index, x, y, z, w);
@@ -5101,178 +5617,23 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribPointer(uint index, int size, VertexAttribPointerType type, bool normalized, int stride, void* pointer)
+    public void VertexAttribBinding(uint attribindex, uint bindingindex)
     {
-        _vertexAttribPointer(index, size, type, ((normalized) ? (byte)1 : (byte)0), stride, pointer);
+        _vertexAttribBinding(attribindex, bindingindex);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2x3fv(int location, int count, bool transpose, float* value)
+    public void VertexAttribDivisor(uint index, uint divisor)
     {
-        _uniformMatrix2x3fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
+        _vertexAttribDivisor(index, divisor);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3x2fv(int location, int count, bool transpose, float* value)
+    public void VertexAttribFormat(uint attribindex, int size, VertexAttribType type, bool normalized, uint relativeoffset)
     {
-        _uniformMatrix3x2fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix2x4fv(int location, int count, bool transpose, float* value)
-    {
-        _uniformMatrix2x4fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4x2fv(int location, int count, bool transpose, float* value)
-    {
-        _uniformMatrix4x2fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix3x4fv(int location, int count, bool transpose, float* value)
-    {
-        _uniformMatrix3x4fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformMatrix4x3fv(int location, int count, bool transpose, float* value)
-    {
-        _uniformMatrix4x3fv(location, count, ((transpose) ? (byte)1 : (byte)0), value);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ColorMaski(uint index, bool r, bool g, bool b, bool a)
-    {
-        _colorMaski(index, ((r) ? (byte)1 : (byte)0), ((g) ? (byte)1 : (byte)0), ((b) ? (byte)1 : (byte)0), ((a) ? (byte)1 : (byte)0));
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBooleani_v(BufferTarget target, uint index, byte* data)
-    {
-        _getBooleani_v(target, index, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetIntegeri_v(GetPName target, uint index, int* data)
-    {
-        _getIntegeri_v(target, index, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Enablei(EnableCap target, uint index)
-    {
-        _enablei(target, index);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Disablei(EnableCap target, uint index)
-    {
-        _disablei(target, index);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsEnabledi(EnableCap target, uint index)
-    {
-        var result = _isEnabledi(target, index);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BeginTransformFeedback(PrimitiveType primitiveMode)
-    {
-        _beginTransformFeedback(primitiveMode);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void EndTransformFeedback()
-    {
-        _endTransformFeedback();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBufferRange(BufferTarget target, uint index, BufferId buffer, nint offset, nint size)
-    {
-        _bindBufferRange(target, index, buffer, offset, size);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBufferBase(BufferTarget target, uint index, BufferId buffer)
-    {
-        _bindBufferBase(target, index, buffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TransformFeedbackVaryings(ProgramId program, int count, byte** varyings, TransformFeedbackBufferMode bufferMode)
-    {
-        _transformFeedbackVaryings(program, count, varyings, bufferMode);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTransformFeedbackVarying(ProgramId program, uint index, int bufSize, int* length, int* size, AttributeType* type, byte* name)
-    {
-        _getTransformFeedbackVarying(program, index, bufSize, length, size, type, name);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClampColor(ClampColorTarget target, ClampColorMode clamp)
-    {
-        _clampColor(target, clamp);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BeginConditionalRender(uint id, ConditionalRenderMode mode)
-    {
-        _beginConditionalRender(id, mode);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void EndConditionalRender()
-    {
-        _endConditionalRender();
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribIPointer(uint index, int size, VertexAttribIType type, int stride, void* pointer)
-    {
-        _vertexAttribIPointer(index, size, type, stride, pointer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribIiv(uint index, VertexAttribEnum pname, int* @params)
-    {
-        _getVertexAttribIiv(index, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetVertexAttribIuiv(uint index, VertexAttribEnum pname, uint* @params)
-    {
-        _getVertexAttribIuiv(index, pname, @params);
+        _vertexAttribFormat(attribindex, size, type, ((normalized) ? (byte)1 : (byte)0), relativeoffset);
         CheckError();
     }
 
@@ -5284,23 +5645,9 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI2i(uint index, int x, int y)
+    public void VertexAttribI1iv(uint index, int* v)
     {
-        _vertexAttribI2i(index, x, y);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI3i(uint index, int x, int y, int z)
-    {
-        _vertexAttribI3i(index, x, y, z);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI4i(uint index, int x, int y, int z, int w)
-    {
-        _vertexAttribI4i(index, x, y, z, w);
+        _vertexAttribI1iv(index, v);
         CheckError();
     }
 
@@ -5312,30 +5659,16 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI2ui(uint index, uint x, uint y)
+    public void VertexAttribI1uiv(uint index, uint* v)
     {
-        _vertexAttribI2ui(index, x, y);
+        _vertexAttribI1uiv(index, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI3ui(uint index, uint x, uint y, uint z)
+    public void VertexAttribI2i(uint index, int x, int y)
     {
-        _vertexAttribI3ui(index, x, y, z);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI4ui(uint index, uint x, uint y, uint z, uint w)
-    {
-        _vertexAttribI4ui(index, x, y, z, w);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI1iv(uint index, int* v)
-    {
-        _vertexAttribI1iv(index, v);
+        _vertexAttribI2i(index, x, y);
         CheckError();
     }
 
@@ -5347,23 +5680,9 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI3iv(uint index, int* v)
+    public void VertexAttribI2ui(uint index, uint x, uint y)
     {
-        _vertexAttribI3iv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI4iv(uint index, int* v)
-    {
-        _vertexAttribI4iv(index, v);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI1uiv(uint index, uint* v)
-    {
-        _vertexAttribI1uiv(index, v);
+        _vertexAttribI2ui(index, x, y);
         CheckError();
     }
 
@@ -5375,6 +5694,27 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttribI3i(uint index, int x, int y, int z)
+    {
+        _vertexAttribI3i(index, x, y, z);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttribI3iv(uint index, int* v)
+    {
+        _vertexAttribI3iv(index, v);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttribI3ui(uint index, uint x, uint y, uint z)
+    {
+        _vertexAttribI3ui(index, x, y, z);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI3uiv(uint index, uint* v)
     {
         _vertexAttribI3uiv(index, v);
@@ -5382,16 +5722,23 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI4uiv(uint index, uint* v)
+    public void VertexAttribI4bv(uint index, sbyte* v)
     {
-        _vertexAttribI4uiv(index, v);
+        _vertexAttribI4bv(index, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI4bv(uint index, sbyte* v)
+    public void VertexAttribI4i(uint index, int x, int y, int z, int w)
     {
-        _vertexAttribI4bv(index, v);
+        _vertexAttribI4i(index, x, y, z, w);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttribI4iv(uint index, int* v)
+    {
+        _vertexAttribI4iv(index, v);
         CheckError();
     }
 
@@ -5410,6 +5757,20 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttribI4ui(uint index, uint x, uint y, uint z, uint w)
+    {
+        _vertexAttribI4ui(index, x, y, z, w);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void VertexAttribI4uiv(uint index, uint* v)
+    {
+        _vertexAttribI4uiv(index, v);
+        CheckError();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void VertexAttribI4usv(uint index, ushort* v)
     {
         _vertexAttribI4usv(index, v);
@@ -5417,552 +5778,191 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetUniformuiv(ProgramId program, int location, uint* @params)
+    public void VertexAttribIFormat(uint attribindex, int size, VertexAttribIType type, uint relativeoffset)
     {
-        _getUniformuiv(program, location, @params);
+        _vertexAttribIFormat(attribindex, size, type, relativeoffset);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindFragDataLocation(ProgramId program, uint color, byte* name)
+    public void VertexAttribIPointer(uint index, int size, VertexAttribIType type, int stride, void* pointer)
     {
-        _bindFragDataLocation(program, color, name);
+        _vertexAttribIPointer(index, size, type, stride, pointer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetFragDataLocation(ProgramId program, byte* name)
+    public void VertexAttribL1d(uint index, double x)
     {
-        var result = _getFragDataLocation(program, name);
+        _vertexAttribL1d(index, x);
         CheckError();
-        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform1ui(int location, uint v0)
+    public void VertexAttribL1dv(uint index, double* v)
     {
-        _uniform1ui(location, v0);
+        _vertexAttribL1dv(index, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform2ui(int location, uint v0, uint v1)
+    public void VertexAttribL2d(uint index, double x, double y)
     {
-        _uniform2ui(location, v0, v1);
+        _vertexAttribL2d(index, x, y);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform3ui(int location, uint v0, uint v1, uint v2)
+    public void VertexAttribL2dv(uint index, double* v)
     {
-        _uniform3ui(location, v0, v1, v2);
+        _vertexAttribL2dv(index, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform4ui(int location, uint v0, uint v1, uint v2, uint v3)
+    public void VertexAttribL3d(uint index, double x, double y, double z)
     {
-        _uniform4ui(location, v0, v1, v2, v3);
+        _vertexAttribL3d(index, x, y, z);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform1uiv(int location, int count, uint* value)
+    public void VertexAttribL3dv(uint index, double* v)
     {
-        _uniform1uiv(location, count, value);
+        _vertexAttribL3dv(index, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform2uiv(int location, int count, uint* value)
+    public void VertexAttribL4d(uint index, double x, double y, double z, double w)
     {
-        _uniform2uiv(location, count, value);
+        _vertexAttribL4d(index, x, y, z, w);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform3uiv(int location, int count, uint* value)
+    public void VertexAttribL4dv(uint index, double* v)
     {
-        _uniform3uiv(location, count, value);
+        _vertexAttribL4dv(index, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Uniform4uiv(int location, int count, uint* value)
+    public void VertexAttribLFormat(uint attribindex, int size, VertexAttribLType type, uint relativeoffset)
     {
-        _uniform4uiv(location, count, value);
+        _vertexAttribLFormat(attribindex, size, type, relativeoffset);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexParameterIiv(TextureTarget target, TextureParameterName pname, int* @params)
+    public void VertexAttribLPointer(uint index, int size, VertexAttribLType type, int stride, void* pointer)
     {
-        _texParameterIiv(target, pname, @params);
+        _vertexAttribLPointer(index, size, type, stride, pointer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexParameterIuiv(TextureTarget target, TextureParameterName pname, uint* @params)
+    public void VertexAttribP1ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
     {
-        _texParameterIuiv(target, pname, @params);
+        _vertexAttribP1ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTexParameterIiv(TextureTarget target, GetTextureParameter pname, int* @params)
+    public void VertexAttribP1uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
     {
-        _getTexParameterIiv(target, pname, @params);
+        _vertexAttribP1uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTexParameterIuiv(TextureTarget target, GetTextureParameter pname, uint* @params)
+    public void VertexAttribP2ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
     {
-        _getTexParameterIuiv(target, pname, @params);
+        _vertexAttribP2ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearBufferiv(Buffer buffer, int drawbuffer, int* value)
+    public void VertexAttribP2uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
     {
-        _clearBufferiv(buffer, drawbuffer, value);
+        _vertexAttribP2uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearBufferuiv(Buffer buffer, int drawbuffer, uint* value)
+    public void VertexAttribP3ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
     {
-        _clearBufferuiv(buffer, drawbuffer, value);
+        _vertexAttribP3ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearBufferfv(Buffer buffer, int drawbuffer, float* value)
+    public void VertexAttribP3uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
     {
-        _clearBufferfv(buffer, drawbuffer, value);
+        _vertexAttribP3uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearBufferfi(Buffer buffer, int drawbuffer, float depth, int stencil)
+    public void VertexAttribP4ui(uint index, VertexAttribPointerType type, bool normalized, uint value)
     {
-        _clearBufferfi(buffer, drawbuffer, depth, stencil);
+        _vertexAttribP4ui(index, type, ((normalized) ? (byte)1 : (byte)0), value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string? GetStringi(StringName name, uint index)
+    public void VertexAttribP4uiv(uint index, VertexAttribPointerType type, bool normalized, uint* value)
     {
-        var result = _getStringi(name, index);
+        _vertexAttribP4uiv(index, type, ((normalized) ? (byte)1 : (byte)0), value);
         CheckError();
-        return Marshal.PtrToStringAnsi(result);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsRenderbuffer(RenderbufferId renderbuffer)
+    public void VertexAttribPointer(uint index, int size, VertexAttribPointerType type, bool normalized, int stride, void* pointer)
     {
-        var result = _isRenderbuffer(renderbuffer);
+        _vertexAttribPointer(index, size, type, ((normalized) ? (byte)1 : (byte)0), stride, pointer);
         CheckError();
-        return ((result) == (byte)1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindRenderbuffer(RenderbufferTarget target, RenderbufferId renderbuffer)
+    public void VertexBindingDivisor(uint bindingindex, uint divisor)
     {
-        _bindRenderbuffer(target, renderbuffer);
+        _vertexBindingDivisor(bindingindex, divisor);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteRenderbuffers(int n, RenderbufferId* renderbuffers)
+    public void Viewport(int x, int y, int width, int height)
     {
-        _deleteRenderbuffers(n, renderbuffers);
+        _viewport(x, y, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenRenderbuffers(int n, RenderbufferId* renderbuffers)
+    public void ViewportArrayv(uint first, int count, float* v)
     {
-        _genRenderbuffers(n, renderbuffers);
+        _viewportArrayv(first, count, v);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void RenderbufferStorage(RenderbufferTarget target, InternalFormat internalformat, int width, int height)
+    public void ViewportIndexedf(uint index, float x, float y, float w, float h)
     {
-        _renderbufferStorage(target, internalformat, width, height);
+        _viewportIndexedf(index, x, y, w, h);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetRenderbufferParameteriv(RenderbufferTarget target, RenderbufferParameterName pname, int* @params)
+    public void ViewportIndexedfv(uint index, float* v)
     {
-        _getRenderbufferParameteriv(target, pname, @params);
+        _viewportIndexedfv(index, v);
         CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsFramebuffer(FramebufferId framebuffer)
-    {
-        var result = _isFramebuffer(framebuffer);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindFramebuffer(FramebufferTarget target, FramebufferId framebuffer)
-    {
-        _bindFramebuffer(target, framebuffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteFramebuffers(int n, FramebufferId* framebuffers)
-    {
-        _deleteFramebuffers(n, framebuffers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenFramebuffers(int n, FramebufferId* framebuffers)
-    {
-        _genFramebuffers(n, framebuffers);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public FramebufferStatus CheckFramebufferStatus(FramebufferTarget target)
-    {
-        var result = _checkFramebufferStatus(target);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FramebufferTexture1D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, TextureId texture, int level)
-    {
-        _framebufferTexture1D(target, attachment, textarget, texture, level);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FramebufferTexture2D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, TextureId texture, int level)
-    {
-        _framebufferTexture2D(target, attachment, textarget, texture, level);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FramebufferTexture3D(FramebufferTarget target, FramebufferAttachment attachment, TextureTarget textarget, TextureId texture, int level, int zoffset)
-    {
-        _framebufferTexture3D(target, attachment, textarget, texture, level, zoffset);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FramebufferRenderbuffer(FramebufferTarget target, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, RenderbufferId renderbuffer)
-    {
-        _framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetFramebufferAttachmentParameteriv(FramebufferTarget target, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
-    {
-        _getFramebufferAttachmentParameteriv(target, attachment, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenerateMipmap(TextureTarget target)
-    {
-        _generateMipmap(target);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
-    {
-        _blitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void RenderbufferStorageMultisample(RenderbufferTarget target, int samples, InternalFormat internalformat, int width, int height)
-    {
-        _renderbufferStorageMultisample(target, samples, internalformat, width, height);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FramebufferTextureLayer(FramebufferTarget target, FramebufferAttachment attachment, TextureId texture, int level, int layer)
-    {
-        _framebufferTextureLayer(target, attachment, texture, level, layer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void* MapBufferRange(BufferTarget target, nint offset, nint length, MapBufferAccessMask access)
-    {
-        var result = _mapBufferRange(target, offset, length, access);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FlushMappedBufferRange(BufferTarget target, nint offset, nint length)
-    {
-        _flushMappedBufferRange(target, offset, length);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindVertexArray(VertexArrayId array)
-    {
-        _bindVertexArray(array);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteVertexArrays(int n, VertexArrayId* arrays)
-    {
-        _deleteVertexArrays(n, arrays);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenVertexArrays(int n, VertexArrayId* arrays)
-    {
-        _genVertexArrays(n, arrays);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsVertexArray(VertexArrayId array)
-    {
-        var result = _isVertexArray(array);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawArraysInstanced(PrimitiveType mode, int first, int count, int instancecount)
-    {
-        _drawArraysInstanced(mode, first, count, instancecount);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawElementsInstanced(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount)
-    {
-        _drawElementsInstanced(mode, count, type, indices, instancecount);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexBuffer(TextureTarget target, SizedInternalFormat internalformat, BufferId buffer)
-    {
-        _texBuffer(target, internalformat, buffer);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PrimitiveRestartIndex(uint index)
-    {
-        _primitiveRestartIndex(index);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CopyBufferSubData(CopyBufferSubDataTarget readTarget, CopyBufferSubDataTarget writeTarget, nint readOffset, nint writeOffset, nint size)
-    {
-        _copyBufferSubData(readTarget, writeTarget, readOffset, writeOffset, size);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetUniformIndices(ProgramId program, int uniformCount, byte** uniformNames, uint* uniformIndices)
-    {
-        _getUniformIndices(program, uniformCount, uniformNames, uniformIndices);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveUniformsiv(ProgramId program, int uniformCount, uint* uniformIndices, UniformPName pname, int* @params)
-    {
-        _getActiveUniformsiv(program, uniformCount, uniformIndices, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveUniformName(ProgramId program, uint uniformIndex, int bufSize, int* length, byte* uniformName)
-    {
-        _getActiveUniformName(program, uniformIndex, bufSize, length, uniformName);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint GetUniformBlockIndex(ProgramId program, byte* uniformBlockName)
-    {
-        var result = _getUniformBlockIndex(program, uniformBlockName);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveUniformBlockiv(ProgramId program, uint uniformBlockIndex, UniformBlockPName pname, int* @params)
-    {
-        _getActiveUniformBlockiv(program, uniformBlockIndex, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveUniformBlockName(ProgramId program, uint uniformBlockIndex, int bufSize, int* length, byte* uniformBlockName)
-    {
-        _getActiveUniformBlockName(program, uniformBlockIndex, bufSize, length, uniformBlockName);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void UniformBlockBinding(ProgramId program, uint uniformBlockIndex, uint uniformBlockBinding)
-    {
-        _uniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawElementsBaseVertex(PrimitiveType mode, int count, DrawElementsType type, void* indices, int basevertex)
-    {
-        _drawElementsBaseVertex(mode, count, type, indices, basevertex);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawRangeElementsBaseVertex(PrimitiveType mode, uint start, uint end, int count, DrawElementsType type, void* indices, int basevertex)
-    {
-        _drawRangeElementsBaseVertex(mode, start, end, count, type, indices, basevertex);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawElementsInstancedBaseVertex(PrimitiveType mode, int count, DrawElementsType type, void* indices, int instancecount, int basevertex)
-    {
-        _drawElementsInstancedBaseVertex(mode, count, type, indices, instancecount, basevertex);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void MultiDrawElementsBaseVertex(PrimitiveType mode, int* count, DrawElementsType type, void** indices, int drawcount, int* basevertex)
-    {
-        _multiDrawElementsBaseVertex(mode, count, type, indices, drawcount, basevertex);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ProvokingVertex(VertexProvokingMode mode)
-    {
-        _provokingVertex(mode);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public nint FenceSync(SyncCondition condition, SyncBehaviorFlags flags)
-    {
-        var result = _fenceSync(condition, flags);
-        CheckError();
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsSync(nint sync)
-    {
-        var result = _isSync(sync);
-        CheckError();
-        return ((result) == (byte)1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteSync(nint sync)
-    {
-        _deleteSync(sync);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public SyncStatus ClientWaitSync(nint sync, SyncObjectMask flags, ulong timeout)
-    {
-        var result = _clientWaitSync(sync, flags, timeout);
-        CheckError();
-        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WaitSync(nint sync, SyncBehaviorFlags flags, ulong timeout)
     {
         _waitSync(sync, flags, timeout);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetInteger64v(GetPName pname, long* data)
-    {
-        _getInteger64v(pname, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetSynciv(nint sync, SyncParameterName pname, int count, int* length, int* values)
-    {
-        _getSynciv(sync, pname, count, length, values);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetInteger64i_v(GetPName target, uint index, long* data)
-    {
-        _getInteger64i_v(target, index, data);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetBufferParameteri64v(BufferTarget target, BufferPName pname, long* @params)
-    {
-        _getBufferParameteri64v(target, pname, @params);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FramebufferTexture(FramebufferTarget target, FramebufferAttachment attachment, TextureId texture, int level)
-    {
-        _framebufferTexture(target, attachment, texture, level);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexImage2DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, bool fixedsamplelocations)
-    {
-        _texImage2DMultisample(target, samples, internalformat, width, height, ((fixedsamplelocations) ? (byte)1 : (byte)0));
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TexImage3DMultisample(TextureTarget target, int samples, InternalFormat internalformat, int width, int height, int depth, bool fixedsamplelocations)
-    {
-        _texImage3DMultisample(target, samples, internalformat, width, height, depth, ((fixedsamplelocations) ? (byte)1 : (byte)0));
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetMultisamplefv(GetMultisamplePNameNV pname, uint index, float* val)
-    {
-        _getMultisamplefv(pname, index, val);
-        CheckError();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SampleMaski(uint maskNumber, uint mask)
-    {
-        _sampleMaski(maskNumber, mask);
         CheckError();
     }
 

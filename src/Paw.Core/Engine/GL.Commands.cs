@@ -58,7 +58,7 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<float, float, float, void> _polygonOffsetClamp;
     private delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, nint, int, int, void> _multiDrawElementsIndirectCount;
     private delegate* unmanaged[Cdecl]<PrimitiveType, void*, nint, int, int, void> _multiDrawArraysIndirectCount;
-    private delegate* unmanaged[Cdecl]<ShaderId, char*, uint, uint*, uint*, void> _specializeShader;
+    private delegate* unmanaged[Cdecl]<ShaderId, byte*, uint, uint*, uint*, void> _specializeShader;
     private delegate* unmanaged[Cdecl]<void> _textureBarrier;
     private delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, int, void*, void> _readnPixels;
     private delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void> _getnUniformuiv;
@@ -179,15 +179,15 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, void*, void> _clearTexImage;
     private delegate* unmanaged[Cdecl]<BufferStorageTarget, nint, void*, BufferStorageMask, void> _bufferStorage;
     private delegate* unmanaged[Cdecl]<GetPointervPName, void**, void> _getPointerv;
-    private delegate* unmanaged[Cdecl]<void*, int, int*, char*, void> _getObjectPtrLabel;
-    private delegate* unmanaged[Cdecl]<void*, int, char*, void> _objectPtrLabel;
-    private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, char*, void> _getObjectLabel;
-    private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, char*, void> _objectLabel;
+    private delegate* unmanaged[Cdecl]<void*, int, int*, byte*, void> _getObjectPtrLabel;
+    private delegate* unmanaged[Cdecl]<void*, int, byte*, void> _objectPtrLabel;
+    private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, byte*, void> _getObjectLabel;
+    private delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, byte*, void> _objectLabel;
     private delegate* unmanaged[Cdecl]<void> _popDebugGroup;
-    private delegate* unmanaged[Cdecl]<DebugSource, uint, int, char*, void> _pushDebugGroup;
-    private delegate* unmanaged[Cdecl]<uint, int, DebugSource*, DebugType*, uint*, DebugSeverity*, int*, char*, uint> _getDebugMessageLog;
+    private delegate* unmanaged[Cdecl]<DebugSource, uint, int, byte*, void> _pushDebugGroup;
+    private delegate* unmanaged[Cdecl]<uint, int, DebugSource*, DebugType*, uint*, DebugSeverity*, int*, byte*, uint> _getDebugMessageLog;
     private delegate* unmanaged[Cdecl]<DebugProc, void*, void> _debugMessageCallback;
-    private delegate* unmanaged[Cdecl]<DebugSource, DebugType, uint, DebugSeverity, int, char*, void> _debugMessageInsert;
+    private delegate* unmanaged[Cdecl]<DebugSource, DebugType, uint, DebugSeverity, int, byte*, void> _debugMessageInsert;
     private delegate* unmanaged[Cdecl]<DebugSource, DebugType, DebugSeverity, int, uint*, byte, void> _debugMessageControl;
     private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexBindingDivisor;
     private delegate* unmanaged[Cdecl]<uint, uint, void> _vertexAttribBinding;
@@ -200,11 +200,11 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, byte, void> _texStorage2DMultisample;
     private delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, nint, nint, void> _texBufferRange;
     private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void> _shaderStorageBlockBinding;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, char*, int> _getProgramResourceLocationIndex;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, char*, int> _getProgramResourceLocation;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int> _getProgramResourceLocationIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int> _getProgramResourceLocation;
     private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, ProgramResourceProperty*, int, int*, int*, void> _getProgramResourceiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, int*, char*, void> _getProgramResourceName;
-    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, char*, uint> _getProgramResourceIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, int*, byte*, void> _getProgramResourceName;
+    private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, uint> _getProgramResourceIndex;
     private delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, ProgramInterfacePName, int*, void> _getProgramInterfaceiv;
     private delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, int, int, void> _multiDrawElementsIndirect;
     private delegate* unmanaged[Cdecl]<PrimitiveType, void*, int, int, void> _multiDrawArraysIndirect;
@@ -254,7 +254,7 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<uint, double, double, double, void> _vertexAttribL3d;
     private delegate* unmanaged[Cdecl]<uint, double, double, void> _vertexAttribL2d;
     private delegate* unmanaged[Cdecl]<uint, double, void> _vertexAttribL1d;
-    private delegate* unmanaged[Cdecl]<ProgramPipelineId, int, int*, char*, void> _getProgramPipelineInfoLog;
+    private delegate* unmanaged[Cdecl]<ProgramPipelineId, int, int*, byte*, void> _getProgramPipelineInfoLog;
     private delegate* unmanaged[Cdecl]<ProgramPipelineId, void> _validateProgramPipeline;
     private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix4x3dv;
     private delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void> _programUniformMatrix3x4dv;
@@ -324,7 +324,7 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<ProgramPipelineId, byte> _isProgramPipeline;
     private delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void> _genProgramPipelines;
     private delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void> _deleteProgramPipelines;
-    private delegate* unmanaged[Cdecl]<ShaderType, int, char**, ProgramId> _createShaderProgramv;
+    private delegate* unmanaged[Cdecl]<ShaderType, int, byte**, ProgramId> _createShaderProgramv;
     private delegate* unmanaged[Cdecl]<ProgramPipelineId, ProgramId, void> _activeShaderProgram;
     private delegate* unmanaged[Cdecl]<ProgramPipelineId, UseProgramStageMask, ProgramId, void> _useProgramStages;
     private delegate* unmanaged[Cdecl]<ProgramId, ProgramParameterPName, int, void> _programParameteri;
@@ -364,11 +364,11 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, ProgramStagePName, int*, void> _getProgramStageiv;
     private delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void> _getUniformSubroutineuiv;
     private delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void> _uniformSubroutinesuiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, char*, void> _getActiveSubroutineName;
-    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, char*, void> _getActiveSubroutineUniformName;
+    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void> _getActiveSubroutineName;
+    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void> _getActiveSubroutineUniformName;
     private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, SubroutineParameterName, int*, void> _getActiveSubroutineUniformiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, char*, uint> _getSubroutineIndex;
-    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, char*, int> _getSubroutineUniformLocation;
+    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, byte*, uint> _getSubroutineIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, ShaderType, byte*, int> _getSubroutineUniformLocation;
     private delegate* unmanaged[Cdecl]<ProgramId, int, double*, void> _getUniformdv;
     private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix4x3dv;
     private delegate* unmanaged[Cdecl]<int, int, byte, double*, void> _uniformMatrix4x2dv;
@@ -427,8 +427,8 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<SamplerId, byte> _isSampler;
     private delegate* unmanaged[Cdecl]<int, SamplerId*, void> _deleteSamplers;
     private delegate* unmanaged[Cdecl]<int, SamplerId*, void> _genSamplers;
-    private delegate* unmanaged[Cdecl]<ProgramId, char*, int> _getFragDataIndex;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, char*, void> _bindFragDataLocationIndexed;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getFragDataIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, byte*, void> _bindFragDataLocationIndexed;
     private delegate* unmanaged[Cdecl]<float, float, float, float, void> _blendColor;
     private delegate* unmanaged[Cdecl]<BlendEquationModeEXT, void> _blendEquation;
     private delegate* unmanaged[Cdecl]<int, QueryId*, void> _genQueries;
@@ -456,7 +456,7 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<TriangleFace, StencilFunction, int, uint, void> _stencilFuncSeparate;
     private delegate* unmanaged[Cdecl]<TriangleFace, uint, void> _stencilMaskSeparate;
     private delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void> _attachShader;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, char*, void> _bindAttribLocation;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void> _bindAttribLocation;
     private delegate* unmanaged[Cdecl]<ShaderId, void> _compileShader;
     private delegate* unmanaged[Cdecl]<ProgramId> _createProgram;
     private delegate* unmanaged[Cdecl]<ShaderType, ShaderId> _createShader;
@@ -465,16 +465,16 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void> _detachShader;
     private delegate* unmanaged[Cdecl]<uint, void> _disableVertexAttribArray;
     private delegate* unmanaged[Cdecl]<uint, void> _enableVertexAttribArray;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, char*, void> _getActiveAttrib;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, UniformType*, char*, void> _getActiveUniform;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void> _getActiveAttrib;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, UniformType*, byte*, void> _getActiveUniform;
     private delegate* unmanaged[Cdecl]<ProgramId, int, int*, ShaderId*, void> _getAttachedShaders;
-    private delegate* unmanaged[Cdecl]<ProgramId, char*, int> _getAttribLocation;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getAttribLocation;
     private delegate* unmanaged[Cdecl]<ProgramId, ProgramProperty, int*, void> _getProgramiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, char*, void> _getProgramInfoLog;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, int*, byte*, void> _getProgramInfoLog;
     private delegate* unmanaged[Cdecl]<ShaderId, ShaderParameterName, int*, void> _getShaderiv;
-    private delegate* unmanaged[Cdecl]<ShaderId, int, int*, char*, void> _getShaderInfoLog;
-    private delegate* unmanaged[Cdecl]<ShaderId, int, int*, char*, void> _getShaderSource;
-    private delegate* unmanaged[Cdecl]<ProgramId, char*, int> _getUniformLocation;
+    private delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void> _getShaderInfoLog;
+    private delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void> _getShaderSource;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getUniformLocation;
     private delegate* unmanaged[Cdecl]<ProgramId, int, float*, void> _getUniformfv;
     private delegate* unmanaged[Cdecl]<ProgramId, int, int*, void> _getUniformiv;
     private delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, double*, void> _getVertexAttribdv;
@@ -484,7 +484,7 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<ProgramId, byte> _isProgram;
     private delegate* unmanaged[Cdecl]<ShaderId, byte> _isShader;
     private delegate* unmanaged[Cdecl]<ProgramId, void> _linkProgram;
-    private delegate* unmanaged[Cdecl]<ShaderId, int, char**, int*, void> _shaderSource;
+    private delegate* unmanaged[Cdecl]<ShaderId, int, byte**, int*, void> _shaderSource;
     private delegate* unmanaged[Cdecl]<ProgramId, void> _useProgram;
     private delegate* unmanaged[Cdecl]<int, float, void> _uniform1f;
     private delegate* unmanaged[Cdecl]<int, float, float, void> _uniform2f;
@@ -524,14 +524,14 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<uint, float*, void> _vertexAttrib3fv;
     private delegate* unmanaged[Cdecl]<uint, short, short, short, void> _vertexAttrib3s;
     private delegate* unmanaged[Cdecl]<uint, short*, void> _vertexAttrib3sv;
-    private delegate* unmanaged[Cdecl]<uint, char*, void> _vertexAttrib4Nbv;
+    private delegate* unmanaged[Cdecl]<uint, sbyte*, void> _vertexAttrib4Nbv;
     private delegate* unmanaged[Cdecl]<uint, int*, void> _vertexAttrib4Niv;
     private delegate* unmanaged[Cdecl]<uint, short*, void> _vertexAttrib4Nsv;
     private delegate* unmanaged[Cdecl]<uint, byte, byte, byte, byte, void> _vertexAttrib4Nub;
     private delegate* unmanaged[Cdecl]<uint, byte*, void> _vertexAttrib4Nubv;
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttrib4Nuiv;
     private delegate* unmanaged[Cdecl]<uint, ushort*, void> _vertexAttrib4Nusv;
-    private delegate* unmanaged[Cdecl]<uint, char*, void> _vertexAttrib4bv;
+    private delegate* unmanaged[Cdecl]<uint, sbyte*, void> _vertexAttrib4bv;
     private delegate* unmanaged[Cdecl]<uint, double, double, double, double, void> _vertexAttrib4d;
     private delegate* unmanaged[Cdecl]<uint, double*, void> _vertexAttrib4dv;
     private delegate* unmanaged[Cdecl]<uint, float, float, float, float, void> _vertexAttrib4f;
@@ -559,8 +559,8 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<void> _endTransformFeedback;
     private delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, nint, nint, void> _bindBufferRange;
     private delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, void> _bindBufferBase;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, char**, TransformFeedbackBufferMode, void> _transformFeedbackVaryings;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, char*, void> _getTransformFeedbackVarying;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, byte**, TransformFeedbackBufferMode, void> _transformFeedbackVaryings;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void> _getTransformFeedbackVarying;
     private delegate* unmanaged[Cdecl]<ClampColorTarget, ClampColorMode, void> _clampColor;
     private delegate* unmanaged[Cdecl]<uint, ConditionalRenderMode, void> _beginConditionalRender;
     private delegate* unmanaged[Cdecl]<void> _endConditionalRender;
@@ -583,13 +583,13 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttribI2uiv;
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttribI3uiv;
     private delegate* unmanaged[Cdecl]<uint, uint*, void> _vertexAttribI4uiv;
-    private delegate* unmanaged[Cdecl]<uint, char*, void> _vertexAttribI4bv;
+    private delegate* unmanaged[Cdecl]<uint, sbyte*, void> _vertexAttribI4bv;
     private delegate* unmanaged[Cdecl]<uint, short*, void> _vertexAttribI4sv;
     private delegate* unmanaged[Cdecl]<uint, byte*, void> _vertexAttribI4ubv;
     private delegate* unmanaged[Cdecl]<uint, ushort*, void> _vertexAttribI4usv;
     private delegate* unmanaged[Cdecl]<ProgramId, int, uint*, void> _getUniformuiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, char*, void> _bindFragDataLocation;
-    private delegate* unmanaged[Cdecl]<ProgramId, char*, int> _getFragDataLocation;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void> _bindFragDataLocation;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, int> _getFragDataLocation;
     private delegate* unmanaged[Cdecl]<int, uint, void> _uniform1ui;
     private delegate* unmanaged[Cdecl]<int, uint, uint, void> _uniform2ui;
     private delegate* unmanaged[Cdecl]<int, uint, uint, uint, void> _uniform3ui;
@@ -638,12 +638,12 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, void> _texBuffer;
     private delegate* unmanaged[Cdecl]<uint, void> _primitiveRestartIndex;
     private delegate* unmanaged[Cdecl]<CopyBufferSubDataTarget, CopyBufferSubDataTarget, nint, nint, nint, void> _copyBufferSubData;
-    private delegate* unmanaged[Cdecl]<ProgramId, int, char**, uint*, void> _getUniformIndices;
+    private delegate* unmanaged[Cdecl]<ProgramId, int, byte**, uint*, void> _getUniformIndices;
     private delegate* unmanaged[Cdecl]<ProgramId, int, uint*, UniformPName, int*, void> _getActiveUniformsiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, char*, void> _getActiveUniformName;
-    private delegate* unmanaged[Cdecl]<ProgramId, char*, uint> _getUniformBlockIndex;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void> _getActiveUniformName;
+    private delegate* unmanaged[Cdecl]<ProgramId, byte*, uint> _getUniformBlockIndex;
     private delegate* unmanaged[Cdecl]<ProgramId, uint, UniformBlockPName, int*, void> _getActiveUniformBlockiv;
-    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, char*, void> _getActiveUniformBlockName;
+    private delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void> _getActiveUniformBlockName;
     private delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void> _uniformBlockBinding;
     private delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void> _drawElementsBaseVertex;
     private delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, int, void> _drawRangeElementsBaseVertex;
@@ -718,7 +718,7 @@ public unsafe partial class GL
         _polygonOffsetClamp = (delegate* unmanaged[Cdecl]<float, float, float, void>)Load("glPolygonOffsetClamp");
         _multiDrawElementsIndirectCount = (delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, nint, int, int, void>)Load("glMultiDrawElementsIndirectCount");
         _multiDrawArraysIndirectCount = (delegate* unmanaged[Cdecl]<PrimitiveType, void*, nint, int, int, void>)Load("glMultiDrawArraysIndirectCount");
-        _specializeShader = (delegate* unmanaged[Cdecl]<ShaderId, char*, uint, uint*, uint*, void>)Load("glSpecializeShader");
+        _specializeShader = (delegate* unmanaged[Cdecl]<ShaderId, byte*, uint, uint*, uint*, void>)Load("glSpecializeShader");
         _textureBarrier = (delegate* unmanaged[Cdecl]<void>)Load("glTextureBarrier");
         _readnPixels = (delegate* unmanaged[Cdecl]<int, int, int, int, PixelFormat, PixelType, int, void*, void>)Load("glReadnPixels");
         _getnUniformuiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, uint*, void>)Load("glGetnUniformuiv");
@@ -839,15 +839,15 @@ public unsafe partial class GL
         _clearTexImage = (delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, void*, void>)Load("glClearTexImage");
         _bufferStorage = (delegate* unmanaged[Cdecl]<BufferStorageTarget, nint, void*, BufferStorageMask, void>)Load("glBufferStorage");
         _getPointerv = (delegate* unmanaged[Cdecl]<GetPointervPName, void**, void>)Load("glGetPointerv");
-        _getObjectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, int*, char*, void>)Load("glGetObjectPtrLabel");
-        _objectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, char*, void>)Load("glObjectPtrLabel");
-        _getObjectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, char*, void>)Load("glGetObjectLabel");
-        _objectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, char*, void>)Load("glObjectLabel");
+        _getObjectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, int*, byte*, void>)Load("glGetObjectPtrLabel");
+        _objectPtrLabel = (delegate* unmanaged[Cdecl]<void*, int, byte*, void>)Load("glObjectPtrLabel");
+        _getObjectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, int*, byte*, void>)Load("glGetObjectLabel");
+        _objectLabel = (delegate* unmanaged[Cdecl]<ObjectIdentifier, uint, int, byte*, void>)Load("glObjectLabel");
         _popDebugGroup = (delegate* unmanaged[Cdecl]<void>)Load("glPopDebugGroup");
-        _pushDebugGroup = (delegate* unmanaged[Cdecl]<DebugSource, uint, int, char*, void>)Load("glPushDebugGroup");
-        _getDebugMessageLog = (delegate* unmanaged[Cdecl]<uint, int, DebugSource*, DebugType*, uint*, DebugSeverity*, int*, char*, uint>)Load("glGetDebugMessageLog");
+        _pushDebugGroup = (delegate* unmanaged[Cdecl]<DebugSource, uint, int, byte*, void>)Load("glPushDebugGroup");
+        _getDebugMessageLog = (delegate* unmanaged[Cdecl]<uint, int, DebugSource*, DebugType*, uint*, DebugSeverity*, int*, byte*, uint>)Load("glGetDebugMessageLog");
         _debugMessageCallback = (delegate* unmanaged[Cdecl]<DebugProc, void*, void>)Load("glDebugMessageCallback");
-        _debugMessageInsert = (delegate* unmanaged[Cdecl]<DebugSource, DebugType, uint, DebugSeverity, int, char*, void>)Load("glDebugMessageInsert");
+        _debugMessageInsert = (delegate* unmanaged[Cdecl]<DebugSource, DebugType, uint, DebugSeverity, int, byte*, void>)Load("glDebugMessageInsert");
         _debugMessageControl = (delegate* unmanaged[Cdecl]<DebugSource, DebugType, DebugSeverity, int, uint*, byte, void>)Load("glDebugMessageControl");
         _vertexBindingDivisor = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexBindingDivisor");
         _vertexAttribBinding = (delegate* unmanaged[Cdecl]<uint, uint, void>)Load("glVertexAttribBinding");
@@ -860,11 +860,11 @@ public unsafe partial class GL
         _texStorage2DMultisample = (delegate* unmanaged[Cdecl]<TextureTarget, int, SizedInternalFormat, int, int, byte, void>)Load("glTexStorage2DMultisample");
         _texBufferRange = (delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, nint, nint, void>)Load("glTexBufferRange");
         _shaderStorageBlockBinding = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void>)Load("glShaderStorageBlockBinding");
-        _getProgramResourceLocationIndex = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, char*, int>)Load("glGetProgramResourceLocationIndex");
-        _getProgramResourceLocation = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, char*, int>)Load("glGetProgramResourceLocation");
+        _getProgramResourceLocationIndex = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int>)Load("glGetProgramResourceLocationIndex");
+        _getProgramResourceLocation = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, int>)Load("glGetProgramResourceLocation");
         _getProgramResourceiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, ProgramResourceProperty*, int, int*, int*, void>)Load("glGetProgramResourceiv");
-        _getProgramResourceName = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, int*, char*, void>)Load("glGetProgramResourceName");
-        _getProgramResourceIndex = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, char*, uint>)Load("glGetProgramResourceIndex");
+        _getProgramResourceName = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, uint, int, int*, byte*, void>)Load("glGetProgramResourceName");
+        _getProgramResourceIndex = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, byte*, uint>)Load("glGetProgramResourceIndex");
         _getProgramInterfaceiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramInterface, ProgramInterfacePName, int*, void>)Load("glGetProgramInterfaceiv");
         _multiDrawElementsIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, DrawElementsType, void*, int, int, void>)Load("glMultiDrawElementsIndirect");
         _multiDrawArraysIndirect = (delegate* unmanaged[Cdecl]<PrimitiveType, void*, int, int, void>)Load("glMultiDrawArraysIndirect");
@@ -914,7 +914,7 @@ public unsafe partial class GL
         _vertexAttribL3d = (delegate* unmanaged[Cdecl]<uint, double, double, double, void>)Load("glVertexAttribL3d");
         _vertexAttribL2d = (delegate* unmanaged[Cdecl]<uint, double, double, void>)Load("glVertexAttribL2d");
         _vertexAttribL1d = (delegate* unmanaged[Cdecl]<uint, double, void>)Load("glVertexAttribL1d");
-        _getProgramPipelineInfoLog = (delegate* unmanaged[Cdecl]<ProgramPipelineId, int, int*, char*, void>)Load("glGetProgramPipelineInfoLog");
+        _getProgramPipelineInfoLog = (delegate* unmanaged[Cdecl]<ProgramPipelineId, int, int*, byte*, void>)Load("glGetProgramPipelineInfoLog");
         _validateProgramPipeline = (delegate* unmanaged[Cdecl]<ProgramPipelineId, void>)Load("glValidateProgramPipeline");
         _programUniformMatrix4x3dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix4x3dv");
         _programUniformMatrix3x4dv = (delegate* unmanaged[Cdecl]<ProgramId, int, int, byte, double*, void>)Load("glProgramUniformMatrix3x4dv");
@@ -984,7 +984,7 @@ public unsafe partial class GL
         _isProgramPipeline = (delegate* unmanaged[Cdecl]<ProgramPipelineId, byte>)Load("glIsProgramPipeline");
         _genProgramPipelines = (delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void>)Load("glGenProgramPipelines");
         _deleteProgramPipelines = (delegate* unmanaged[Cdecl]<int, ProgramPipelineId*, void>)Load("glDeleteProgramPipelines");
-        _createShaderProgramv = (delegate* unmanaged[Cdecl]<ShaderType, int, char**, ProgramId>)Load("glCreateShaderProgramv");
+        _createShaderProgramv = (delegate* unmanaged[Cdecl]<ShaderType, int, byte**, ProgramId>)Load("glCreateShaderProgramv");
         _activeShaderProgram = (delegate* unmanaged[Cdecl]<ProgramPipelineId, ProgramId, void>)Load("glActiveShaderProgram");
         _useProgramStages = (delegate* unmanaged[Cdecl]<ProgramPipelineId, UseProgramStageMask, ProgramId, void>)Load("glUseProgramStages");
         _programParameteri = (delegate* unmanaged[Cdecl]<ProgramId, ProgramParameterPName, int, void>)Load("glProgramParameteri");
@@ -1024,11 +1024,11 @@ public unsafe partial class GL
         _getProgramStageiv = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, ProgramStagePName, int*, void>)Load("glGetProgramStageiv");
         _getUniformSubroutineuiv = (delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void>)Load("glGetUniformSubroutineuiv");
         _uniformSubroutinesuiv = (delegate* unmanaged[Cdecl]<ShaderType, int, uint*, void>)Load("glUniformSubroutinesuiv");
-        _getActiveSubroutineName = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, char*, void>)Load("glGetActiveSubroutineName");
-        _getActiveSubroutineUniformName = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, char*, void>)Load("glGetActiveSubroutineUniformName");
+        _getActiveSubroutineName = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void>)Load("glGetActiveSubroutineName");
+        _getActiveSubroutineUniformName = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, int, int*, byte*, void>)Load("glGetActiveSubroutineUniformName");
         _getActiveSubroutineUniformiv = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, uint, SubroutineParameterName, int*, void>)Load("glGetActiveSubroutineUniformiv");
-        _getSubroutineIndex = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, char*, uint>)Load("glGetSubroutineIndex");
-        _getSubroutineUniformLocation = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, char*, int>)Load("glGetSubroutineUniformLocation");
+        _getSubroutineIndex = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, byte*, uint>)Load("glGetSubroutineIndex");
+        _getSubroutineUniformLocation = (delegate* unmanaged[Cdecl]<ProgramId, ShaderType, byte*, int>)Load("glGetSubroutineUniformLocation");
         _getUniformdv = (delegate* unmanaged[Cdecl]<ProgramId, int, double*, void>)Load("glGetUniformdv");
         _uniformMatrix4x3dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix4x3dv");
         _uniformMatrix4x2dv = (delegate* unmanaged[Cdecl]<int, int, byte, double*, void>)Load("glUniformMatrix4x2dv");
@@ -1087,8 +1087,8 @@ public unsafe partial class GL
         _isSampler = (delegate* unmanaged[Cdecl]<SamplerId, byte>)Load("glIsSampler");
         _deleteSamplers = (delegate* unmanaged[Cdecl]<int, SamplerId*, void>)Load("glDeleteSamplers");
         _genSamplers = (delegate* unmanaged[Cdecl]<int, SamplerId*, void>)Load("glGenSamplers");
-        _getFragDataIndex = (delegate* unmanaged[Cdecl]<ProgramId, char*, int>)Load("glGetFragDataIndex");
-        _bindFragDataLocationIndexed = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, char*, void>)Load("glBindFragDataLocationIndexed");
+        _getFragDataIndex = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetFragDataIndex");
+        _bindFragDataLocationIndexed = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, byte*, void>)Load("glBindFragDataLocationIndexed");
         _blendColor = (delegate* unmanaged[Cdecl]<float, float, float, float, void>)Load("glBlendColor");
         _blendEquation = (delegate* unmanaged[Cdecl]<BlendEquationModeEXT, void>)Load("glBlendEquation");
         _genQueries = (delegate* unmanaged[Cdecl]<int, QueryId*, void>)Load("glGenQueries");
@@ -1116,7 +1116,7 @@ public unsafe partial class GL
         _stencilFuncSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, StencilFunction, int, uint, void>)Load("glStencilFuncSeparate");
         _stencilMaskSeparate = (delegate* unmanaged[Cdecl]<TriangleFace, uint, void>)Load("glStencilMaskSeparate");
         _attachShader = (delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void>)Load("glAttachShader");
-        _bindAttribLocation = (delegate* unmanaged[Cdecl]<ProgramId, uint, char*, void>)Load("glBindAttribLocation");
+        _bindAttribLocation = (delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void>)Load("glBindAttribLocation");
         _compileShader = (delegate* unmanaged[Cdecl]<ShaderId, void>)Load("glCompileShader");
         _createProgram = (delegate* unmanaged[Cdecl]<ProgramId>)Load("glCreateProgram");
         _createShader = (delegate* unmanaged[Cdecl]<ShaderType, ShaderId>)Load("glCreateShader");
@@ -1125,16 +1125,16 @@ public unsafe partial class GL
         _detachShader = (delegate* unmanaged[Cdecl]<ProgramId, ShaderId, void>)Load("glDetachShader");
         _disableVertexAttribArray = (delegate* unmanaged[Cdecl]<uint, void>)Load("glDisableVertexAttribArray");
         _enableVertexAttribArray = (delegate* unmanaged[Cdecl]<uint, void>)Load("glEnableVertexAttribArray");
-        _getActiveAttrib = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, char*, void>)Load("glGetActiveAttrib");
-        _getActiveUniform = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, UniformType*, char*, void>)Load("glGetActiveUniform");
+        _getActiveAttrib = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void>)Load("glGetActiveAttrib");
+        _getActiveUniform = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, UniformType*, byte*, void>)Load("glGetActiveUniform");
         _getAttachedShaders = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, ShaderId*, void>)Load("glGetAttachedShaders");
-        _getAttribLocation = (delegate* unmanaged[Cdecl]<ProgramId, char*, int>)Load("glGetAttribLocation");
+        _getAttribLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetAttribLocation");
         _getProgramiv = (delegate* unmanaged[Cdecl]<ProgramId, ProgramProperty, int*, void>)Load("glGetProgramiv");
-        _getProgramInfoLog = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, char*, void>)Load("glGetProgramInfoLog");
+        _getProgramInfoLog = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, byte*, void>)Load("glGetProgramInfoLog");
         _getShaderiv = (delegate* unmanaged[Cdecl]<ShaderId, ShaderParameterName, int*, void>)Load("glGetShaderiv");
-        _getShaderInfoLog = (delegate* unmanaged[Cdecl]<ShaderId, int, int*, char*, void>)Load("glGetShaderInfoLog");
-        _getShaderSource = (delegate* unmanaged[Cdecl]<ShaderId, int, int*, char*, void>)Load("glGetShaderSource");
-        _getUniformLocation = (delegate* unmanaged[Cdecl]<ProgramId, char*, int>)Load("glGetUniformLocation");
+        _getShaderInfoLog = (delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void>)Load("glGetShaderInfoLog");
+        _getShaderSource = (delegate* unmanaged[Cdecl]<ShaderId, int, int*, byte*, void>)Load("glGetShaderSource");
+        _getUniformLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetUniformLocation");
         _getUniformfv = (delegate* unmanaged[Cdecl]<ProgramId, int, float*, void>)Load("glGetUniformfv");
         _getUniformiv = (delegate* unmanaged[Cdecl]<ProgramId, int, int*, void>)Load("glGetUniformiv");
         _getVertexAttribdv = (delegate* unmanaged[Cdecl]<uint, VertexAttribProperty, double*, void>)Load("glGetVertexAttribdv");
@@ -1144,7 +1144,7 @@ public unsafe partial class GL
         _isProgram = (delegate* unmanaged[Cdecl]<ProgramId, byte>)Load("glIsProgram");
         _isShader = (delegate* unmanaged[Cdecl]<ShaderId, byte>)Load("glIsShader");
         _linkProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glLinkProgram");
-        _shaderSource = (delegate* unmanaged[Cdecl]<ShaderId, int, char**, int*, void>)Load("glShaderSource");
+        _shaderSource = (delegate* unmanaged[Cdecl]<ShaderId, int, byte**, int*, void>)Load("glShaderSource");
         _useProgram = (delegate* unmanaged[Cdecl]<ProgramId, void>)Load("glUseProgram");
         _uniform1f = (delegate* unmanaged[Cdecl]<int, float, void>)Load("glUniform1f");
         _uniform2f = (delegate* unmanaged[Cdecl]<int, float, float, void>)Load("glUniform2f");
@@ -1184,14 +1184,14 @@ public unsafe partial class GL
         _vertexAttrib3fv = (delegate* unmanaged[Cdecl]<uint, float*, void>)Load("glVertexAttrib3fv");
         _vertexAttrib3s = (delegate* unmanaged[Cdecl]<uint, short, short, short, void>)Load("glVertexAttrib3s");
         _vertexAttrib3sv = (delegate* unmanaged[Cdecl]<uint, short*, void>)Load("glVertexAttrib3sv");
-        _vertexAttrib4Nbv = (delegate* unmanaged[Cdecl]<uint, char*, void>)Load("glVertexAttrib4Nbv");
+        _vertexAttrib4Nbv = (delegate* unmanaged[Cdecl]<uint, sbyte*, void>)Load("glVertexAttrib4Nbv");
         _vertexAttrib4Niv = (delegate* unmanaged[Cdecl]<uint, int*, void>)Load("glVertexAttrib4Niv");
         _vertexAttrib4Nsv = (delegate* unmanaged[Cdecl]<uint, short*, void>)Load("glVertexAttrib4Nsv");
         _vertexAttrib4Nub = (delegate* unmanaged[Cdecl]<uint, byte, byte, byte, byte, void>)Load("glVertexAttrib4Nub");
         _vertexAttrib4Nubv = (delegate* unmanaged[Cdecl]<uint, byte*, void>)Load("glVertexAttrib4Nubv");
         _vertexAttrib4Nuiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttrib4Nuiv");
         _vertexAttrib4Nusv = (delegate* unmanaged[Cdecl]<uint, ushort*, void>)Load("glVertexAttrib4Nusv");
-        _vertexAttrib4bv = (delegate* unmanaged[Cdecl]<uint, char*, void>)Load("glVertexAttrib4bv");
+        _vertexAttrib4bv = (delegate* unmanaged[Cdecl]<uint, sbyte*, void>)Load("glVertexAttrib4bv");
         _vertexAttrib4d = (delegate* unmanaged[Cdecl]<uint, double, double, double, double, void>)Load("glVertexAttrib4d");
         _vertexAttrib4dv = (delegate* unmanaged[Cdecl]<uint, double*, void>)Load("glVertexAttrib4dv");
         _vertexAttrib4f = (delegate* unmanaged[Cdecl]<uint, float, float, float, float, void>)Load("glVertexAttrib4f");
@@ -1219,8 +1219,8 @@ public unsafe partial class GL
         _endTransformFeedback = (delegate* unmanaged[Cdecl]<void>)Load("glEndTransformFeedback");
         _bindBufferRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, nint, nint, void>)Load("glBindBufferRange");
         _bindBufferBase = (delegate* unmanaged[Cdecl]<BufferTarget, uint, BufferId, void>)Load("glBindBufferBase");
-        _transformFeedbackVaryings = (delegate* unmanaged[Cdecl]<ProgramId, int, char**, TransformFeedbackBufferMode, void>)Load("glTransformFeedbackVaryings");
-        _getTransformFeedbackVarying = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, char*, void>)Load("glGetTransformFeedbackVarying");
+        _transformFeedbackVaryings = (delegate* unmanaged[Cdecl]<ProgramId, int, byte**, TransformFeedbackBufferMode, void>)Load("glTransformFeedbackVaryings");
+        _getTransformFeedbackVarying = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, int*, AttributeType*, byte*, void>)Load("glGetTransformFeedbackVarying");
         _clampColor = (delegate* unmanaged[Cdecl]<ClampColorTarget, ClampColorMode, void>)Load("glClampColor");
         _beginConditionalRender = (delegate* unmanaged[Cdecl]<uint, ConditionalRenderMode, void>)Load("glBeginConditionalRender");
         _endConditionalRender = (delegate* unmanaged[Cdecl]<void>)Load("glEndConditionalRender");
@@ -1243,13 +1243,13 @@ public unsafe partial class GL
         _vertexAttribI2uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttribI2uiv");
         _vertexAttribI3uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttribI3uiv");
         _vertexAttribI4uiv = (delegate* unmanaged[Cdecl]<uint, uint*, void>)Load("glVertexAttribI4uiv");
-        _vertexAttribI4bv = (delegate* unmanaged[Cdecl]<uint, char*, void>)Load("glVertexAttribI4bv");
+        _vertexAttribI4bv = (delegate* unmanaged[Cdecl]<uint, sbyte*, void>)Load("glVertexAttribI4bv");
         _vertexAttribI4sv = (delegate* unmanaged[Cdecl]<uint, short*, void>)Load("glVertexAttribI4sv");
         _vertexAttribI4ubv = (delegate* unmanaged[Cdecl]<uint, byte*, void>)Load("glVertexAttribI4ubv");
         _vertexAttribI4usv = (delegate* unmanaged[Cdecl]<uint, ushort*, void>)Load("glVertexAttribI4usv");
         _getUniformuiv = (delegate* unmanaged[Cdecl]<ProgramId, int, uint*, void>)Load("glGetUniformuiv");
-        _bindFragDataLocation = (delegate* unmanaged[Cdecl]<ProgramId, uint, char*, void>)Load("glBindFragDataLocation");
-        _getFragDataLocation = (delegate* unmanaged[Cdecl]<ProgramId, char*, int>)Load("glGetFragDataLocation");
+        _bindFragDataLocation = (delegate* unmanaged[Cdecl]<ProgramId, uint, byte*, void>)Load("glBindFragDataLocation");
+        _getFragDataLocation = (delegate* unmanaged[Cdecl]<ProgramId, byte*, int>)Load("glGetFragDataLocation");
         _uniform1ui = (delegate* unmanaged[Cdecl]<int, uint, void>)Load("glUniform1ui");
         _uniform2ui = (delegate* unmanaged[Cdecl]<int, uint, uint, void>)Load("glUniform2ui");
         _uniform3ui = (delegate* unmanaged[Cdecl]<int, uint, uint, uint, void>)Load("glUniform3ui");
@@ -1298,12 +1298,12 @@ public unsafe partial class GL
         _texBuffer = (delegate* unmanaged[Cdecl]<TextureTarget, SizedInternalFormat, BufferId, void>)Load("glTexBuffer");
         _primitiveRestartIndex = (delegate* unmanaged[Cdecl]<uint, void>)Load("glPrimitiveRestartIndex");
         _copyBufferSubData = (delegate* unmanaged[Cdecl]<CopyBufferSubDataTarget, CopyBufferSubDataTarget, nint, nint, nint, void>)Load("glCopyBufferSubData");
-        _getUniformIndices = (delegate* unmanaged[Cdecl]<ProgramId, int, char**, uint*, void>)Load("glGetUniformIndices");
+        _getUniformIndices = (delegate* unmanaged[Cdecl]<ProgramId, int, byte**, uint*, void>)Load("glGetUniformIndices");
         _getActiveUniformsiv = (delegate* unmanaged[Cdecl]<ProgramId, int, uint*, UniformPName, int*, void>)Load("glGetActiveUniformsiv");
-        _getActiveUniformName = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, char*, void>)Load("glGetActiveUniformName");
-        _getUniformBlockIndex = (delegate* unmanaged[Cdecl]<ProgramId, char*, uint>)Load("glGetUniformBlockIndex");
+        _getActiveUniformName = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void>)Load("glGetActiveUniformName");
+        _getUniformBlockIndex = (delegate* unmanaged[Cdecl]<ProgramId, byte*, uint>)Load("glGetUniformBlockIndex");
         _getActiveUniformBlockiv = (delegate* unmanaged[Cdecl]<ProgramId, uint, UniformBlockPName, int*, void>)Load("glGetActiveUniformBlockiv");
-        _getActiveUniformBlockName = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, char*, void>)Load("glGetActiveUniformBlockName");
+        _getActiveUniformBlockName = (delegate* unmanaged[Cdecl]<ProgramId, uint, int, int*, byte*, void>)Load("glGetActiveUniformBlockName");
         _uniformBlockBinding = (delegate* unmanaged[Cdecl]<ProgramId, uint, uint, void>)Load("glUniformBlockBinding");
         _drawElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, int, DrawElementsType, void*, int, void>)Load("glDrawElementsBaseVertex");
         _drawRangeElementsBaseVertex = (delegate* unmanaged[Cdecl]<PrimitiveType, uint, uint, int, DrawElementsType, void*, int, void>)Load("glDrawRangeElementsBaseVertex");
@@ -1686,7 +1686,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SpecializeShader(ShaderId shader, char* pEntryPoint, uint numSpecializationConstants, uint* pConstantIndex, uint* pConstantValue)
+    public void SpecializeShader(ShaderId shader, byte* pEntryPoint, uint numSpecializationConstants, uint* pConstantIndex, uint* pConstantValue)
     {
         _specializeShader(shader, pEntryPoint, numSpecializationConstants, pConstantIndex, pConstantValue);
         CheckError();
@@ -2538,28 +2538,28 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetObjectPtrLabel(void* ptr, int bufSize, int* length, char* label)
+    public void GetObjectPtrLabel(void* ptr, int bufSize, int* length, byte* label)
     {
         _getObjectPtrLabel(ptr, bufSize, length, label);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ObjectPtrLabel(void* ptr, int length, char* label)
+    public void ObjectPtrLabel(void* ptr, int length, byte* label)
     {
         _objectPtrLabel(ptr, length, label);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetObjectLabel(ObjectIdentifier identifier, uint name, int bufSize, int* length, char* label)
+    public void GetObjectLabel(ObjectIdentifier identifier, uint name, int bufSize, int* length, byte* label)
     {
         _getObjectLabel(identifier, name, bufSize, length, label);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ObjectLabel(ObjectIdentifier identifier, uint name, int length, char* label)
+    public void ObjectLabel(ObjectIdentifier identifier, uint name, int length, byte* label)
     {
         _objectLabel(identifier, name, length, label);
         CheckError();
@@ -2573,14 +2573,14 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void PushDebugGroup(DebugSource source, uint id, int length, char* message)
+    public void PushDebugGroup(DebugSource source, uint id, int length, byte* message)
     {
         _pushDebugGroup(source, id, length, message);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint GetDebugMessageLog(uint count, int bufSize, DebugSource* sources, DebugType* types, uint* ids, DebugSeverity* severities, int* lengths, char* messageLog)
+    public uint GetDebugMessageLog(uint count, int bufSize, DebugSource* sources, DebugType* types, uint* ids, DebugSeverity* severities, int* lengths, byte* messageLog)
     {
         var result = _getDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog);
         CheckError();
@@ -2595,7 +2595,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DebugMessageInsert(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, char* buf)
+    public void DebugMessageInsert(DebugSource source, DebugType type, uint id, DebugSeverity severity, int length, byte* buf)
     {
         _debugMessageInsert(source, type, id, severity, length, buf);
         CheckError();
@@ -2686,7 +2686,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetProgramResourceLocationIndex(ProgramId program, ProgramInterface programInterface, char* name)
+    public int GetProgramResourceLocationIndex(ProgramId program, ProgramInterface programInterface, byte* name)
     {
         var result = _getProgramResourceLocationIndex(program, programInterface, name);
         CheckError();
@@ -2694,7 +2694,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetProgramResourceLocation(ProgramId program, ProgramInterface programInterface, char* name)
+    public int GetProgramResourceLocation(ProgramId program, ProgramInterface programInterface, byte* name)
     {
         var result = _getProgramResourceLocation(program, programInterface, name);
         CheckError();
@@ -2709,14 +2709,14 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramResourceName(ProgramId program, ProgramInterface programInterface, uint index, int bufSize, int* length, char* name)
+    public void GetProgramResourceName(ProgramId program, ProgramInterface programInterface, uint index, int bufSize, int* length, byte* name)
     {
         _getProgramResourceName(program, programInterface, index, bufSize, length, name);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint GetProgramResourceIndex(ProgramId program, ProgramInterface programInterface, char* name)
+    public uint GetProgramResourceIndex(ProgramId program, ProgramInterface programInterface, byte* name)
     {
         var result = _getProgramResourceIndex(program, programInterface, name);
         CheckError();
@@ -3067,7 +3067,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramPipelineInfoLog(ProgramPipelineId pipeline, int bufSize, int* length, char* infoLog)
+    public void GetProgramPipelineInfoLog(ProgramPipelineId pipeline, int bufSize, int* length, byte* infoLog)
     {
         _getProgramPipelineInfoLog(pipeline, bufSize, length, infoLog);
         CheckError();
@@ -3559,7 +3559,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ProgramId CreateShaderProgramv(ShaderType type, int count, char** strings)
+    public ProgramId CreateShaderProgramv(ShaderType type, int count, byte** strings)
     {
         var result = _createShaderProgramv(type, count, strings);
         CheckError();
@@ -3841,14 +3841,14 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveSubroutineName(ProgramId program, ShaderType shadertype, uint index, int bufSize, int* length, char* name)
+    public void GetActiveSubroutineName(ProgramId program, ShaderType shadertype, uint index, int bufSize, int* length, byte* name)
     {
         _getActiveSubroutineName(program, shadertype, index, bufSize, length, name);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveSubroutineUniformName(ProgramId program, ShaderType shadertype, uint index, int bufSize, int* length, char* name)
+    public void GetActiveSubroutineUniformName(ProgramId program, ShaderType shadertype, uint index, int bufSize, int* length, byte* name)
     {
         _getActiveSubroutineUniformName(program, shadertype, index, bufSize, length, name);
         CheckError();
@@ -3862,7 +3862,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint GetSubroutineIndex(ProgramId program, ShaderType shadertype, char* name)
+    public uint GetSubroutineIndex(ProgramId program, ShaderType shadertype, byte* name)
     {
         var result = _getSubroutineIndex(program, shadertype, name);
         CheckError();
@@ -3870,7 +3870,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetSubroutineUniformLocation(ProgramId program, ShaderType shadertype, char* name)
+    public int GetSubroutineUniformLocation(ProgramId program, ShaderType shadertype, byte* name)
     {
         var result = _getSubroutineUniformLocation(program, shadertype, name);
         CheckError();
@@ -4285,7 +4285,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetFragDataIndex(ProgramId program, char* name)
+    public int GetFragDataIndex(ProgramId program, byte* name)
     {
         var result = _getFragDataIndex(program, name);
         CheckError();
@@ -4293,7 +4293,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindFragDataLocationIndexed(ProgramId program, uint colorNumber, uint index, char* name)
+    public void BindFragDataLocationIndexed(ProgramId program, uint colorNumber, uint index, byte* name)
     {
         _bindFragDataLocationIndexed(program, colorNumber, index, name);
         CheckError();
@@ -4493,7 +4493,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindAttribLocation(ProgramId program, uint index, char* name)
+    public void BindAttribLocation(ProgramId program, uint index, byte* name)
     {
         _bindAttribLocation(program, index, name);
         CheckError();
@@ -4558,14 +4558,14 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveAttrib(ProgramId program, uint index, int bufSize, int* length, int* size, AttributeType* type, char* name)
+    public void GetActiveAttrib(ProgramId program, uint index, int bufSize, int* length, int* size, AttributeType* type, byte* name)
     {
         _getActiveAttrib(program, index, bufSize, length, size, type, name);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveUniform(ProgramId program, uint index, int bufSize, int* length, int* size, UniformType* type, char* name)
+    public void GetActiveUniform(ProgramId program, uint index, int bufSize, int* length, int* size, UniformType* type, byte* name)
     {
         _getActiveUniform(program, index, bufSize, length, size, type, name);
         CheckError();
@@ -4579,7 +4579,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetAttribLocation(ProgramId program, char* name)
+    public int GetAttribLocation(ProgramId program, byte* name)
     {
         var result = _getAttribLocation(program, name);
         CheckError();
@@ -4594,7 +4594,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetProgramInfoLog(ProgramId program, int bufSize, int* length, char* infoLog)
+    public void GetProgramInfoLog(ProgramId program, int bufSize, int* length, byte* infoLog)
     {
         _getProgramInfoLog(program, bufSize, length, infoLog);
         CheckError();
@@ -4608,21 +4608,21 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetShaderInfoLog(ShaderId shader, int bufSize, int* length, char* infoLog)
+    public void GetShaderInfoLog(ShaderId shader, int bufSize, int* length, byte* infoLog)
     {
         _getShaderInfoLog(shader, bufSize, length, infoLog);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetShaderSource(ShaderId shader, int bufSize, int* length, char* source)
+    public void GetShaderSource(ShaderId shader, int bufSize, int* length, byte* source)
     {
         _getShaderSource(shader, bufSize, length, source);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetUniformLocation(ProgramId program, char* name)
+    public int GetUniformLocation(ProgramId program, byte* name)
     {
         var result = _getUniformLocation(program, name);
         CheckError();
@@ -4695,7 +4695,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ShaderSource(ShaderId shader, int count, char** @string, int* length)
+    public void ShaderSource(ShaderId shader, int count, byte** @string, int* length)
     {
         _shaderSource(shader, count, @string, length);
         CheckError();
@@ -4975,7 +4975,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttrib4Nbv(uint index, char* v)
+    public void VertexAttrib4Nbv(uint index, sbyte* v)
     {
         _vertexAttrib4Nbv(index, v);
         CheckError();
@@ -5024,7 +5024,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttrib4bv(uint index, char* v)
+    public void VertexAttrib4bv(uint index, sbyte* v)
     {
         _vertexAttrib4bv(index, v);
         CheckError();
@@ -5221,14 +5221,14 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TransformFeedbackVaryings(ProgramId program, int count, char** varyings, TransformFeedbackBufferMode bufferMode)
+    public void TransformFeedbackVaryings(ProgramId program, int count, byte** varyings, TransformFeedbackBufferMode bufferMode)
     {
         _transformFeedbackVaryings(program, count, varyings, bufferMode);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetTransformFeedbackVarying(ProgramId program, uint index, int bufSize, int* length, int* size, AttributeType* type, char* name)
+    public void GetTransformFeedbackVarying(ProgramId program, uint index, int bufSize, int* length, int* size, AttributeType* type, byte* name)
     {
         _getTransformFeedbackVarying(program, index, bufSize, length, size, type, name);
         CheckError();
@@ -5389,7 +5389,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexAttribI4bv(uint index, char* v)
+    public void VertexAttribI4bv(uint index, sbyte* v)
     {
         _vertexAttribI4bv(index, v);
         CheckError();
@@ -5424,14 +5424,14 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindFragDataLocation(ProgramId program, uint color, char* name)
+    public void BindFragDataLocation(ProgramId program, uint color, byte* name)
     {
         _bindFragDataLocation(program, color, name);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetFragDataLocation(ProgramId program, char* name)
+    public int GetFragDataLocation(ProgramId program, byte* name)
     {
         var result = _getFragDataLocation(program, name);
         CheckError();
@@ -5781,7 +5781,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetUniformIndices(ProgramId program, int uniformCount, char** uniformNames, uint* uniformIndices)
+    public void GetUniformIndices(ProgramId program, int uniformCount, byte** uniformNames, uint* uniformIndices)
     {
         _getUniformIndices(program, uniformCount, uniformNames, uniformIndices);
         CheckError();
@@ -5795,14 +5795,14 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveUniformName(ProgramId program, uint uniformIndex, int bufSize, int* length, char* uniformName)
+    public void GetActiveUniformName(ProgramId program, uint uniformIndex, int bufSize, int* length, byte* uniformName)
     {
         _getActiveUniformName(program, uniformIndex, bufSize, length, uniformName);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint GetUniformBlockIndex(ProgramId program, char* uniformBlockName)
+    public uint GetUniformBlockIndex(ProgramId program, byte* uniformBlockName)
     {
         var result = _getUniformBlockIndex(program, uniformBlockName);
         CheckError();
@@ -5817,7 +5817,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetActiveUniformBlockName(ProgramId program, uint uniformBlockIndex, int bufSize, int* length, char* uniformBlockName)
+    public void GetActiveUniformBlockName(ProgramId program, uint uniformBlockIndex, int bufSize, int* length, byte* uniformBlockName)
     {
         _getActiveUniformBlockName(program, uniformBlockIndex, bufSize, length, uniformBlockName);
         CheckError();

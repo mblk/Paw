@@ -122,7 +122,7 @@ public sealed unsafe partial class GL
         byte[] bytes = Encoding.UTF8.GetBytes(label);
         fixed (byte* p = bytes)
         {
-            _objectLabel(identifier, name, bytes.Length, (char*)p);
+            _objectLabel(identifier, name, bytes.Length, p);
         }
         CheckError();
     }
@@ -149,7 +149,7 @@ public sealed unsafe partial class GL
 
         fixed (byte* p = terminatedName)
         {
-            int loc = _getUniformLocation(program, (char*)p);
+            int loc = _getUniformLocation(program, p);
             CheckError();
 #if DEBUG
             if (loc == -1)
@@ -185,7 +185,7 @@ public sealed unsafe partial class GL
 
         fixed (byte* p = bytes)
         {
-            char** strings = stackalloc char*[1] { (char*)p };
+            byte** strings = stackalloc byte*[1] { p };
             int length = bytes.Length;
 
             _shaderSource(shader, 1, strings, &length);
@@ -222,7 +222,7 @@ public sealed unsafe partial class GL
 
         fixed (byte* p = buffer)
         {
-            _getShaderInfoLog(shader, len, null, (char*)p);
+            _getShaderInfoLog(shader, len, null, p);
         }
         CheckError();
 
@@ -244,7 +244,7 @@ public sealed unsafe partial class GL
 
         fixed (byte* p = buffer)
         {
-            _getProgramInfoLog(program, len, null, (char*)p);
+            _getProgramInfoLog(program, len, null, p);
         }
         CheckError();
 

@@ -535,8 +535,8 @@ internal class GlBindingGenerator
         {
             "GLenum" => _fallbackEnumGroupName,
 
-            "GLchar" => "char",
-            "GLbyte" => "char",
+            "GLchar" => "byte",
+            "GLbyte" => "sbyte",
             "GLubyte" => "byte",
 
             "GLshort" => "short",

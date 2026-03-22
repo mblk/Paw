@@ -20,9 +20,13 @@ internal class GlBindingGenerator
         _outputDir = outputDir;
     }
 
-    public void Generate()
+    public void Generate(int majorVersion, int minorVersion)
     {
-        var (enumNames, commandNames) = GetEnumsAndCommandsToGenerate();
+        Console.WriteLine($"Generating bindings for OpenGL {majorVersion}.{minorVersion}");
+
+        var (enumNames, commandNames) = GetEnumsAndCommandsToGenerate(majorVersion, minorVersion);
+
+        Console.WriteLine($"Found {enumNames.Count} enums, {commandNames.Count} commands");
 
         var enumGroupMappings = ResolveNamingCollisions(enumNames, commandNames);
 
@@ -37,6 +41,35 @@ internal class GlBindingGenerator
         File.WriteAllText(typesCodeFile.FullName, typesCode);
         File.WriteAllText(enumsCodeFile.FullName, enumsCode);
         File.WriteAllText(commandsCodeFile.FullName, commandsCode);
+    }
+
+    private (IReadOnlyList<string>, IReadOnlyList<string>) GetEnumsAndCommandsToGenerate(int majorVersion, int minorVersion)
+    {
+        var featuresInOrder = _spec.Features.Values
+            .Where(x => x.Major < majorVersion || (x.Major == majorVersion && x.Minor <= minorVersion))
+            .OrderBy(x => x.Major)
+            .ThenBy(x => x.Minor)
+            .ToArray();
+
+        var enums = new HashSet<string>();
+        var commands = new HashSet<string>();
+
+        foreach (var feature in featuresInOrder)
+        {
+            foreach (var @enum in feature.RequiredEnums)
+                enums.Add(@enum);
+
+            foreach (var command in feature.RequiredCommands)
+                commands.Add(command);
+
+            foreach (var @enum in feature.RemovedEnums)
+                enums.Remove(@enum);
+
+            foreach (var command in feature.RemovedCommands)
+                commands.Remove(command);
+        }
+
+        return (enums.ToArray(), commands.ToArray());
     }
 
     private IReadOnlyDictionary<string, string> ResolveNamingCollisions(IReadOnlyList<string> enumNames, IReadOnlyList<string> commandNames)
@@ -160,7 +193,11 @@ internal class GlBindingGenerator
 
         foreach (var group in groups)
         {
-            string mappedGroupName = enumGroupMappings[group.Key];
+            if (!enumGroupMappings.TryGetValue(group.Key, out string? mappedGroupName))
+            {
+                Console.WriteLine($"Error: enum group '{group.Key}' not found in mapping, skipping enum");
+                continue;
+            }
 
             sb.AppendLine($"{_indent}public enum {mappedGroupName} : uint");
             sb.AppendLine($"{_indent}{{");
@@ -228,9 +265,16 @@ internal class GlBindingGenerator
 
             foreach (var paramSpec in commandSpec.Params)
             {
-                string? mappedGroupName = !string.IsNullOrWhiteSpace(paramSpec.Group)
-                    ? enumGroupMappings[paramSpec.Group]
-                    : null;
+                string? mappedGroupName = null;
+
+                if (!String.IsNullOrWhiteSpace(paramSpec.Group))
+                {
+                    if (!enumGroupMappings.TryGetValue(paramSpec.Group, out mappedGroupName))
+                    {
+                        Console.WriteLine($"Error: enum group '{paramSpec.Group}' not found in mapping, skipping command parameter");
+                        continue;
+                    }
+                }
 
                 (string paramType, TypeMapping paramTypeMapping) = ResolveType(paramSpec.Type, mappedGroupName, null, paramSpec.Class);
 
@@ -585,33 +629,5 @@ internal class GlBindingGenerator
     private static void WriteClassEnd(StringBuilder sb)
     {
         sb.AppendLine("}");
-    }
-
-    private (IReadOnlyList<string>, IReadOnlyList<string>) GetEnumsAndCommandsToGenerate()
-    {
-        var featuresInOrder = _spec.Features.Values
-            .OrderBy(x => x.Major)
-            .ThenBy(x => x.Minor)
-            .ToArray();
-
-        var enums = new HashSet<string>();
-        var commands = new HashSet<string>();
-
-        foreach (var feature in featuresInOrder)
-        {
-            foreach (var @enum in feature.RequiredEnums)
-                enums.Add(@enum);
-
-            foreach (var command in feature.RequiredCommands)
-                commands.Add(command);
-
-            foreach (var @enum in feature.RemovedEnums)
-                enums.Remove(@enum);
-
-            foreach (var command in feature.RemovedCommands)
-                commands.Remove(command);
-        }
-
-        return (enums.ToArray(), commands.ToArray());
     }
 }

@@ -13,7 +13,7 @@ public static class Program
         var glSpec = parser.Parse();
 
         var generator = new GlBindingGenerator(glSpec, outputDir);
-        generator.Generate();
+        generator.Generate(4, 6);
 
         Console.WriteLine("bye");
     }

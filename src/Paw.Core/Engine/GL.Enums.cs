@@ -2764,5 +2764,4 @@ public unsafe partial class GL
         FLOAT = 0x1406,
         DOUBLE = 0x140A,
     }
-
 }

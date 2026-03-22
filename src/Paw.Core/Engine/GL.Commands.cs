@@ -5965,5 +5965,4 @@ public unsafe partial class GL
         _waitSync(sync, flags, timeout);
         CheckError();
     }
-
 }

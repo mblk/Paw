@@ -191,13 +191,16 @@ internal class GlBindingGenerator
         WriteNamespace(sb);
         WriteClassStart(sb);
 
-        foreach (var group in groups.OrderBy(x => x.Key))
+        foreach (var (group, index) in groups.OrderBy(x => x.Key).Select((x, i) => (x, i)))
         {
             if (!enumGroupMappings.TryGetValue(group.Key, out string? mappedGroupName))
             {
                 Console.WriteLine($"Error: enum group '{group.Key}' not found in mapping, skipping enum");
                 continue;
             }
+
+            if (index > 0)
+                sb.AppendLine();
 
             sb.AppendLine($"{_indent}public enum {mappedGroupName} : uint");
             sb.AppendLine($"{_indent}{{");
@@ -214,7 +217,6 @@ internal class GlBindingGenerator
             }
 
             sb.AppendLine($"{_indent}}}");
-            sb.AppendLine();
         }
 
         WriteClassEnd(sb);
@@ -255,10 +257,11 @@ internal class GlBindingGenerator
         {
             var commandSpec = _spec.Commands[commandName];
 
-            string delegateName = GetDelegateName(commandSpec.Name);
+            // Map return type
             (string returnType, TypeMapping returnTypeMapping) = ResolveType(commandSpec.ReturnType, commandSpec.Group, commandSpec.Kind, commandSpec.Class);
             returnType = MakePointerType(returnType, commandSpec.PointerCount);
 
+            // Map parameters
             var paramTypes = new List<string>();
             var paramNames = new List<string>();
             var mappedParamTypesAndNamesAndConverters = new List<(string Type, string Name, Func<string, string> Converter)>();
@@ -328,7 +331,7 @@ internal class GlBindingGenerator
             // TODO try making it readonly
             // private delegate* unmanaged[Cdecl]<int, uint*, void> _genBuffers;
             // _genBuffers = (delegate* unmanaged[Cdecl]<int, uint*, void>)Load("glGenBuffers");
-
+            string delegateName = GetDelegateName(commandSpec.Name);
             string delegateType = $"delegate* unmanaged[Cdecl]<{String.Join(", ", genericArgs)}>";
             string delegateDefinition = $"private {delegateType} {delegateName};";
             string delegateLoad = $"{delegateName} = ({delegateType})Load(\"{commandSpec.Name}\");";
@@ -419,8 +422,7 @@ internal class GlBindingGenerator
             wrappers.Add(wrapper.ToString());
         }
 
-        // -------------------------------------------
-
+        // Put it all together
         var sb = new StringBuilder();
         WriteFileStart(sb);
 
@@ -455,10 +457,12 @@ internal class GlBindingGenerator
         sb.AppendLine();
 
         // wrappers
-        foreach (var wrapper in wrappers)
+        foreach (var (wrapper, index) in wrappers.Select((x, i) => (x, i)))
         {
+            if (index > 0)
+                sb.AppendLine();
+
             sb.Append(wrapper);
-            sb.AppendLine();
         }
 
         WriteClassEnd(sb);

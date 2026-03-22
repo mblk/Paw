@@ -36,30 +36,30 @@ public unsafe class Texture : Asset, IDisposable
     private readonly GL _gl;
     private readonly GL.TextureId _id;
 
-    public Texture(GL gl, int width, int height, ReadOnlySpan<byte> data)
+    public Texture(GL gl, int width, int height, ReadOnlySpan<byte> data) // uses DSA
     {
         _gl = gl;
 
-        GL.TextureId texId = default;
-        _gl.GenTextures(1, &texId);
-        _id = texId;
+        GL.TextureId id = default;
+        _gl.CreateTextures(GL.TextureTarget.TEXTURE_2D, 1, &id);
+        _id = id;
 
-        _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, texId);
+        int levels = (int)Math.Floor(Math.Log2(Math.Max(width, height))) + 1;
+        Console.WriteLine($"Texture size {width}x{height} -> using levels: {levels}");
 
-        //_gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MIN_FILTER, (int)GL.TextureMinFilter.LINEAR);
-        _gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MIN_FILTER, (int)GL.TextureMinFilter.LINEAR_MIPMAP_LINEAR);
-        _gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_MAG_FILTER, (int)GL.TextureMinFilter.LINEAR);
-        _gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_WRAP_S, (int)GL.TextureWrapMode.CLAMP_TO_EDGE);
-        _gl.TexParameteri(GL.TextureTarget.TEXTURE_2D, GL.TextureParameterName.TEXTURE_WRAP_T, (int)GL.TextureWrapMode.CLAMP_TO_EDGE);
+        _gl.TextureStorage2D(id, levels, GL.SizedInternalFormat.RGBA8, width, height);
+
+        _gl.TextureParameteri(id, GL.TextureParameterName.TEXTURE_MIN_FILTER, (int)GL.TextureMinFilter.LINEAR);
+        _gl.TextureParameteri(id, GL.TextureParameterName.TEXTURE_MAG_FILTER, (int)GL.TextureMinFilter.LINEAR);
+        _gl.TextureParameteri(id, GL.TextureParameterName.TEXTURE_WRAP_S, (int)GL.TextureWrapMode.CLAMP_TO_EDGE);
+        _gl.TextureParameteri(id, GL.TextureParameterName.TEXTURE_WRAP_T, (int)GL.TextureWrapMode.CLAMP_TO_EDGE);
 
         fixed (void* pData = data)
         {
-            _gl.TexImage2D(GL.TextureTarget.TEXTURE_2D, 0, GL.InternalFormat.RGBA8, width, height, 0, GL.PixelFormat.RGBA, GL.PixelType.UNSIGNED_BYTE, pData);
+            _gl.TextureSubImage2D(id, 0, 0, 0, width, height, GL.PixelFormat.RGBA, GL.PixelType.UNSIGNED_BYTE, pData);
         }
 
-        _gl.GenerateMipmap(GL.TextureTarget.TEXTURE_2D);
-
-        _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, default);
+        _gl.GenerateTextureMipmap(id);
     }
 
     public void Dispose()
@@ -70,14 +70,12 @@ public unsafe class Texture : Asset, IDisposable
 
     public void Bind(int unit)
     {
-        _gl.ActiveTexture(GL.TextureUnit.TEXTURE0 + (uint)unit);
-        _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, _id);
+        _gl.BindTextureUnit((uint)unit, _id);
     }
 
     public void Unbind(int unit)
     {
-        _gl.ActiveTexture(GL.TextureUnit.TEXTURE0 + (uint)unit);
-        _gl.BindTexture(GL.TextureTarget.TEXTURE_2D, default);
+        _gl.BindTextureUnit((uint)unit, default);
     }
 }
 

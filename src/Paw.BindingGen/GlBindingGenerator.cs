@@ -115,14 +115,14 @@ internal class GlBindingGenerator
         {
             var commandSpec = _spec.Commands[commandName];
 
-            if (!String.IsNullOrWhiteSpace(commandSpec.Class))
+            if (commandSpec.ReturnType == "GLuint" && !String.IsNullOrWhiteSpace(commandSpec.Class))
             {
                 allTypeClasses.Add(commandSpec.Class);
             }
 
             foreach (var paramSpec in commandSpec.Params)
             {
-                if (!String.IsNullOrWhiteSpace(paramSpec.Class))
+                if (paramSpec.Type == "GLuint" && !String.IsNullOrWhiteSpace(paramSpec.Class))
                 {
                     allTypeClasses.Add(paramSpec.Class);
                 }

@@ -15,5 +15,4 @@ public unsafe partial class GL
     public readonly record struct RenderbufferId(uint Id);
     public readonly record struct FramebufferId(uint Id);
     public readonly record struct TransformFeedbackId(uint Id);
-    public readonly record struct SyncId(uint Id);
 }

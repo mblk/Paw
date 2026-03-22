@@ -53,13 +53,18 @@ internal class GlBindingGenerator
         {
             string mappedEnumGroup = TrimEnumName(enumGroup);
 
-            if (trimmedCommandNames.Contains(enumGroup))
+            if (trimmedCommandNames.Contains(mappedEnumGroup))
             {
                 Console.WriteLine($"Found name collision: {enumGroup}");
                 mappedEnumGroup += "Enum";
             }
 
             enumGroupMappings.Add(enumGroup, mappedEnumGroup);
+        }
+
+        if (!enumGroupMappings.ContainsKey(_fallbackEnumGroupName))
+        {
+            enumGroupMappings.Add(_fallbackEnumGroupName, _fallbackEnumGroupName);
         }
 
         return enumGroupMappings;
@@ -155,21 +160,7 @@ internal class GlBindingGenerator
 
             string delegateName = GetDelegateName(commandSpec.Name);
             (string returnType, TypeMapping returnTypeMapping) = ResolveType(commandSpec.ReturnType, commandSpec.Group, commandSpec.Kind, commandSpec.Class, "void");
-
-            if (returnType == "nint")
-            {
-                for (int i = 1; i < commandSpec.PointerCount; i++)
-                {
-                    returnType += "*";
-                }
-            }
-            else
-            {
-                for (int i = 0; i < commandSpec.PointerCount; i++)
-                {
-                    returnType += "*";
-                }
-            }
+            returnType = MakePointerType(returnType, commandSpec.PointerCount);
 
             var paramTypes = new List<string>();
             var paramNames = new List<string>();
@@ -210,17 +201,13 @@ internal class GlBindingGenerator
                     case TypeMapping.PtrToString:
                     {
                         throw new NotImplementedException("PtrToString param");
-                        //break;
                     }    
 
                     default: throw new NotImplementedException("Unknown TypeMapping");
                 }
 
-                for(int i=0; i<paramSpec.PointerCount; i++)
-                {
-                    paramType += "*"; // TODO -1 for nint
-                    mappedParamType += "*"; // TODO -1 for nint
-                }
+                paramType = MakePointerType(paramType, paramSpec.PointerCount);
+                mappedParamType = MakePointerType(mappedParamType, paramSpec.PointerCount);
 
                 string paramName = SanitizeParameterName(paramSpec.Name);
 
@@ -351,6 +338,7 @@ internal class GlBindingGenerator
         // loads
         sb.Append(_indent);
         sb.AppendLine("private void LoadFunctions()");
+        sb.Append(_indent);
         sb.AppendLine("{");
         foreach (var load in loads)
         {
@@ -370,6 +358,24 @@ internal class GlBindingGenerator
         }
 
         WriteClassEnd(sb);
+
+        return sb.ToString();
+    }
+
+    private static string MakePointerType(string type, int pointerCount)
+    {
+        if (type == "nint")
+        {
+            pointerCount--;
+        }
+
+        var sb = new StringBuilder();
+        sb.Append(type);
+
+        for (int i = 0; i < pointerCount; i++)
+        {
+            sb.Append('*');
+        }
 
         return sb.ToString();
     }
@@ -415,13 +421,20 @@ internal class GlBindingGenerator
         return s;
     }
 
+
+    private static readonly IReadOnlySet<string> _reservedKeywords = new HashSet<string>()
+    {
+        "bool", "byte", "sbyte", "short", "ushort", "int", "uint", "long", "ulong", "double", "float", "decimal",
+        "string", "char", "void", "object", "typeof", "sizeof", "null", "true", "false", "if", "else", "while", "for", "foreach", "do", "switch",
+        "case", "default", "lock", "try", "throw", "catch", "finally", "goto", "break", "continue", "return", "public", "private", "internal",
+        "protected", "static", "readonly", "sealed", "const", "fixed", "stackalloc", "volatile", "new", "override", "abstract", "virtual",
+        "event", "extern", "ref", "out", "in", "is", "as", "params", "__arglist", "__makeref", "__reftype", "__refvalue", "this", "base",
+        "namespace", "using", "class", "struct", "interface", "enum", "delegate", "checked", "unchecked", "unsafe", "operator", "implicit", "explicit"
+    };
+
     private static bool IsReservedKeyword(string name)
     {
-        return name switch
-        {
-            "params" or "ref" or "string" => true, // TODO extend
-            _ => false,
-        };
+        return _reservedKeywords.Contains(name);
     }
 
     private enum TypeMapping

@@ -16,7 +16,6 @@ public static class Program
         generator.Generate();
 
         Console.WriteLine("bye");
-        Console.ReadKey();
     }
 }
 

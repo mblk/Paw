@@ -7,7 +7,7 @@ public static class StringExtensions
         if (string.IsNullOrWhiteSpace(s))
             throw new ArgumentException("String is empty or whitespace");
 
-        return $"{char.ToLower(s[0])}{s[1..]}";
+        return $"{char.ToLowerInvariant(s[0])}{s[1..]}";
     }
 
     public static string FirstToUpper(this string s)
@@ -15,6 +15,6 @@ public static class StringExtensions
         if (string.IsNullOrWhiteSpace(s))
             throw new ArgumentException("String is empty or whitespace");
 
-        return $"{char.ToUpper(s[0])}{s[1..]}";
+        return $"{char.ToUpperInvariant(s[0])}{s[1..]}";
     }
 }

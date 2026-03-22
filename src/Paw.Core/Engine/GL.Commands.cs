@@ -86,7 +86,7 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribIType, uint, void> _vertexArrayAttribIFormat;
     private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribType, byte, uint, void> _vertexArrayAttribFormat;
     private delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void> _vertexArrayAttribBinding;
-    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, BufferId*, nint*, int*, void> _vertexArrayVertexBuffers;
+    private delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, BufferId*, nint, int*, void> _vertexArrayVertexBuffers;
     private delegate* unmanaged[Cdecl]<VertexArrayId, uint, BufferId, nint, int, void> _vertexArrayVertexBuffer;
     private delegate* unmanaged[Cdecl]<VertexArrayId, BufferId, void> _vertexArrayElementBuffer;
     private delegate* unmanaged[Cdecl]<VertexArrayId, uint, void> _enableVertexArrayAttrib;
@@ -169,11 +169,11 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, void> _transformFeedbackBufferBase;
     private delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void> _createTransformFeedbacks;
     private delegate* unmanaged[Cdecl]<ClipControlOrigin, ClipControlDepth, void> _clipControl;
-    private delegate* unmanaged[Cdecl]<uint, int, BufferId*, nint*, int*, void> _bindVertexBuffers;
+    private delegate* unmanaged[Cdecl]<uint, int, BufferId*, nint, int*, void> _bindVertexBuffers;
     private delegate* unmanaged[Cdecl]<uint, int, TextureId*, void> _bindImageTextures;
     private delegate* unmanaged[Cdecl]<uint, int, SamplerId*, void> _bindSamplers;
     private delegate* unmanaged[Cdecl]<uint, int, TextureId*, void> _bindTextures;
-    private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, nint*, nint*, void> _bindBuffersRange;
+    private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, nint, nint, void> _bindBuffersRange;
     private delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, void> _bindBuffersBase;
     private delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void> _clearTexSubImage;
     private delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, void*, void> _clearTexImage;
@@ -666,7 +666,7 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<uint, uint, void> _sampleMaski;
 
     private void LoadFunctions()
-{
+    {
         _cullFace = (delegate* unmanaged[Cdecl]<TriangleFace, void>)Load("glCullFace");
         _frontFace = (delegate* unmanaged[Cdecl]<FrontFaceDirection, void>)Load("glFrontFace");
         _hint = (delegate* unmanaged[Cdecl]<HintTarget, HintMode, void>)Load("glHint");
@@ -746,7 +746,7 @@ public unsafe partial class GL
         _vertexArrayAttribIFormat = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribIType, uint, void>)Load("glVertexArrayAttribIFormat");
         _vertexArrayAttribFormat = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, VertexAttribType, byte, uint, void>)Load("glVertexArrayAttribFormat");
         _vertexArrayAttribBinding = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, uint, void>)Load("glVertexArrayAttribBinding");
-        _vertexArrayVertexBuffers = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, BufferId*, nint*, int*, void>)Load("glVertexArrayVertexBuffers");
+        _vertexArrayVertexBuffers = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, int, BufferId*, nint, int*, void>)Load("glVertexArrayVertexBuffers");
         _vertexArrayVertexBuffer = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, BufferId, nint, int, void>)Load("glVertexArrayVertexBuffer");
         _vertexArrayElementBuffer = (delegate* unmanaged[Cdecl]<VertexArrayId, BufferId, void>)Load("glVertexArrayElementBuffer");
         _enableVertexArrayAttrib = (delegate* unmanaged[Cdecl]<VertexArrayId, uint, void>)Load("glEnableVertexArrayAttrib");
@@ -829,11 +829,11 @@ public unsafe partial class GL
         _transformFeedbackBufferBase = (delegate* unmanaged[Cdecl]<TransformFeedbackId, uint, BufferId, void>)Load("glTransformFeedbackBufferBase");
         _createTransformFeedbacks = (delegate* unmanaged[Cdecl]<int, TransformFeedbackId*, void>)Load("glCreateTransformFeedbacks");
         _clipControl = (delegate* unmanaged[Cdecl]<ClipControlOrigin, ClipControlDepth, void>)Load("glClipControl");
-        _bindVertexBuffers = (delegate* unmanaged[Cdecl]<uint, int, BufferId*, nint*, int*, void>)Load("glBindVertexBuffers");
+        _bindVertexBuffers = (delegate* unmanaged[Cdecl]<uint, int, BufferId*, nint, int*, void>)Load("glBindVertexBuffers");
         _bindImageTextures = (delegate* unmanaged[Cdecl]<uint, int, TextureId*, void>)Load("glBindImageTextures");
         _bindSamplers = (delegate* unmanaged[Cdecl]<uint, int, SamplerId*, void>)Load("glBindSamplers");
         _bindTextures = (delegate* unmanaged[Cdecl]<uint, int, TextureId*, void>)Load("glBindTextures");
-        _bindBuffersRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, nint*, nint*, void>)Load("glBindBuffersRange");
+        _bindBuffersRange = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, nint, nint, void>)Load("glBindBuffersRange");
         _bindBuffersBase = (delegate* unmanaged[Cdecl]<BufferTarget, uint, int, BufferId*, void>)Load("glBindBuffersBase");
         _clearTexSubImage = (delegate* unmanaged[Cdecl]<TextureId, int, int, int, int, int, int, int, PixelFormat, PixelType, void*, void>)Load("glClearTexSubImage");
         _clearTexImage = (delegate* unmanaged[Cdecl]<TextureId, int, PixelFormat, PixelType, void*, void>)Load("glClearTexImage");
@@ -1883,7 +1883,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void VertexArrayVertexBuffers(VertexArrayId vaobj, uint first, int count, BufferId* buffers, nint* offsets, int* strides)
+    public void VertexArrayVertexBuffers(VertexArrayId vaobj, uint first, int count, BufferId* buffers, nint offsets, int* strides)
     {
         _vertexArrayVertexBuffers(vaobj, first, count, buffers, offsets, strides);
         CheckError();
@@ -2468,7 +2468,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindVertexBuffers(uint first, int count, BufferId* buffers, nint* offsets, int* strides)
+    public void BindVertexBuffers(uint first, int count, BufferId* buffers, nint offsets, int* strides)
     {
         _bindVertexBuffers(first, count, buffers, offsets, strides);
         CheckError();
@@ -2496,7 +2496,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindBuffersRange(BufferTarget target, uint first, int count, BufferId* buffers, nint* offsets, nint* sizes)
+    public void BindBuffersRange(BufferTarget target, uint first, int count, BufferId* buffers, nint offsets, nint sizes)
     {
         _bindBuffersRange(target, first, count, buffers, offsets, sizes);
         CheckError();

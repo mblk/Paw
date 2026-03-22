@@ -139,7 +139,7 @@ public sealed unsafe partial class GL
         CheckError();
     }
 
-    private int GetUniformLocation(ProgramId program, scoped ReadOnlySpan<byte> name) // TODO what does "scoped" mean here?
+    private int GetUniformLocation(ProgramId program, scoped ReadOnlySpan<byte> name) // scoped == allow caller to pass stack allocated buffer
     {
 #if DEBUG
         if (name.Length < 1) throw new ArgumentException("Name must not be empty", nameof(name));

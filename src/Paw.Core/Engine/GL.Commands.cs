@@ -125,28 +125,28 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, nint, nint, void> _textureBufferRange;
     private delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, void> _textureBuffer;
     private delegate* unmanaged[Cdecl]<TextureTarget, int, TextureId*, void> _createTextures;
-    private delegate* unmanaged[Cdecl]<RenderBufferId, RenderbufferParameterName, int*, void> _getNamedRenderbufferParameteriv;
-    private delegate* unmanaged[Cdecl]<RenderBufferId, int, InternalFormat, int, int, void> _namedRenderbufferStorageMultisample;
-    private delegate* unmanaged[Cdecl]<RenderBufferId, InternalFormat, int, int, void> _namedRenderbufferStorage;
-    private delegate* unmanaged[Cdecl]<int, RenderBufferId*, void> _createRenderbuffers;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void> _getNamedFramebufferAttachmentParameteriv;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, GetFramebufferParameter, int*, void> _getNamedFramebufferParameteriv;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferTarget, FramebufferStatus> _checkNamedFramebufferStatus;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, FrameBufferId, int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void> _blitNamedFramebuffer;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, Buffer, int, float, int, void> _clearNamedFramebufferfi;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, Buffer, int, float*, void> _clearNamedFramebufferfv;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, Buffer, int, uint*, void> _clearNamedFramebufferuiv;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, Buffer, int, int*, void> _clearNamedFramebufferiv;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, int, FramebufferAttachment*, int, int, int, int, void> _invalidateNamedFramebufferSubData;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, int, FramebufferAttachment*, void> _invalidateNamedFramebufferData;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, ColorBuffer, void> _namedFramebufferReadBuffer;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, int, ColorBuffer*, void> _namedFramebufferDrawBuffers;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, ColorBuffer, void> _namedFramebufferDrawBuffer;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferAttachment, TextureId, int, int, void> _namedFramebufferTextureLayer;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferAttachment, TextureId, int, void> _namedFramebufferTexture;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferParameterName, int, void> _namedFramebufferParameteri;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferAttachment, RenderbufferTarget, RenderBufferId, void> _namedFramebufferRenderbuffer;
-    private delegate* unmanaged[Cdecl]<int, FrameBufferId*, void> _createFramebuffers;
+    private delegate* unmanaged[Cdecl]<RenderbufferId, RenderbufferParameterName, int*, void> _getNamedRenderbufferParameteriv;
+    private delegate* unmanaged[Cdecl]<RenderbufferId, int, InternalFormat, int, int, void> _namedRenderbufferStorageMultisample;
+    private delegate* unmanaged[Cdecl]<RenderbufferId, InternalFormat, int, int, void> _namedRenderbufferStorage;
+    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _createRenderbuffers;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void> _getNamedFramebufferAttachmentParameteriv;
+    private delegate* unmanaged[Cdecl]<FramebufferId, GetFramebufferParameter, int*, void> _getNamedFramebufferParameteriv;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferTarget, FramebufferStatus> _checkNamedFramebufferStatus;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferId, int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void> _blitNamedFramebuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, float, int, void> _clearNamedFramebufferfi;
+    private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, float*, void> _clearNamedFramebufferfv;
+    private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, uint*, void> _clearNamedFramebufferuiv;
+    private delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, int*, void> _clearNamedFramebufferiv;
+    private delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, int, int, int, int, void> _invalidateNamedFramebufferSubData;
+    private delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, void> _invalidateNamedFramebufferData;
+    private delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void> _namedFramebufferReadBuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferId, int, ColorBuffer*, void> _namedFramebufferDrawBuffers;
+    private delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void> _namedFramebufferDrawBuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, int, void> _namedFramebufferTextureLayer;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, void> _namedFramebufferTexture;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferParameterName, int, void> _namedFramebufferParameteri;
+    private delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void> _namedFramebufferRenderbuffer;
+    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _createFramebuffers;
     private delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void> _getNamedBufferSubData;
     private delegate* unmanaged[Cdecl]<BufferId, BufferPointerName, void**, void> _getNamedBufferPointerv;
     private delegate* unmanaged[Cdecl]<BufferId, BufferPName, long*, void> _getNamedBufferParameteri64v;
@@ -607,21 +607,21 @@ public unsafe partial class GL
     private delegate* unmanaged[Cdecl]<Buffer, int, float*, void> _clearBufferfv;
     private delegate* unmanaged[Cdecl]<Buffer, int, float, int, void> _clearBufferfi;
     private delegate* unmanaged[Cdecl]<StringName, uint, nint> _getStringi;
-    private delegate* unmanaged[Cdecl]<RenderBufferId, byte> _isRenderbuffer;
-    private delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderBufferId, void> _bindRenderbuffer;
-    private delegate* unmanaged[Cdecl]<int, RenderBufferId*, void> _deleteRenderbuffers;
-    private delegate* unmanaged[Cdecl]<int, RenderBufferId*, void> _genRenderbuffers;
+    private delegate* unmanaged[Cdecl]<RenderbufferId, byte> _isRenderbuffer;
+    private delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferId, void> _bindRenderbuffer;
+    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _deleteRenderbuffers;
+    private delegate* unmanaged[Cdecl]<int, RenderbufferId*, void> _genRenderbuffers;
     private delegate* unmanaged[Cdecl]<RenderbufferTarget, InternalFormat, int, int, void> _renderbufferStorage;
     private delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferParameterName, int*, void> _getRenderbufferParameteriv;
-    private delegate* unmanaged[Cdecl]<FrameBufferId, byte> _isFramebuffer;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FrameBufferId, void> _bindFramebuffer;
-    private delegate* unmanaged[Cdecl]<int, FrameBufferId*, void> _deleteFramebuffers;
-    private delegate* unmanaged[Cdecl]<int, FrameBufferId*, void> _genFramebuffers;
+    private delegate* unmanaged[Cdecl]<FramebufferId, byte> _isFramebuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferId, void> _bindFramebuffer;
+    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _deleteFramebuffers;
+    private delegate* unmanaged[Cdecl]<int, FramebufferId*, void> _genFramebuffers;
     private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferStatus> _checkFramebufferStatus;
     private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void> _framebufferTexture1D;
     private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void> _framebufferTexture2D;
     private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, int, void> _framebufferTexture3D;
-    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, RenderbufferTarget, RenderBufferId, void> _framebufferRenderbuffer;
+    private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void> _framebufferRenderbuffer;
     private delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void> _getFramebufferAttachmentParameteriv;
     private delegate* unmanaged[Cdecl]<TextureTarget, void> _generateMipmap;
     private delegate* unmanaged[Cdecl]<int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void> _blitFramebuffer;
@@ -785,28 +785,28 @@ public unsafe partial class GL
         _textureBufferRange = (delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, nint, nint, void>)Load("glTextureBufferRange");
         _textureBuffer = (delegate* unmanaged[Cdecl]<TextureId, SizedInternalFormat, BufferId, void>)Load("glTextureBuffer");
         _createTextures = (delegate* unmanaged[Cdecl]<TextureTarget, int, TextureId*, void>)Load("glCreateTextures");
-        _getNamedRenderbufferParameteriv = (delegate* unmanaged[Cdecl]<RenderBufferId, RenderbufferParameterName, int*, void>)Load("glGetNamedRenderbufferParameteriv");
-        _namedRenderbufferStorageMultisample = (delegate* unmanaged[Cdecl]<RenderBufferId, int, InternalFormat, int, int, void>)Load("glNamedRenderbufferStorageMultisample");
-        _namedRenderbufferStorage = (delegate* unmanaged[Cdecl]<RenderBufferId, InternalFormat, int, int, void>)Load("glNamedRenderbufferStorage");
-        _createRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderBufferId*, void>)Load("glCreateRenderbuffers");
-        _getNamedFramebufferAttachmentParameteriv = (delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void>)Load("glGetNamedFramebufferAttachmentParameteriv");
-        _getNamedFramebufferParameteriv = (delegate* unmanaged[Cdecl]<FrameBufferId, GetFramebufferParameter, int*, void>)Load("glGetNamedFramebufferParameteriv");
-        _checkNamedFramebufferStatus = (delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferTarget, FramebufferStatus>)Load("glCheckNamedFramebufferStatus");
-        _blitNamedFramebuffer = (delegate* unmanaged[Cdecl]<FrameBufferId, FrameBufferId, int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void>)Load("glBlitNamedFramebuffer");
-        _clearNamedFramebufferfi = (delegate* unmanaged[Cdecl]<FrameBufferId, Buffer, int, float, int, void>)Load("glClearNamedFramebufferfi");
-        _clearNamedFramebufferfv = (delegate* unmanaged[Cdecl]<FrameBufferId, Buffer, int, float*, void>)Load("glClearNamedFramebufferfv");
-        _clearNamedFramebufferuiv = (delegate* unmanaged[Cdecl]<FrameBufferId, Buffer, int, uint*, void>)Load("glClearNamedFramebufferuiv");
-        _clearNamedFramebufferiv = (delegate* unmanaged[Cdecl]<FrameBufferId, Buffer, int, int*, void>)Load("glClearNamedFramebufferiv");
-        _invalidateNamedFramebufferSubData = (delegate* unmanaged[Cdecl]<FrameBufferId, int, FramebufferAttachment*, int, int, int, int, void>)Load("glInvalidateNamedFramebufferSubData");
-        _invalidateNamedFramebufferData = (delegate* unmanaged[Cdecl]<FrameBufferId, int, FramebufferAttachment*, void>)Load("glInvalidateNamedFramebufferData");
-        _namedFramebufferReadBuffer = (delegate* unmanaged[Cdecl]<FrameBufferId, ColorBuffer, void>)Load("glNamedFramebufferReadBuffer");
-        _namedFramebufferDrawBuffers = (delegate* unmanaged[Cdecl]<FrameBufferId, int, ColorBuffer*, void>)Load("glNamedFramebufferDrawBuffers");
-        _namedFramebufferDrawBuffer = (delegate* unmanaged[Cdecl]<FrameBufferId, ColorBuffer, void>)Load("glNamedFramebufferDrawBuffer");
-        _namedFramebufferTextureLayer = (delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferAttachment, TextureId, int, int, void>)Load("glNamedFramebufferTextureLayer");
-        _namedFramebufferTexture = (delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferAttachment, TextureId, int, void>)Load("glNamedFramebufferTexture");
-        _namedFramebufferParameteri = (delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferParameterName, int, void>)Load("glNamedFramebufferParameteri");
-        _namedFramebufferRenderbuffer = (delegate* unmanaged[Cdecl]<FrameBufferId, FramebufferAttachment, RenderbufferTarget, RenderBufferId, void>)Load("glNamedFramebufferRenderbuffer");
-        _createFramebuffers = (delegate* unmanaged[Cdecl]<int, FrameBufferId*, void>)Load("glCreateFramebuffers");
+        _getNamedRenderbufferParameteriv = (delegate* unmanaged[Cdecl]<RenderbufferId, RenderbufferParameterName, int*, void>)Load("glGetNamedRenderbufferParameteriv");
+        _namedRenderbufferStorageMultisample = (delegate* unmanaged[Cdecl]<RenderbufferId, int, InternalFormat, int, int, void>)Load("glNamedRenderbufferStorageMultisample");
+        _namedRenderbufferStorage = (delegate* unmanaged[Cdecl]<RenderbufferId, InternalFormat, int, int, void>)Load("glNamedRenderbufferStorage");
+        _createRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glCreateRenderbuffers");
+        _getNamedFramebufferAttachmentParameteriv = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void>)Load("glGetNamedFramebufferAttachmentParameteriv");
+        _getNamedFramebufferParameteriv = (delegate* unmanaged[Cdecl]<FramebufferId, GetFramebufferParameter, int*, void>)Load("glGetNamedFramebufferParameteriv");
+        _checkNamedFramebufferStatus = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferTarget, FramebufferStatus>)Load("glCheckNamedFramebufferStatus");
+        _blitNamedFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferId, int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void>)Load("glBlitNamedFramebuffer");
+        _clearNamedFramebufferfi = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, float, int, void>)Load("glClearNamedFramebufferfi");
+        _clearNamedFramebufferfv = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, float*, void>)Load("glClearNamedFramebufferfv");
+        _clearNamedFramebufferuiv = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, uint*, void>)Load("glClearNamedFramebufferuiv");
+        _clearNamedFramebufferiv = (delegate* unmanaged[Cdecl]<FramebufferId, Buffer, int, int*, void>)Load("glClearNamedFramebufferiv");
+        _invalidateNamedFramebufferSubData = (delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, int, int, int, int, void>)Load("glInvalidateNamedFramebufferSubData");
+        _invalidateNamedFramebufferData = (delegate* unmanaged[Cdecl]<FramebufferId, int, FramebufferAttachment*, void>)Load("glInvalidateNamedFramebufferData");
+        _namedFramebufferReadBuffer = (delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void>)Load("glNamedFramebufferReadBuffer");
+        _namedFramebufferDrawBuffers = (delegate* unmanaged[Cdecl]<FramebufferId, int, ColorBuffer*, void>)Load("glNamedFramebufferDrawBuffers");
+        _namedFramebufferDrawBuffer = (delegate* unmanaged[Cdecl]<FramebufferId, ColorBuffer, void>)Load("glNamedFramebufferDrawBuffer");
+        _namedFramebufferTextureLayer = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, int, void>)Load("glNamedFramebufferTextureLayer");
+        _namedFramebufferTexture = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, TextureId, int, void>)Load("glNamedFramebufferTexture");
+        _namedFramebufferParameteri = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferParameterName, int, void>)Load("glNamedFramebufferParameteri");
+        _namedFramebufferRenderbuffer = (delegate* unmanaged[Cdecl]<FramebufferId, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void>)Load("glNamedFramebufferRenderbuffer");
+        _createFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glCreateFramebuffers");
         _getNamedBufferSubData = (delegate* unmanaged[Cdecl]<BufferId, nint, nint, void*, void>)Load("glGetNamedBufferSubData");
         _getNamedBufferPointerv = (delegate* unmanaged[Cdecl]<BufferId, BufferPointerName, void**, void>)Load("glGetNamedBufferPointerv");
         _getNamedBufferParameteri64v = (delegate* unmanaged[Cdecl]<BufferId, BufferPName, long*, void>)Load("glGetNamedBufferParameteri64v");
@@ -1267,21 +1267,21 @@ public unsafe partial class GL
         _clearBufferfv = (delegate* unmanaged[Cdecl]<Buffer, int, float*, void>)Load("glClearBufferfv");
         _clearBufferfi = (delegate* unmanaged[Cdecl]<Buffer, int, float, int, void>)Load("glClearBufferfi");
         _getStringi = (delegate* unmanaged[Cdecl]<StringName, uint, nint>)Load("glGetStringi");
-        _isRenderbuffer = (delegate* unmanaged[Cdecl]<RenderBufferId, byte>)Load("glIsRenderbuffer");
-        _bindRenderbuffer = (delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderBufferId, void>)Load("glBindRenderbuffer");
-        _deleteRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderBufferId*, void>)Load("glDeleteRenderbuffers");
-        _genRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderBufferId*, void>)Load("glGenRenderbuffers");
+        _isRenderbuffer = (delegate* unmanaged[Cdecl]<RenderbufferId, byte>)Load("glIsRenderbuffer");
+        _bindRenderbuffer = (delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferId, void>)Load("glBindRenderbuffer");
+        _deleteRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glDeleteRenderbuffers");
+        _genRenderbuffers = (delegate* unmanaged[Cdecl]<int, RenderbufferId*, void>)Load("glGenRenderbuffers");
         _renderbufferStorage = (delegate* unmanaged[Cdecl]<RenderbufferTarget, InternalFormat, int, int, void>)Load("glRenderbufferStorage");
         _getRenderbufferParameteriv = (delegate* unmanaged[Cdecl]<RenderbufferTarget, RenderbufferParameterName, int*, void>)Load("glGetRenderbufferParameteriv");
-        _isFramebuffer = (delegate* unmanaged[Cdecl]<FrameBufferId, byte>)Load("glIsFramebuffer");
-        _bindFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FrameBufferId, void>)Load("glBindFramebuffer");
-        _deleteFramebuffers = (delegate* unmanaged[Cdecl]<int, FrameBufferId*, void>)Load("glDeleteFramebuffers");
-        _genFramebuffers = (delegate* unmanaged[Cdecl]<int, FrameBufferId*, void>)Load("glGenFramebuffers");
+        _isFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferId, byte>)Load("glIsFramebuffer");
+        _bindFramebuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferId, void>)Load("glBindFramebuffer");
+        _deleteFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glDeleteFramebuffers");
+        _genFramebuffers = (delegate* unmanaged[Cdecl]<int, FramebufferId*, void>)Load("glGenFramebuffers");
         _checkFramebufferStatus = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferStatus>)Load("glCheckFramebufferStatus");
         _framebufferTexture1D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void>)Load("glFramebufferTexture1D");
         _framebufferTexture2D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, void>)Load("glFramebufferTexture2D");
         _framebufferTexture3D = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, TextureTarget, TextureId, int, int, void>)Load("glFramebufferTexture3D");
-        _framebufferRenderbuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, RenderbufferTarget, RenderBufferId, void>)Load("glFramebufferRenderbuffer");
+        _framebufferRenderbuffer = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, RenderbufferTarget, RenderbufferId, void>)Load("glFramebufferRenderbuffer");
         _getFramebufferAttachmentParameteriv = (delegate* unmanaged[Cdecl]<FramebufferTarget, FramebufferAttachment, FramebufferAttachmentParameterName, int*, void>)Load("glGetFramebufferAttachmentParameteriv");
         _generateMipmap = (delegate* unmanaged[Cdecl]<TextureTarget, void>)Load("glGenerateMipmap");
         _blitFramebuffer = (delegate* unmanaged[Cdecl]<int, int, int, int, int, int, int, int, ClearBufferMask, BlitFramebufferFilter, void>)Load("glBlitFramebuffer");
@@ -2156,49 +2156,49 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedRenderbufferParameteriv(RenderBufferId renderbuffer, RenderbufferParameterName pname, int* @params)
+    public void GetNamedRenderbufferParameteriv(RenderbufferId renderbuffer, RenderbufferParameterName pname, int* @params)
     {
         _getNamedRenderbufferParameteriv(renderbuffer, pname, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedRenderbufferStorageMultisample(RenderBufferId renderbuffer, int samples, InternalFormat internalformat, int width, int height)
+    public void NamedRenderbufferStorageMultisample(RenderbufferId renderbuffer, int samples, InternalFormat internalformat, int width, int height)
     {
         _namedRenderbufferStorageMultisample(renderbuffer, samples, internalformat, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedRenderbufferStorage(RenderBufferId renderbuffer, InternalFormat internalformat, int width, int height)
+    public void NamedRenderbufferStorage(RenderbufferId renderbuffer, InternalFormat internalformat, int width, int height)
     {
         _namedRenderbufferStorage(renderbuffer, internalformat, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateRenderbuffers(int n, RenderBufferId* renderbuffers)
+    public void CreateRenderbuffers(int n, RenderbufferId* renderbuffers)
     {
         _createRenderbuffers(n, renderbuffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedFramebufferAttachmentParameteriv(FrameBufferId framebuffer, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
+    public void GetNamedFramebufferAttachmentParameteriv(FramebufferId framebuffer, FramebufferAttachment attachment, FramebufferAttachmentParameterName pname, int* @params)
     {
         _getNamedFramebufferAttachmentParameteriv(framebuffer, attachment, pname, @params);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetNamedFramebufferParameteriv(FrameBufferId framebuffer, GetFramebufferParameter pname, int* param)
+    public void GetNamedFramebufferParameteriv(FramebufferId framebuffer, GetFramebufferParameter pname, int* param)
     {
         _getNamedFramebufferParameteriv(framebuffer, pname, param);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public FramebufferStatus CheckNamedFramebufferStatus(FrameBufferId framebuffer, FramebufferTarget target)
+    public FramebufferStatus CheckNamedFramebufferStatus(FramebufferId framebuffer, FramebufferTarget target)
     {
         var result = _checkNamedFramebufferStatus(framebuffer, target);
         CheckError();
@@ -2206,105 +2206,105 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BlitNamedFramebuffer(FrameBufferId readFramebuffer, FrameBufferId drawFramebuffer, int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
+    public void BlitNamedFramebuffer(FramebufferId readFramebuffer, FramebufferId drawFramebuffer, int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, ClearBufferMask mask, BlitFramebufferFilter filter)
     {
         _blitNamedFramebuffer(readFramebuffer, drawFramebuffer, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearNamedFramebufferfi(FrameBufferId framebuffer, Buffer buffer, int drawbuffer, float depth, int stencil)
+    public void ClearNamedFramebufferfi(FramebufferId framebuffer, Buffer buffer, int drawbuffer, float depth, int stencil)
     {
         _clearNamedFramebufferfi(framebuffer, buffer, drawbuffer, depth, stencil);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearNamedFramebufferfv(FrameBufferId framebuffer, Buffer buffer, int drawbuffer, float* value)
+    public void ClearNamedFramebufferfv(FramebufferId framebuffer, Buffer buffer, int drawbuffer, float* value)
     {
         _clearNamedFramebufferfv(framebuffer, buffer, drawbuffer, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearNamedFramebufferuiv(FrameBufferId framebuffer, Buffer buffer, int drawbuffer, uint* value)
+    public void ClearNamedFramebufferuiv(FramebufferId framebuffer, Buffer buffer, int drawbuffer, uint* value)
     {
         _clearNamedFramebufferuiv(framebuffer, buffer, drawbuffer, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearNamedFramebufferiv(FrameBufferId framebuffer, Buffer buffer, int drawbuffer, int* value)
+    public void ClearNamedFramebufferiv(FramebufferId framebuffer, Buffer buffer, int drawbuffer, int* value)
     {
         _clearNamedFramebufferiv(framebuffer, buffer, drawbuffer, value);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateNamedFramebufferSubData(FrameBufferId framebuffer, int numAttachments, FramebufferAttachment* attachments, int x, int y, int width, int height)
+    public void InvalidateNamedFramebufferSubData(FramebufferId framebuffer, int numAttachments, FramebufferAttachment* attachments, int x, int y, int width, int height)
     {
         _invalidateNamedFramebufferSubData(framebuffer, numAttachments, attachments, x, y, width, height);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvalidateNamedFramebufferData(FrameBufferId framebuffer, int numAttachments, FramebufferAttachment* attachments)
+    public void InvalidateNamedFramebufferData(FramebufferId framebuffer, int numAttachments, FramebufferAttachment* attachments)
     {
         _invalidateNamedFramebufferData(framebuffer, numAttachments, attachments);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferReadBuffer(FrameBufferId framebuffer, ColorBuffer src)
+    public void NamedFramebufferReadBuffer(FramebufferId framebuffer, ColorBuffer src)
     {
         _namedFramebufferReadBuffer(framebuffer, src);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferDrawBuffers(FrameBufferId framebuffer, int n, ColorBuffer* bufs)
+    public void NamedFramebufferDrawBuffers(FramebufferId framebuffer, int n, ColorBuffer* bufs)
     {
         _namedFramebufferDrawBuffers(framebuffer, n, bufs);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferDrawBuffer(FrameBufferId framebuffer, ColorBuffer buf)
+    public void NamedFramebufferDrawBuffer(FramebufferId framebuffer, ColorBuffer buf)
     {
         _namedFramebufferDrawBuffer(framebuffer, buf);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferTextureLayer(FrameBufferId framebuffer, FramebufferAttachment attachment, TextureId texture, int level, int layer)
+    public void NamedFramebufferTextureLayer(FramebufferId framebuffer, FramebufferAttachment attachment, TextureId texture, int level, int layer)
     {
         _namedFramebufferTextureLayer(framebuffer, attachment, texture, level, layer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferTexture(FrameBufferId framebuffer, FramebufferAttachment attachment, TextureId texture, int level)
+    public void NamedFramebufferTexture(FramebufferId framebuffer, FramebufferAttachment attachment, TextureId texture, int level)
     {
         _namedFramebufferTexture(framebuffer, attachment, texture, level);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferParameteri(FrameBufferId framebuffer, FramebufferParameterName pname, int param)
+    public void NamedFramebufferParameteri(FramebufferId framebuffer, FramebufferParameterName pname, int param)
     {
         _namedFramebufferParameteri(framebuffer, pname, param);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void NamedFramebufferRenderbuffer(FrameBufferId framebuffer, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, RenderBufferId renderbuffer)
+    public void NamedFramebufferRenderbuffer(FramebufferId framebuffer, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, RenderbufferId renderbuffer)
     {
         _namedFramebufferRenderbuffer(framebuffer, attachment, renderbuffertarget, renderbuffer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CreateFramebuffers(int n, FrameBufferId* framebuffers)
+    public void CreateFramebuffers(int n, FramebufferId* framebuffers)
     {
         _createFramebuffers(n, framebuffers);
         CheckError();
@@ -5559,7 +5559,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsRenderbuffer(RenderBufferId renderbuffer)
+    public bool IsRenderbuffer(RenderbufferId renderbuffer)
     {
         var result = _isRenderbuffer(renderbuffer);
         CheckError();
@@ -5567,21 +5567,21 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindRenderbuffer(RenderbufferTarget target, RenderBufferId renderbuffer)
+    public void BindRenderbuffer(RenderbufferTarget target, RenderbufferId renderbuffer)
     {
         _bindRenderbuffer(target, renderbuffer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteRenderbuffers(int n, RenderBufferId* renderbuffers)
+    public void DeleteRenderbuffers(int n, RenderbufferId* renderbuffers)
     {
         _deleteRenderbuffers(n, renderbuffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenRenderbuffers(int n, RenderBufferId* renderbuffers)
+    public void GenRenderbuffers(int n, RenderbufferId* renderbuffers)
     {
         _genRenderbuffers(n, renderbuffers);
         CheckError();
@@ -5602,7 +5602,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsFramebuffer(FrameBufferId framebuffer)
+    public bool IsFramebuffer(FramebufferId framebuffer)
     {
         var result = _isFramebuffer(framebuffer);
         CheckError();
@@ -5610,21 +5610,21 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void BindFramebuffer(FramebufferTarget target, FrameBufferId framebuffer)
+    public void BindFramebuffer(FramebufferTarget target, FramebufferId framebuffer)
     {
         _bindFramebuffer(target, framebuffer);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DeleteFramebuffers(int n, FrameBufferId* framebuffers)
+    public void DeleteFramebuffers(int n, FramebufferId* framebuffers)
     {
         _deleteFramebuffers(n, framebuffers);
         CheckError();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GenFramebuffers(int n, FrameBufferId* framebuffers)
+    public void GenFramebuffers(int n, FramebufferId* framebuffers)
     {
         _genFramebuffers(n, framebuffers);
         CheckError();
@@ -5660,7 +5660,7 @@ public unsafe partial class GL
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void FramebufferRenderbuffer(FramebufferTarget target, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, RenderBufferId renderbuffer)
+    public void FramebufferRenderbuffer(FramebufferTarget target, FramebufferAttachment attachment, RenderbufferTarget renderbuffertarget, RenderbufferId renderbuffer)
     {
         _framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
         CheckError();

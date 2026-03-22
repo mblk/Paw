@@ -26,12 +26,15 @@ internal class GlBindingGenerator
 
         var enumGroupMappings = ResolveNamingCollisions(enumNames, commandNames);
 
+        string typesCode = GenerateTypes(commandNames);
         string enumsCode = GenerateEnums(enumNames, enumGroupMappings);
         string commandsCode = GenerateCommands(commandNames, enumGroupMappings);
 
+        var typesCodeFile = new FileInfo(Path.Combine(_outputDir.FullName, $"{_className}.Types.cs"));
         var enumsCodeFile = new FileInfo(Path.Combine(_outputDir.FullName, $"{_className}.Enums.cs"));
         var commandsCodeFile = new FileInfo(Path.Combine(_outputDir.FullName, $"{_className}.Commands.cs"));
 
+        File.WriteAllText(typesCodeFile.FullName, typesCode);
         File.WriteAllText(enumsCodeFile.FullName, enumsCode);
         File.WriteAllText(commandsCodeFile.FullName, commandsCode);
     }
@@ -70,6 +73,63 @@ internal class GlBindingGenerator
         return enumGroupMappings;
     }
     
+    private string GenerateTypes(IReadOnlyList<string> commandNames)
+    {
+        // Find all classes
+        var allTypeClasses = new HashSet<string>();
+
+        foreach (var commandName in commandNames)
+        {
+            var commandSpec = _spec.Commands[commandName];
+
+            if (!String.IsNullOrWhiteSpace(commandSpec.Class))
+            {
+                allTypeClasses.Add(commandSpec.Class);
+            }
+
+            foreach (var paramSpec in commandSpec.Params)
+            {
+                if (!String.IsNullOrWhiteSpace(paramSpec.Class))
+                {
+                    allTypeClasses.Add(paramSpec.Class);
+                }
+            }
+        }
+
+        // Create code
+        var sb = new StringBuilder();
+        WriteFileStart(sb);
+        WriteNamespace(sb);
+        WriteClassStart(sb);
+
+        foreach (var className in allTypeClasses)
+        {
+            sb.Append(_indent);
+            sb.Append("public readonly record struct ");
+            sb.Append(CreateIdTypeName(className));
+            sb.AppendLine("(uint Id);");
+        }
+
+        WriteClassEnd(sb);
+
+        return sb.ToString();
+    }
+
+    private static string CreateIdTypeName(string className)
+    {
+        var parts = className
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .Select(s => s.FirstToUpper());
+
+        var sb = new StringBuilder(className.Length + 2);
+
+        foreach (var part in parts)
+            sb.Append(part);
+        sb.Append("Id");
+
+        return sb.ToString();
+    }
 
     private string GenerateEnums(IReadOnlyList<string> enumNames, IReadOnlyDictionary<string, string> enumGroupMappings)
     {
@@ -159,7 +219,7 @@ internal class GlBindingGenerator
             var commandSpec = _spec.Commands[commandName];
 
             string delegateName = GetDelegateName(commandSpec.Name);
-            (string returnType, TypeMapping returnTypeMapping) = ResolveType(commandSpec.ReturnType, commandSpec.Group, commandSpec.Kind, commandSpec.Class, "void");
+            (string returnType, TypeMapping returnTypeMapping) = ResolveType(commandSpec.ReturnType, commandSpec.Group, commandSpec.Kind, commandSpec.Class);
             returnType = MakePointerType(returnType, commandSpec.PointerCount);
 
             var paramTypes = new List<string>();
@@ -172,7 +232,7 @@ internal class GlBindingGenerator
                     ? enumGroupMappings[paramSpec.Group]
                     : null;
 
-                (string paramType, TypeMapping paramTypeMapping) = ResolveType(paramSpec.Type, mappedGroupName, null, paramSpec.Class, "void");
+                (string paramType, TypeMapping paramTypeMapping) = ResolveType(paramSpec.Type, mappedGroupName, null, paramSpec.Class);
 
                 string mappedParamType;
                 Func<string, string> paramConverter;
@@ -444,37 +504,19 @@ internal class GlBindingGenerator
         PtrToString,
     }
 
-    private static (string, TypeMapping) ResolveType(string? glType, string? group, string? kind, string? @class, string noneType)
+    private static (string, TypeMapping) ResolveType(string? glType, string? group, string? kind, string? @class)
     {
-        // Enum?
+        // void?
+        if (string.IsNullOrWhiteSpace(glType))
+            return ("void", TypeMapping.None);
+
+        // enum?
         if (!string.IsNullOrWhiteSpace(group))
             return (group, TypeMapping.None);
 
-        // None?
-        if (string.IsNullOrWhiteSpace(glType))
-            return (noneType, TypeMapping.None);
-
-        // Id with class?
+        // Id?
         if (glType == "GLuint" && !String.IsNullOrWhiteSpace(@class))
-        {
-            string? classType = @class switch
-            {
-                "program" => "ProgramId",
-                "shader" => "ShaderId",
-                "texture" => "TextureId",
-                "buffer" => "BufferId",
-                "vertex array" => "VertexArrayId",
-                "renderbuffer" => "RenderBufferId",
-                "framebuffer" => "FrameBufferId",
-                "query" => "QueryId",
-                "program pipeline" => "ProgramPipelineId",
-                "sampler" => "SamplerId",
-                "transform feedback" => "TransformFeedbackId",
-                _ => throw new NotImplementedException($"Unknown type class '{@class}'"),
-            };
-
-            return (classType, TypeMapping.None);
-        }
+            return (CreateIdTypeName(@class), TypeMapping.None);
 
         // Convert boolean?
         if (glType == "GLboolean")

@@ -11,18 +11,6 @@ public sealed unsafe partial class GL
     public const int MajorVersion = 4;
     public const int MinorVersion = 6;
 
-    public readonly record struct ProgramId(uint Id);
-    public readonly record struct ShaderId(uint Id);
-    public readonly record struct TextureId(uint Id);
-    public readonly record struct BufferId(uint Id);
-    public readonly record struct VertexArrayId(uint Id);
-    public readonly record struct RenderBufferId(uint Id);
-    public readonly record struct FrameBufferId(uint Id);
-    public readonly record struct QueryId(uint Id);
-    public readonly record struct ProgramPipelineId(uint Id);
-    public readonly record struct SamplerId(uint Id);
-    public readonly record struct TransformFeedbackId(uint Id);
-
     private readonly Func<string, nint> _loader;
 
     private DebugProc? _debugProc;
@@ -96,7 +84,7 @@ public sealed unsafe partial class GL
         // Enable all messages
         DebugMessageControl(DebugSource.DONT_CARE, DebugType.DONT_CARE, DebugSeverity.DONT_CARE, 0, null, true);
 
-        // Disable notification severity messages
+        // Disable notification
         DebugMessageControl(DebugSource.DONT_CARE, DebugType.DONT_CARE, DebugSeverity.DEBUG_SEVERITY_NOTIFICATION, 0, null, false);
     }
 

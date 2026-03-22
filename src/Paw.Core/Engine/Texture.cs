@@ -36,7 +36,7 @@ public unsafe class Texture : Asset, IDisposable
     private readonly GL _gl;
     private readonly GL.TextureId _id;
 
-    public Texture(GL gl, int width, int height, ReadOnlySpan<byte> data) // uses DSA
+    public Texture(GL gl, int width, int height, ReadOnlySpan<byte> data)
     {
         _gl = gl;
 

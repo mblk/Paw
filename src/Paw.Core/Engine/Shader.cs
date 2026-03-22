@@ -107,7 +107,6 @@ public sealed class Shader : Asset, IDisposable
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
         {
-            //_gl.Uniform1i(location, value); // without DSA-like API - program must be bound
             _gl.ProgramUniform1i(_program, location, value); // DSA-like without the need to bind the program first
         }
     }

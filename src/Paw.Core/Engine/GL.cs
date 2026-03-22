@@ -135,15 +135,46 @@ public sealed unsafe partial class GL
     // Handwritten mappings for strings, etc
     //
 
-    public void ObjectLabel(ObjectIdentifier identifier, uint name, string label)
+    [Conditional("DEBUG")]
+    public void Label(ObjectIdentifier identifier, uint objectId, string label)
     {
-        byte[] bytes = Encoding.UTF8.GetBytes(label);
-        fixed (byte* p = bytes)
+        if (String.IsNullOrWhiteSpace(label))
         {
-            _objectLabel(identifier, name, bytes.Length, p);
+            throw new ArgumentNullException(nameof(label), "Missing label");
+        }
+
+        int length = Encoding.UTF8.GetByteCount(label);
+
+        Span<byte> buffer = length <= 256
+            ? stackalloc byte[length]
+            : new byte[length];
+
+        Encoding.UTF8.GetBytes(label, buffer);
+
+        fixed (byte* p = buffer)
+        {
+            _objectLabel(identifier, objectId, length, p); // Providing explicit length, so null-termination is not required
         }
         CheckError();
     }
+
+    //public void ObjectLabel(ObjectIdentifier identifier, uint name, string label)
+    //{
+    //    byte[] bytes = Encoding.UTF8.GetBytes(label);
+    //    fixed (byte* p = bytes)
+    //    {
+    //        _objectLabel(identifier, name, bytes.Length, p);
+    //    }
+    //    CheckError();
+    //}
+
+    //public void LabelTexture(uint id, string name) // TODO direct pointer or UTF8 encoded?
+    //{
+    //    fixed (char* p = name)
+    //    {
+    //        _objectLabel(GL.ObjectIdentifier.TEXTURE, id, name.Length, (byte*)p);
+    //    }
+    //}
 
     private int GetUniformLocation(ProgramId program, scoped ReadOnlySpan<byte> name) // scoped == allow caller to pass stack allocated buffer
     {

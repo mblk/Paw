@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -22,17 +21,14 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
 
         Id = CreateArrayAndConfigureAttributes(gl);
 
-        if (!string.IsNullOrWhiteSpace(label))
+        if (!String.IsNullOrWhiteSpace(label))
         {
-            gl.BindVertexArray(Id);
-            gl.ObjectLabel(GL.ObjectIdentifier.VERTEX_ARRAY, Id.Id, label);
-            gl.BindVertexArray(default);
+            gl.Label(GL.ObjectIdentifier.VERTEX_ARRAY, Id.Id, label);
         }
     }
 
     private GL.VertexArrayId CreateArrayAndConfigureAttributes(GL gl)
     {
-        var sw = Stopwatch.StartNew();
         Console.WriteLine($"VertexArrayObject:");
         Console.WriteLine($"  Type: {typeof(T).FullName}");
 
@@ -41,18 +37,20 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
         int stride = sizeof(T);
         Console.WriteLine($"  Stride: {stride}");
 
-        GL.VertexArrayId id = default;
-        gl.GenVertexArrays(1, &id);
-        gl.BindVertexArray(id);
+        // Create VAO
+        GL.VertexArrayId vaoId = default;
+        gl.CreateVertexArrays(1, &vaoId);
 
-        gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, _vertexBufferObject.Id);
+        // Attach VBO to VAO at binding slot 0
+        gl.VertexArrayVertexBuffer(vaoId, 0, _vertexBufferObject.Id, 0, stride);
 
+        // configure attributes
         var fields = typeof(T)
             .GetFields(BindingFlags.Public | BindingFlags.Instance)
             .Select(fi => new
             {
                 Field = fi,
-                Offset = (int)Marshal.OffsetOf<T>(fi.Name),
+                Offset = (uint)Marshal.OffsetOf<T>(fi.Name),
             })
             .OrderBy(x => x.Offset)
             .Select((x, index) => new
@@ -65,26 +63,31 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
 
         foreach (var field in fields)
         {
-            gl.EnableVertexAttribArray(field.Index);
+            gl.EnableVertexArrayAttrib(vaoId, field.Index);
 
             var attribInfo = GetAttribInfo(field.Field.FieldType);
             Console.WriteLine($"  Attrib {field.Index}: '{field.Field.Name}' offset={field.Offset} {attribInfo}");
 
             switch (attribInfo)
             {
-                case AttribInfo info: gl.VertexAttribPointer(field.Index, info.Components, info.Type, info.Normalized, stride, (void*)field.Offset); break;
-                case IAttribInfo info: gl.VertexAttribIPointer(field.Index, info.Components, info.Type, stride, (void*)field.Offset); break;
-                case LAttribInfo info: gl.VertexAttribLPointer(field.Index, info.Components, info.Type, stride, (void*)field.Offset); break;
+                case AttribInfo info:
+                    gl.VertexArrayAttribFormat(vaoId, field.Index, info.Components, info.Type, info.Normalized, field.Offset);
+                    gl.VertexArrayAttribBinding(vaoId, field.Index, 0);
+                    break;
+                case IAttribInfo info:
+                    gl.VertexArrayAttribIFormat(vaoId, field.Index, info.Components, info.Type, field.Offset);
+                    gl.VertexArrayAttribBinding(vaoId, field.Index, 0);
+                    break;
+                case LAttribInfo info:
+                    gl.VertexArrayAttribLFormat(vaoId, field.Index, info.Components, info.Type, field.Offset);
+                    gl.VertexArrayAttribBinding(vaoId, field.Index, 0);
+                    break;
+
                 default: throw new NotImplementedException();
             }
         }
 
-        // Unbind
-        gl.BindVertexArray(default);
-        gl.BindBuffer(GL.BufferTarget.ARRAY_BUFFER, default);
-
-        Console.WriteLine($"-> {sw.ElapsedMilliseconds} ms"); // TODO: maybe add cache later
-        return id;
+        return vaoId;
     }
 
     public void Bind()
@@ -103,20 +106,20 @@ public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAcc
     }
 
     private abstract record CommonAttribInfo(int Components);
-    private record AttribInfo(int Components, GL.VertexAttribPointerType Type, bool Normalized) : CommonAttribInfo(Components);
+    private record AttribInfo(int Components, GL.VertexAttribType Type, bool Normalized) : CommonAttribInfo(Components);
     private record IAttribInfo(int Components, GL.VertexAttribIType Type) : CommonAttribInfo(Components);
     private record LAttribInfo(int Components, GL.VertexAttribLType Type) : CommonAttribInfo(Components);
 
     private static CommonAttribInfo GetAttribInfo(Type type)
     {
         // Floats
-        if (type == typeof(float)) return new AttribInfo(1, GL.VertexAttribPointerType.FLOAT, false);
-        if (type == typeof(Vector2)) return new AttribInfo(2, GL.VertexAttribPointerType.FLOAT, false);
-        if (type == typeof(Vector3)) return new AttribInfo(3, GL.VertexAttribPointerType.FLOAT, false);
-        if (type == typeof(Vector4)) return new AttribInfo(4, GL.VertexAttribPointerType.FLOAT, false);
+        if (type == typeof(float)) return new AttribInfo(1, GL.VertexAttribType.FLOAT, false);
+        if (type == typeof(Vector2)) return new AttribInfo(2, GL.VertexAttribType.FLOAT, false);
+        if (type == typeof(Vector3)) return new AttribInfo(3, GL.VertexAttribType.FLOAT, false);
+        if (type == typeof(Vector4)) return new AttribInfo(4, GL.VertexAttribType.FLOAT, false);
 
-        if (type == typeof(sbyte)) return new AttribInfo(1, GL.VertexAttribPointerType.BYTE, true);
-        if (type == typeof(byte)) return new AttribInfo(1, GL.VertexAttribPointerType.UNSIGNED_BYTE, true);
+        if (type == typeof(sbyte)) return new AttribInfo(1, GL.VertexAttribType.BYTE, true);
+        if (type == typeof(byte)) return new AttribInfo(1, GL.VertexAttribType.UNSIGNED_BYTE, true);
 
         // Integers
         if (type == typeof(int)) return new IAttribInfo(1, GL.VertexAttribIType.INT);

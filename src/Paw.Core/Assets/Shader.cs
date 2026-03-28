@@ -1,6 +1,8 @@
-﻿using System.Numerics;
+﻿using Paw.Core.Engine;
+using Paw.Core.Graphics;
+using System.Numerics;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Assets;
 
 public class ShaderLoader : AssetLoader<Shader>
 {

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Graphics;
 
 // Ideas for additional features:
 //

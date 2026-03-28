@@ -1,9 +1,8 @@
-﻿using System.Diagnostics;
+﻿using Paw.Core.Graphics;
+using Paw.Core.Platforms.LinuxX11.Native;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Paw.Core.Engine;
-using Paw.Core.Platforms;
-using Paw.Core.Platforms.LinuxX11.Native;
 
 namespace Paw.Core.Platforms.LinuxX11;
 
@@ -61,7 +60,7 @@ public unsafe class LinuxX11Platform : IPlatform
         nint visInfoPtr = GLX.glXGetVisualFromFBConfig(display, fbConfig);
         if (visInfoPtr == nint.Zero)
             throw new Exception("glXGetVisualFromFBConfig failed");
-        
+
         X11.XVisualInfo vis = Marshal.PtrToStructure<X11.XVisualInfo>(visInfoPtr);
 
         //
@@ -69,7 +68,7 @@ public unsafe class LinuxX11Platform : IPlatform
         //
 
         nint cmap = X11.XCreateColormap(display, root, vis.visual, 0 /*AllocNone*/);
-        
+
         X11.XSetWindowAttributes swa = new()
         {
             colormap = cmap,
@@ -114,7 +113,7 @@ public unsafe class LinuxX11Platform : IPlatform
         var pCreateCtx = GLX.glXGetProcAddress("glXCreateContextAttribsARB");
         if (pCreateCtx == nint.Zero)
             throw new Exception("glXCreateContextAttribsARB not available");
-        
+
         var glXCreateContextAttribsARB = (delegate* unmanaged<nint, nint, nint, int, int*, nint>)pCreateCtx;
 
         int* ctxAttribs = stackalloc int[]
@@ -125,7 +124,7 @@ public unsafe class LinuxX11Platform : IPlatform
             0
         };
 
-        nint glxContext = glXCreateContextAttribsARB(display, fbConfig, nint.Zero, 1, ctxAttribs);        
+        nint glxContext = glXCreateContextAttribsARB(display, fbConfig, nint.Zero, 1, ctxAttribs);
         if (glxContext == IntPtr.Zero)
             throw new Exception($"Failed to create GL {GL.MajorVersion}.{GL.MinorVersion} core context");
 
@@ -414,7 +413,7 @@ public unsafe class LinuxX11Platform : IPlatform
                     case X11.EventType.ClientMessage:
                     {
                         running = false;
-                        break;                            
+                        break;
                     }
 
                     case X11.EventType.ConfigureNotify:
@@ -427,13 +426,13 @@ public unsafe class LinuxX11Platform : IPlatform
                         Size = (w, h);
                         break;
                     }
-                    
+
                     case X11.EventType.KeyPress:
                     {
                         _keyboard.HandleInput(@event->key);
                         break;
                     }
-                    
+
                     case X11.EventType.KeyRelease:
                     {
                         _keyboard.HandleInput(@event->key);

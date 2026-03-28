@@ -1,5 +1,4 @@
-﻿using Paw.Core.Engine;
-using Paw.Core.Platforms;
+﻿using Paw.Core.Graphics;
 using Paw.Core.Platforms.Windows.Native;
 using System.Collections.Frozen;
 using System.ComponentModel;
@@ -604,7 +603,7 @@ internal unsafe class WindowsPlatform : IPlatform
 
             var w = lParam.ToInt32() & 0xFFFF;
             var h = lParam.ToInt32() >> 16 & 0xFFFF;
-            
+
             _clientW = w;
             _clientH = h;
             _resizePending = true;

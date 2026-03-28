@@ -1,4 +1,6 @@
-﻿namespace Paw.Core.Engine;
+﻿using Paw.Core.Graphics;
+
+namespace Paw.Core.Engine;
 
 public abstract class AssetLoader<T>
     where T : Asset

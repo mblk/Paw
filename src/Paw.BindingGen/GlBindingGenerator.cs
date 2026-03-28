@@ -9,7 +9,7 @@ internal class GlBindingGenerator
     private const string _fallbackEnumGroupName = "Enum";
     private const string _indent = "    ";
     private const string _className = "GL";
-    private const string _namespace = "Paw.Core.Engine";
+    private const string _namespace = "Paw.Core.Graphics";
 
     private readonly GlSpec _spec;
     private readonly DirectoryInfo _outputDir;
@@ -108,7 +108,7 @@ internal class GlBindingGenerator
 
         return enumGroupMappings;
     }
-    
+
     private string GenerateConstants(int majorVersion, int minorVersion, GitInfo? specGitInfo)
     {
         var sb = new StringBuilder();
@@ -216,7 +216,7 @@ internal class GlBindingGenerator
                 values.Add((enumSpec.Name, enumSpec.Value));
             }
         }
-        
+
         // Write code
         var sb = new StringBuilder();
         WriteFileStart(sb);
@@ -340,7 +340,7 @@ internal class GlBindingGenerator
                     case TypeMapping.PtrToString:
                     {
                         throw new NotImplementedException("PtrToString param");
-                    }    
+                    }
 
                     default: throw new NotImplementedException("Unknown TypeMapping");
                 }
@@ -373,7 +373,7 @@ internal class GlBindingGenerator
 
             // map return type
             string mappedReturnType;
-            Func<string,string> returnValueConverter;
+            Func<string, string> returnValueConverter;
 
             switch (returnTypeMapping)
             {
@@ -396,7 +396,7 @@ internal class GlBindingGenerator
                     mappedReturnType = "string?";
                     returnValueConverter = (s) => $"Marshal.PtrToStringAnsi({s})";
                     break;
-                }    
+                }
 
                 default: throw new NotImplementedException("Unknown TypeMapping");
             }

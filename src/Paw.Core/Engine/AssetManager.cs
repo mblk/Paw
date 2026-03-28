@@ -1,8 +1,9 @@
-﻿using System.Diagnostics;
+﻿using Paw.Core.Assets;
+using Paw.Core.Graphics;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using Paw.Core.Engine.Assets;
 
 namespace Paw.Core.Engine;
 
@@ -140,9 +141,9 @@ public class AssetManager : IDisposable, IAssetManager
 
         var material = loadedMaterial.Asset;
         var sourceFiles = loadedMaterial.SourceFiles;
-        
+
         RegisterAssetDependencies(material, sourceFiles);
-        
+
         return material;
     }
 
@@ -204,7 +205,7 @@ public class AssetManager : IDisposable, IAssetManager
             //material.Dispose();
         }
         _materials.Clear();
-        
+
         foreach (var shader in _shaders.Values)
         {
             shader.Dispose();
@@ -246,7 +247,7 @@ public class AssetManager : IDisposable, IAssetManager
 
         public FileSystemAssetReader(DirectoryInfo baseDir)
         {
-            if (!baseDir.Exists) 
+            if (!baseDir.Exists)
                 throw new DirectoryNotFoundException($"Asset base directory does not exist: {baseDir.FullName}");
 
             _baseDir = baseDir;
@@ -287,11 +288,11 @@ public class AssetManager : IDisposable, IAssetManager
         public T ReadFileAsJson<T>(string assetPath, JsonTypeInfo<T> typeInfo) where T : class
         {
             string json = ReadFileAsString(assetPath);
-            
+
             T? obj = JsonSerializer.Deserialize<T>(json, typeInfo);
             if (obj is null)
                 throw new Exception($"Failed to deserialize asset: {assetPath} as {typeof(T).FullName}");
-            
+
             return obj;
         }
     }

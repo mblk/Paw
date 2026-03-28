@@ -1,4 +1,4 @@
-﻿namespace Paw.Core.Engine;
+﻿namespace Paw.Core.Graphics;
 
 // Notes for later:
 //

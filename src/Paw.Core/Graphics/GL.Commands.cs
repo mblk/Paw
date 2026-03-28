@@ -3,7 +3,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Graphics;
 
 public unsafe partial class GL
 {

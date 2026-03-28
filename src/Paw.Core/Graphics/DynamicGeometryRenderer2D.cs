@@ -1,9 +1,10 @@
-﻿using System.Numerics;
-using System.Runtime.InteropServices;
-using Paw.Core.Engine.Assets;
+﻿using Paw.Core.Assets;
+using Paw.Core.Engine;
 using Paw.Core.Utils;
+using System.Numerics;
+using System.Runtime.InteropServices;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Graphics;
 
 public unsafe class DynamicGeometryRenderer2D : IDisposable
 {
@@ -45,7 +46,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
     private readonly Material _material1;
 
     private readonly Dictionary<string, Material> _materials = [];
-    
+
     // TODO: vertex buffer per material
     // - what format?
     // - what about index buffers?
@@ -63,10 +64,10 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
     private readonly List<VertexPCT> _fontVertexBuffer = new(_initialVertexBufferSize);
 
     public DynamicGeometryRenderer2D(AssetManager assetManager)
-        :this(assetManager, [])
+        : this(assetManager, [])
     {
     }
-    
+
     public DynamicGeometryRenderer2D(AssetManager assetManager, IReadOnlyList<string> materials)
     {
         _shader = assetManager.LoadShader("triangle");
@@ -83,7 +84,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             var material = assetManager.LoadMaterial(materialId);
             _materials.Add(materialId, material);
         }
-        
+
         _material1 = assetManager.LoadMaterial("block");
 
         _vertexBufferObject = new BufferObject(assetManager.GL);
@@ -98,7 +99,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
         _fontVertexBufferObject.SetSizeAndUsage(sizeof(VertexPCT) * _initialVertexBufferSize, GL.BufferUsage.STREAM_DRAW);
         _fontVertexArrayObject = new VertexArrayObject<VertexPCT>(assetManager.GL, _fontVertexBufferObject);
     }
-    
+
     public void AddTriangle(Vector2 p1, Vector3 c1, Vector2 p2, Vector3 c2, Vector2 p3, Vector3 c3)
     {
         _vertexBuffer.Add(new VertexPC() { Position = p1, Color = c1 });
@@ -129,10 +130,10 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
         Vector2 halfSize = size * 0.5f;
 
         Vector2 tl = center + new Vector2(-halfSize.X, -halfSize.Y).Rotate(angle);
-        Vector2 tr = center + new Vector2( halfSize.X, -halfSize.Y).Rotate(angle);
-        Vector2 br = center + new Vector2( halfSize.X,  halfSize.Y).Rotate(angle);
-        Vector2 bl = center + new Vector2(-halfSize.X,  halfSize.Y).Rotate(angle);
-        
+        Vector2 tr = center + new Vector2(halfSize.X, -halfSize.Y).Rotate(angle);
+        Vector2 br = center + new Vector2(halfSize.X, halfSize.Y).Rotate(angle);
+        Vector2 bl = center + new Vector2(-halfSize.X, halfSize.Y).Rotate(angle);
+
         _vertexBuffer.Add(new VertexPC { Position = bl, Color = color });
         _vertexBuffer.Add(new VertexPC { Position = br, Color = color });
         _vertexBuffer.Add(new VertexPC { Position = tr, Color = color });
@@ -141,7 +142,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
         _vertexBuffer.Add(new VertexPC { Position = tr, Color = color });
         _vertexBuffer.Add(new VertexPC { Position = tl, Color = color });
     }
-    
+
     public void AddRectangleWithTexture(Vector2 center, Vector2 size, Vector3 color, Vector2 uvMin, Vector2 uvMax)
     {
         Vector2 halfSize = size * 0.5f;
@@ -158,7 +159,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
         _textureVertexBuffer.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
         _textureVertexBuffer.Add(new VertexPCT { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
     }
-    
+
     public void AddText(Vector2 position, float scale, string text)
     {
         var font = _font1;
@@ -221,13 +222,13 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
 
             _material1.SetUniform("uMVP", mvp);
             _material1.Bind();
-            
+
             _vertexArrayObject.Bind();
             _vertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _vertexBuffer.Count);
             _vertexArrayObject.Unbind();
 
             _material1.Unbind();
-            
+
             //_shader.Unuse();
 
             _vertexBuffer.Clear();

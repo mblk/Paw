@@ -1,11 +1,13 @@
-﻿using System.Buffers.Binary;
+﻿using Paw.Core.Engine;
+using Paw.Core.Graphics;
+using System.Buffers.Binary;
 using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Assets;
 
 public class FontLoader : AssetLoader<Font>
 {
@@ -54,7 +56,7 @@ public class FontMetaData
 
     public required IReadOnlyDictionary<uint, CharacterData> Characters { get; init; }
 
-    
+
 }
 
 public static class FontMetaDataLoader
@@ -63,7 +65,7 @@ public static class FontMetaDataLoader
     // spec: https://www.angelcode.com/products/bmfont/doc/file_format.html
     //
 
-    private static readonly byte[] _signature = [ 0x42, 0x4D, 0x46, 0x03 ];
+    private static readonly byte[] _signature = [0x42, 0x4D, 0x46, 0x03];
 
     private const int _minimumSize = 10;
 
@@ -189,7 +191,7 @@ public static class FontMetaDataLoader
                         while (remData.Length > 0)
                         {
                             int endIndex = remData.IndexOf((byte)0);
-                            
+
                             if (endIndex != -1)
                             {
                                 var pageName = Encoding.ASCII.GetString(remData[0..endIndex]);
@@ -219,7 +221,7 @@ public static class FontMetaDataLoader
                             int numChars = blockSize / sizeof(CharInfo);
                             CharInfo* charInfos = (CharInfo*)pStart;
 
-                            for (int i=0; i<numChars; i++)
+                            for (int i = 0; i < numChars; i++)
                             {
                                 CharInfo ci = charInfos[i];
 
@@ -248,7 +250,7 @@ public static class FontMetaDataLoader
                             int numPairs = blockSize / sizeof(KerningPair);
                             KerningPair* pairs = (KerningPair*)pStart;
 
-                            for (int i=0; i<numPairs; i++)
+                            for (int i = 0; i < numPairs; i++)
                             {
                                 KerningPair kp = pairs[i];
 

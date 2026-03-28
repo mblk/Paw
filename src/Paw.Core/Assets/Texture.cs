@@ -1,7 +1,9 @@
-﻿using System.Buffers.Binary;
+﻿using Paw.Core.Engine;
+using Paw.Core.Graphics;
+using System.Buffers.Binary;
 using System.IO.Compression;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Assets;
 
 public class TextureLoader : AssetLoader<Texture>
 {
@@ -92,7 +94,7 @@ public class PngImageLoader : ImageLoader
     // spec: https://www.w3.org/TR/png-3/
     //
 
-    private static readonly byte[] _signature = [ 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A ];
+    private static readonly byte[] _signature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
     // Length + Type + CRC
     private static readonly int _minimumChunkSize = 12;

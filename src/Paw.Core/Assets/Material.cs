@@ -1,7 +1,9 @@
+using Paw.Core.Engine;
+using Paw.Core.Graphics;
 using System.Numerics;
 using System.Text.Json.Serialization;
 
-namespace Paw.Core.Engine.Assets;
+namespace Paw.Core.Assets;
 
 public class MaterialDef
 {
@@ -58,14 +60,14 @@ public class Material : Asset
         {
             _textures[i].Bind(i);
         }
-        
+
         _shader.Use();
     }
 
     public void Unbind()
     {
         _shader.Unuse();
-        
+
         for (int i = 0; i < _textures.Count; i++)
         {
             _textures[i].Unbind(i);

@@ -3,9 +3,9 @@ using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Graphics;
 
-public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] T> 
+public unsafe class VertexArrayObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] T>
     : IDisposable
     where T : unmanaged
 {

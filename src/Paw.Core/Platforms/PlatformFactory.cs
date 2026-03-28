@@ -1,4 +1,4 @@
-﻿using Paw.Core.Engine;
+﻿using Paw.Core.Graphics;
 
 namespace Paw.Core.Platforms;
 
@@ -10,7 +10,7 @@ public static class PlatformFactory
         {
             return new Windows.WindowsPlatform(options);
         }
-        
+
         if (OperatingSystem.IsLinux())
         {
             var xdgSessionType = Environment.GetEnvironmentVariable("XDG_SESSION_TYPE_");
@@ -23,7 +23,7 @@ public static class PlatformFactory
                 return new LinuxX11.LinuxX11Platform(options);
             }
         }
-        
+
         throw new PlatformNotSupportedException("Unsupported OS platform.");
     }
 }

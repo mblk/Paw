@@ -4,7 +4,7 @@ namespace Paw.BindingGen;
 
 internal record GitInfo(string CommitHash, string CommitDate, string CommitSubject)
 {
-    public static GitInfo FromDirectory(string directory)
+    public static GitInfo FromDirectory(DirectoryInfo directory)
     {
         string output = RunGit(directory, "log -1 --format=%H|%ai|%s");
 
@@ -19,7 +19,7 @@ internal record GitInfo(string CommitHash, string CommitDate, string CommitSubje
             CommitSubject: parts[2].Trim());
     }
 
-    private static string RunGit(string workingDirectory, string arguments)
+    private static string RunGit(DirectoryInfo workingDirectory, string arguments)
     {
         using var process = new Process();
 
@@ -27,7 +27,7 @@ internal record GitInfo(string CommitHash, string CommitDate, string CommitSubje
         {
             FileName = "git",
             Arguments = arguments,
-            WorkingDirectory = workingDirectory,
+            WorkingDirectory = workingDirectory.FullName,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,

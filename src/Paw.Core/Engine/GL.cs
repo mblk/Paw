@@ -158,24 +158,6 @@ public sealed unsafe partial class GL
         CheckError();
     }
 
-    //public void ObjectLabel(ObjectIdentifier identifier, uint name, string label)
-    //{
-    //    byte[] bytes = Encoding.UTF8.GetBytes(label);
-    //    fixed (byte* p = bytes)
-    //    {
-    //        _objectLabel(identifier, name, bytes.Length, p);
-    //    }
-    //    CheckError();
-    //}
-
-    //public void LabelTexture(uint id, string name) // TODO direct pointer or UTF8 encoded?
-    //{
-    //    fixed (char* p = name)
-    //    {
-    //        _objectLabel(GL.ObjectIdentifier.TEXTURE, id, name.Length, (byte*)p);
-    //    }
-    //}
-
     private int GetUniformLocation(ProgramId program, scoped ReadOnlySpan<byte> name) // scoped == allow caller to pass stack allocated buffer
     {
 #if DEBUG

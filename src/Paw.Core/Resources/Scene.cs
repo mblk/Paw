@@ -1,6 +1,6 @@
 ﻿using Paw.Core.Platforms;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Resources;
 
 public abstract class Scene
 {
@@ -27,7 +27,7 @@ public class UpdateContext
 {
     public required float DeltaTime { get; init; }
     public required (int, int) WindowSize { get; init; }
-    public required IInput Input{ get; init; }
+    public required IInput Input { get; init; }
     public required ISceneController SceneController { get; init; }
 }
 

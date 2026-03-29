@@ -1,5 +1,5 @@
-﻿using Paw.Core.Engine;
-using Paw.Core.Graphics;
+﻿using Paw.Core.Graphics;
+using Paw.Core.Resources;
 using System.Buffers.Binary;
 using System.Collections.Frozen;
 using System.Diagnostics;

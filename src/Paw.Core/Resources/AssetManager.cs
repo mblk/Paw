@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Resources;
 
 [JsonSerializable(typeof(MaterialDef))]
 public partial class AssetDefJsonContext : JsonSerializerContext

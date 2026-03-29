@@ -1,7 +1,7 @@
 ﻿using Paw.Core.Graphics;
 using System.Collections.Concurrent;
 
-namespace Paw.Core.Engine;
+namespace Paw.Core.Resources;
 
 public class AssetManagerWithHotReload : AssetManager
 {

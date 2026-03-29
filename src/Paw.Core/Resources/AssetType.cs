@@ -1,4 +1,4 @@
-﻿namespace Paw.Core.Engine;
+﻿namespace Paw.Core.Resources;
 
 public enum AssetType
 {

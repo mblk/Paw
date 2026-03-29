@@ -1,6 +1,6 @@
 ﻿using Paw.Core;
-using Paw.Core.Engine;
 using Paw.Core.Platforms;
+using Paw.Core.Resources;
 using Paw.Demo.Scenes;
 
 namespace Paw.Demo;

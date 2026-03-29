@@ -9,11 +9,11 @@ public class MaterialDef
 {
     [JsonIgnore]
     public string Id { get; set; } = null!;
+
     public required string Name { get; init; }
     public required string Shader { get; init; }
     public required IReadOnlyList<string> Textures { get; init; }
-
-    public required int Passes { get; init; } = 1;
+    public required int Passes { get; init; }
 }
 
 public class MaterialLoader : AssetLoader<Material>
@@ -67,20 +67,19 @@ public class Material : Asset
 
         }
 
-        if (_textures.Count > 0)
+        if (_textures.Count == 1)
         {
-            _shader.SetUniform("uTex", 0); // xxx
+            _shader.SetUniform("uTex", 0);
+        }
+        else if (_textures.Count > 1)
+        {
+            for (int i = 0; i < _textures.Count; i++)
+            {
+                _shader.SetUniform($"uTex{i + 1}", i); // TODO maybe use glsl array instead?
+            }
         }
 
         _shader.Use();
-    }
-
-    public void SetPass(int pass)
-    {
-        if (Passes > 1)
-        {
-            _shader.SetUniform("uPass", pass);
-        }
     }
 
     public void Unbind()
@@ -90,6 +89,14 @@ public class Material : Asset
         for (int i = 0; i < _textures.Count; i++)
         {
             _textures[i].Unbind(i);
+        }
+    }
+
+    public void SetPass(int pass)
+    {
+        if (Passes > 1)
+        {
+            _shader.SetUniform("uPass", pass);
         }
     }
 

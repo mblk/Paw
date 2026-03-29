@@ -1,5 +1,6 @@
 ﻿using Paw.Core.Engine;
 using Paw.Core.Graphics;
+using System.Diagnostics;
 using System.Numerics;
 
 namespace Paw.Core.Assets;
@@ -71,7 +72,7 @@ public sealed class Shader : Asset, IDisposable
     {
         _gl = gl;
         _name = name;
-        _program = CompileProgram(vsSource, fsSource);
+        _program = CompileProgram(vsSource, fsSource, true);
     }
 
     public void Dispose()
@@ -154,7 +155,7 @@ public sealed class Shader : Asset, IDisposable
 
 
 
-    private GL.ProgramId CompileProgram(string vsSource, string fsSource)
+    private GL.ProgramId CompileProgram(string vsSource, string fsSource, bool breakOnError = false)
     {
         Console.WriteLine($"Compiling shader '{_name}' ...");
 
@@ -184,6 +185,11 @@ public sealed class Shader : Asset, IDisposable
         catch (Exception e)
         {
             Console.WriteLine($"Error in Shader '{_name}': {e.Message}");
+
+            if (Debugger.IsAttached && breakOnError)
+            {
+                Debugger.Break();
+            }
 
             if (p != default)
             {

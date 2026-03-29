@@ -1,4 +1,6 @@
-﻿namespace Paw.Core.Graphics;
+﻿using System.Runtime.InteropServices;
+
+namespace Paw.Core.Graphics;
 
 // Notes for later:
 //
@@ -40,6 +42,14 @@ public unsafe class BufferObject : IDisposable
         {
             _gl.NamedBufferData(Id, data.Length * sizeof(T), pData, usage);
         }
+    }
+
+    public void SetData<T>(List<T> data, GL.BufferUsage usage)
+        where T : unmanaged
+    {
+        var span = CollectionsMarshal.AsSpan(data);
+
+        SetData(span, usage);
     }
 
     public void SetSizeAndUsage(int size, GL.BufferUsage usage)

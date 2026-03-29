@@ -18,7 +18,7 @@ internal class MenuScene : Scene
 
     public override void Load()
     {
-        _renderer = new DynamicGeometryRenderer2D(AssetManager);
+        _renderer = new DynamicGeometryRenderer2D(AssetManager, ["default", "font1"], ["font1"]);
     }
 
     public override void Unload()
@@ -83,18 +83,23 @@ internal class MenuScene : Scene
         var mView = Matrix4x4.Identity;
         var mvp = mModel * mView * mOrthoProj;
 
-        _renderer.AddRectangle(
+
+        var defaultWriter = _renderer.GetWriter("default");
+        var fontWriter = _renderer.GetWriter("font1");
+        var font = _renderer.GetFont("font1");
+
+
+        defaultWriter.AddRectangle(
             new Vector2(WorldWidth * 0.5f, WorldHeight * 0.5f),
             new Vector2(WorldWidth, WorldHeight),
-            new Vector3(0.1f, 0.1f, 0.1f));
+            new Vector3(0.2f, 0.1f, 0.1f));
 
         const float textScale = 1f / 64f;
 
-        _renderer.AddText(new Vector2(1, 1), textScale, "Hello!");
-
-        _renderer.AddText(new Vector2(1, 3), textScale, $"1: Render test 1 {(_selected == 0 ? "<" : "")}");
-        _renderer.AddText(new Vector2(1, 4), textScale, $"2: Render test 2 {(_selected == 1 ? "<" : "")}");
-        _renderer.AddText(new Vector2(1, 5), textScale, $"3: Exit {(_selected == 2 ? "<" : "")}");
+        fontWriter.AddText(font, new Vector2(1, 1), textScale, "Hello!");
+        fontWriter.AddText(font, new Vector2(1, 3), textScale, $"1: Render test 1 {(_selected == 0 ? "<" : "")}");
+        fontWriter.AddText(font, new Vector2(1, 4), textScale, $"2: Render test 2 {(_selected == 1 ? "<" : "")}");
+        fontWriter.AddText(font, new Vector2(1, 5), textScale, $"3: Exit {(_selected == 2 ? "<" : "")}");
 
         _renderer.Render(mvp);
     }

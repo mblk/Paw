@@ -1,0 +1,6 @@
+{
+  "Name": "textured2",
+  "Shader": "textured",
+  "Textures": [ "2" ],
+  "Passes": 1
+}

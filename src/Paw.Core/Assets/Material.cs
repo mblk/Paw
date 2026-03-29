@@ -12,6 +12,8 @@ public class MaterialDef
     public required string Name { get; init; }
     public required string Shader { get; init; }
     public required IReadOnlyList<string> Textures { get; init; }
+
+    public required int Passes { get; init; } = 1;
 }
 
 public class MaterialLoader : AssetLoader<Material>
@@ -31,7 +33,7 @@ public class MaterialLoader : AssetLoader<Material>
         Shader shader = AssetManager.LoadShader(def.Shader);
         IReadOnlyList<Texture> textures = def.Textures.Select(AssetManager.LoadTexture).ToArray();
 
-        var material = new Material(shader, textures);
+        var material = new Material(shader, textures, def.Passes);
         var sourceFiles = new HashSet<string> { path };
 
         return new AssetLoadResult<Material>(material, sourceFiles);
@@ -45,13 +47,16 @@ public class MaterialLoader : AssetLoader<Material>
 
 public class Material : Asset
 {
-    public readonly Shader _shader;
-    public readonly IReadOnlyList<Texture> _textures;
+    private readonly Shader _shader;
+    private readonly IReadOnlyList<Texture> _textures;
 
-    public Material(Shader shader, IReadOnlyList<Texture> textures)
+    public int Passes { get; }
+
+    public Material(Shader shader, IReadOnlyList<Texture> textures, int passes)
     {
         _shader = shader;
         _textures = textures.ToArray();
+        Passes = passes;
     }
 
     public void Bind()
@@ -59,9 +64,23 @@ public class Material : Asset
         for (int i = 0; i < _textures.Count; i++)
         {
             _textures[i].Bind(i);
+
+        }
+
+        if (_textures.Count > 0)
+        {
+            _shader.SetUniform("uTex", 0); // xxx
         }
 
         _shader.Use();
+    }
+
+    public void SetPass(int pass)
+    {
+        if (Passes > 1)
+        {
+            _shader.SetUniform("uPass", pass);
+        }
     }
 
     public void Unbind()

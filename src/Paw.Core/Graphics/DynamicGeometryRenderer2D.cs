@@ -1,6 +1,7 @@
 ﻿using Paw.Core.Assets;
 using Paw.Core.Engine;
 using Paw.Core.Utils;
+using System.Collections.Frozen;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
@@ -8,12 +9,8 @@ namespace Paw.Core.Graphics;
 
 public unsafe class DynamicGeometryRenderer2D : IDisposable
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VertexPC
-    {
-        public Vector2 Position;
-        public Vector3 Color;
-    }
+    // TODO:
+    // - what about index buffers?
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VertexPCT
@@ -23,281 +20,229 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
         public Vector2 UV;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VertexFont
-    {
-        public Vector2 Position;
-        public Vector3 Color;
-        public Vector2 UV;
-    }
-
     private const int _initialVertexBufferSize = 1024;
 
+    private readonly FrozenDictionary<string, PerMaterialData> _perMaterialDatas;
+    private readonly FrozenDictionary<string, Font> _fonts;
 
-    private readonly Shader _shader;
-    private readonly Shader _textureShader;
-    private readonly Shader _fontShader;
 
-    private readonly Texture _texture1;
-    private readonly Texture _texture2;
 
-    private readonly Font _font1;
 
-    private readonly Material _material1;
-
-    private readonly Dictionary<string, Material> _materials = [];
-
-    // TODO: vertex buffer per material
-    // - what format?
-    // - what about index buffers?
-
-    private readonly BufferObject _vertexBufferObject;
-    private readonly VertexArrayObject<VertexPC> _vertexArrayObject;
-    private readonly List<VertexPC> _vertexBuffer = new(_initialVertexBufferSize);
-
-    private readonly BufferObject _textureVertexBufferObject;
-    private readonly VertexArrayObject<VertexPCT> _textureVertexArrayObject;
-    private readonly List<VertexPCT> _textureVertexBuffer = new(_initialVertexBufferSize);
-
-    private readonly BufferObject _fontVertexBufferObject;
-    private readonly VertexArrayObject<VertexPCT> _fontVertexArrayObject;
-    private readonly List<VertexPCT> _fontVertexBuffer = new(_initialVertexBufferSize);
-
-    public DynamicGeometryRenderer2D(AssetManager assetManager)
-        : this(assetManager, [])
+    public class PerMaterialData : IDisposable
     {
+        public readonly Material Material;
+        public readonly BufferObject VertexBuffer;
+        public readonly VertexArrayObject<VertexPCT> VertexArray;
+        public readonly Writer Writer;
+        public readonly List<VertexPCT> Vertices = new(_initialVertexBufferSize);
+
+        public PerMaterialData(GL gl, Material material)
+        {
+            Material = material;
+            VertexBuffer = new BufferObject(gl);
+            VertexBuffer.SetSizeAndUsage(sizeof(VertexPCT) * _initialVertexBufferSize, GL.BufferUsage.STREAM_DRAW);
+            VertexArray = new VertexArrayObject<VertexPCT>(gl, VertexBuffer);
+            Writer = new Writer(Vertices);
+        }
+
+        public void Dispose()
+        {
+            VertexArray.Dispose();
+            VertexBuffer.Dispose();
+        }
     }
 
-    public DynamicGeometryRenderer2D(AssetManager assetManager, IReadOnlyList<string> materials)
+    public class Writer
     {
-        _shader = assetManager.LoadShader("triangle");
-        _textureShader = assetManager.LoadShader("texture");
-        _fontShader = assetManager.LoadShader("font");
+        private readonly List<VertexPCT> _vertices;
 
-        _texture1 = assetManager.LoadTexture("1");
-        _texture2 = assetManager.LoadTexture("2");
+        public Writer(List<VertexPCT> vertices)
+        {
+            _vertices = vertices;
+        }
 
-        _font1 = assetManager.LoadFont("font1");
+        public void AddTriangle(Vector2 p1, Vector3 c1, Vector2 p2, Vector3 c2, Vector2 p3, Vector3 c3)
+        {
+            _vertices.Add(new VertexPCT() { Position = p1, Color = c1, UV = new(0.0f, 0.0f) });
+            _vertices.Add(new VertexPCT() { Position = p2, Color = c2, UV = new(1.0f, 0.0f) });
+            _vertices.Add(new VertexPCT() { Position = p3, Color = c3, UV = new(0.5f, 1.0f) });
+        }
 
-        foreach (var materialId in materials)
+        public void AddRectangle(Vector2 center, Vector2 size, Vector3 color)
+        {
+            Vector2 halfSize = size * 0.5f;
+
+            Vector2 tl = new(center.X - halfSize.X, center.Y - halfSize.Y);
+            Vector2 tr = new(center.X + halfSize.X, center.Y - halfSize.Y);
+            Vector2 br = new(center.X + halfSize.X, center.Y + halfSize.Y);
+            Vector2 bl = new(center.X - halfSize.X, center.Y + halfSize.Y);
+
+            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(1.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+
+            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
+        }
+
+        public void AddRotatedRectangle(Vector2 center, Vector2 size, float angle, Vector3 color)
+        {
+            Vector2 halfSize = size * 0.5f;
+
+            Vector2 tl = center + new Vector2(-halfSize.X, -halfSize.Y).Rotate(angle);
+            Vector2 tr = center + new Vector2(halfSize.X, -halfSize.Y).Rotate(angle);
+            Vector2 br = center + new Vector2(halfSize.X, halfSize.Y).Rotate(angle);
+            Vector2 bl = center + new Vector2(-halfSize.X, halfSize.Y).Rotate(angle);
+
+            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(1.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+
+            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
+        }
+
+        public void AddRectangleWithUV(Vector2 center, Vector2 size, Vector3 color, Vector2 uvMin, Vector2 uvMax)
+        {
+            Vector2 halfSize = size * 0.5f;
+
+            Vector2 tl = new(center.X - halfSize.X, center.Y - halfSize.Y);
+            Vector2 tr = new(center.X + halfSize.X, center.Y - halfSize.Y);
+            Vector2 br = new(center.X + halfSize.X, center.Y + halfSize.Y);
+            Vector2 bl = new(center.X - halfSize.X, center.Y + halfSize.Y);
+
+            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
+            _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
+            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
+            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
+            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
+            _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
+        }
+
+        public void AddText(Font font, Vector2 position, float scale, string text)
+        {
+            Vector3 color = new Vector3(1, 1, 1);
+
+            Vector2 currentPosition = position;
+
+            foreach (char c in text)
+            {
+                if (!font.MetaData.Characters.TryGetValue(c, out var charData))
+                {
+                    Console.WriteLine($"char data {(uint)c} '{c}' not found");
+                    continue;
+                }
+
+                if (c == ' ')
+                {
+                    currentPosition.X += charData.XAdvance * scale;
+                    continue;
+                }
+
+                Vector2 uvMin = charData.UvMin;
+                Vector2 uvMax = charData.UvMax;
+                Vector2 size = charData.Size * scale;
+                Vector2 offset = charData.Offset * scale;
+
+                float xl = currentPosition.X + offset.X;
+                float xr = xl + size.X;
+
+                float yt = currentPosition.Y + offset.Y;
+                float yb = currentPosition.Y + font.MetaData.LineBase * scale;
+
+                Vector2 tl = new(xl, yt);
+                Vector2 tr = new(xr, yt);
+                Vector2 br = new(xr, yb);
+                Vector2 bl = new(xl, yb);
+
+                _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
+                _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
+                _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
+                _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
+                _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
+                _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
+
+                currentPosition.X += charData.XAdvance * scale;
+            }
+        }
+    }
+
+    public DynamicGeometryRenderer2D(AssetManager assetManager, IReadOnlyList<string> materialsToLoad, IReadOnlyList<string> fontsToLoad)
+    {
+        var perMaterialDatas = new Dictionary<string, PerMaterialData>();
+        foreach (var materialId in materialsToLoad)
         {
             var material = assetManager.LoadMaterial(materialId);
-            _materials.Add(materialId, material);
+            var perMaterialData = new PerMaterialData(assetManager.GL, material);
+            perMaterialDatas.Add(materialId, perMaterialData);
         }
+        _perMaterialDatas = perMaterialDatas.ToFrozenDictionary();
 
-        _material1 = assetManager.LoadMaterial("block");
-
-        _vertexBufferObject = new BufferObject(assetManager.GL);
-        _vertexBufferObject.SetSizeAndUsage(sizeof(VertexPC) * _initialVertexBufferSize, GL.BufferUsage.STREAM_DRAW);
-        _vertexArrayObject = new VertexArrayObject<VertexPC>(assetManager.GL, _vertexBufferObject);
-
-        _textureVertexBufferObject = new BufferObject(assetManager.GL);
-        _textureVertexBufferObject.SetSizeAndUsage(sizeof(VertexPCT) * _initialVertexBufferSize, GL.BufferUsage.STREAM_DRAW);
-        _textureVertexArrayObject = new VertexArrayObject<VertexPCT>(assetManager.GL, _textureVertexBufferObject);
-
-        _fontVertexBufferObject = new BufferObject(assetManager.GL);
-        _fontVertexBufferObject.SetSizeAndUsage(sizeof(VertexPCT) * _initialVertexBufferSize, GL.BufferUsage.STREAM_DRAW);
-        _fontVertexArrayObject = new VertexArrayObject<VertexPCT>(assetManager.GL, _fontVertexBufferObject);
-    }
-
-    public void AddTriangle(Vector2 p1, Vector3 c1, Vector2 p2, Vector3 c2, Vector2 p3, Vector3 c3)
-    {
-        _vertexBuffer.Add(new VertexPC() { Position = p1, Color = c1 });
-        _vertexBuffer.Add(new VertexPC() { Position = p2, Color = c2 });
-        _vertexBuffer.Add(new VertexPC() { Position = p3, Color = c3 });
-    }
-
-    public void AddRectangle(Vector2 center, Vector2 size, Vector3 color)
-    {
-        Vector2 halfSize = size * 0.5f;
-
-        Vector2 tl = new(center.X - halfSize.X, center.Y - halfSize.Y);
-        Vector2 tr = new(center.X + halfSize.X, center.Y - halfSize.Y);
-        Vector2 br = new(center.X + halfSize.X, center.Y + halfSize.Y);
-        Vector2 bl = new(center.X - halfSize.X, center.Y + halfSize.Y);
-
-        _vertexBuffer.Add(new VertexPC { Position = bl, Color = color });
-        _vertexBuffer.Add(new VertexPC { Position = br, Color = color });
-        _vertexBuffer.Add(new VertexPC { Position = tr, Color = color });
-
-        _vertexBuffer.Add(new VertexPC { Position = bl, Color = color });
-        _vertexBuffer.Add(new VertexPC { Position = tr, Color = color });
-        _vertexBuffer.Add(new VertexPC { Position = tl, Color = color });
-    }
-
-    public void AddRotatedRectangle(Vector2 center, Vector2 size, float angle, Vector3 color)
-    {
-        Vector2 halfSize = size * 0.5f;
-
-        Vector2 tl = center + new Vector2(-halfSize.X, -halfSize.Y).Rotate(angle);
-        Vector2 tr = center + new Vector2(halfSize.X, -halfSize.Y).Rotate(angle);
-        Vector2 br = center + new Vector2(halfSize.X, halfSize.Y).Rotate(angle);
-        Vector2 bl = center + new Vector2(-halfSize.X, halfSize.Y).Rotate(angle);
-
-        _vertexBuffer.Add(new VertexPC { Position = bl, Color = color });
-        _vertexBuffer.Add(new VertexPC { Position = br, Color = color });
-        _vertexBuffer.Add(new VertexPC { Position = tr, Color = color });
-
-        _vertexBuffer.Add(new VertexPC { Position = bl, Color = color });
-        _vertexBuffer.Add(new VertexPC { Position = tr, Color = color });
-        _vertexBuffer.Add(new VertexPC { Position = tl, Color = color });
-    }
-
-    public void AddRectangleWithTexture(Vector2 center, Vector2 size, Vector3 color, Vector2 uvMin, Vector2 uvMax)
-    {
-        Vector2 halfSize = size * 0.5f;
-
-        Vector2 tl = new(center.X - halfSize.X, center.Y - halfSize.Y);
-        Vector2 tr = new(center.X + halfSize.X, center.Y - halfSize.Y);
-        Vector2 br = new(center.X + halfSize.X, center.Y + halfSize.Y);
-        Vector2 bl = new(center.X - halfSize.X, center.Y + halfSize.Y);
-
-        _textureVertexBuffer.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-        _textureVertexBuffer.Add(new VertexPCT { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
-        _textureVertexBuffer.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-        _textureVertexBuffer.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-        _textureVertexBuffer.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-        _textureVertexBuffer.Add(new VertexPCT { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
-    }
-
-    public void AddText(Vector2 position, float scale, string text)
-    {
-        var font = _font1;
-
-        Vector3 color = new Vector3(1, 1, 1);
-
-        Vector2 currentPosition = position;
-
-        foreach (char c in text)
+        var fonts = new Dictionary<string, Font>();
+        foreach (var fontId in fontsToLoad)
         {
-            if (!font.MetaData.Characters.TryGetValue(c, out var charData))
-            {
-                Console.WriteLine($"char data {(uint)c} '{c}' not found");
-                continue;
-            }
-
-            if (c == ' ')
-            {
-                currentPosition.X += charData.XAdvance * scale;
-                continue;
-            }
-
-            Vector2 uvMin = charData.UvMin;
-            Vector2 uvMax = charData.UvMax;
-            Vector2 size = charData.Size * scale;
-            Vector2 offset = charData.Offset * scale;
-
-            float xl = currentPosition.X + offset.X;
-            float xr = xl + size.X;
-
-            float yt = currentPosition.Y + offset.Y;
-            float yb = currentPosition.Y + font.MetaData.LineBase * scale;
-
-            Vector2 tl = new(xl, yt);
-            Vector2 tr = new(xr, yt);
-            Vector2 br = new(xr, yb);
-            Vector2 bl = new(xl, yb);
-
-            _fontVertexBuffer.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-            _fontVertexBuffer.Add(new VertexPCT { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
-            _fontVertexBuffer.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-            _fontVertexBuffer.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-            _fontVertexBuffer.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-            _fontVertexBuffer.Add(new VertexPCT { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
-
-            currentPosition.X += charData.XAdvance * scale;
+            var font = assetManager.LoadFont(fontId);
+            fonts.Add(fontId, font);
         }
+        _fonts = fonts.ToFrozenDictionary();
+    }
+
+    public Writer GetWriter(string materialId)
+    {
+        if (!_perMaterialDatas.TryGetValue(materialId, out var perMaterialData))
+            throw new ArgumentException($"Material '{materialId}' not loaded");
+
+        return perMaterialData.Writer;
+    }
+
+    public Font GetFont(string fontId)
+    {
+        if (!_fonts.TryGetValue(fontId, out var font))
+            throw new ArgumentException($"Font '{fontId}' not loaded");
+
+        return font;
     }
 
     public void Render(Matrix4x4 mvp)
     {
-        if (_vertexBuffer.Count > 0)
+        foreach (var (_, perMaterialData) in _perMaterialDatas)
         {
-            ReadOnlySpan<VertexPC> span = CollectionsMarshal.AsSpan(_vertexBuffer);
+            int vertexCount = perMaterialData.Vertices.Count;
+            if (vertexCount == 0)
+                continue;
 
-            _vertexBufferObject.SetData(span, GL.BufferUsage.STREAM_DRAW);
+            var material = perMaterialData.Material;
+            var vertexBuffer = perMaterialData.VertexBuffer;
+            var vertexArray = perMaterialData.VertexArray;
+            var vertices = perMaterialData.Vertices;
 
-            //_shader.Use();
-            //_shader.SetUniform("uMVP", mvp);
+            vertexBuffer.SetData(vertices, GL.BufferUsage.STREAM_DRAW);
+            vertices.Clear();
 
-            _material1.SetUniform("uMVP", mvp);
-            _material1.Bind();
-
-            _vertexArrayObject.Bind();
-            _vertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _vertexBuffer.Count);
-            _vertexArrayObject.Unbind();
-
-            _material1.Unbind();
-
-            //_shader.Unuse();
-
-            _vertexBuffer.Clear();
-        }
-
-        if (_textureVertexBuffer.Count > 0)
-        {
-            ReadOnlySpan<VertexPCT> span = CollectionsMarshal.AsSpan(_textureVertexBuffer);
-
-            _textureVertexBufferObject.SetData(span, GL.BufferUsage.STREAM_DRAW);
-
-            _texture1.Bind(0);
+            vertexArray.Bind();
             {
-                _textureShader.SetUniform("uMVP", mvp);
-                _textureShader.SetUniform("uTex", 0);
-                _textureShader.Use();
+                material.SetUniform("uMVP", mvp);
+                material.Bind();
                 {
-                    _textureVertexArrayObject.Bind();
-                    _textureVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _textureVertexBuffer.Count);
-                    _textureVertexArrayObject.Unbind();
-                }
-                _textureShader.Unuse();
-            }
-            _texture1.Unbind(0);
-
-            _textureVertexBuffer.Clear();
-        }
-
-        if (_fontVertexBuffer.Count > 0)
-        {
-            ReadOnlySpan<VertexPCT> span = CollectionsMarshal.AsSpan(_fontVertexBuffer);
-
-            _fontVertexBufferObject.SetData(span, GL.BufferUsage.STREAM_DRAW);
-
-            _font1.Texture.Bind(0);
-            {
-                _fontShader.SetUniform("uMVP", mvp);
-                _fontShader.SetUniform("uTex", 0);
-                _fontShader.Use();
-                {
-                    _fontVertexArrayObject.Bind();
+                    for (int pass = 1; pass <= material.Passes; pass++)
                     {
-                        _fontShader.SetUniform("uPass1", 1.0f);
-                        _fontShader.SetUniform("uPass2", 0.0f);
-                        _fontVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _fontVertexBuffer.Count);
-
-                        _fontShader.SetUniform("uPass1", 0.0f);
-                        _fontShader.SetUniform("uPass2", 1.0f);
-                        _fontVertexArrayObject.Draw(GL.PrimitiveType.TRIANGLES, 0, _fontVertexBuffer.Count);
+                        material.SetPass(pass);
+                        vertexArray.Draw(GL.PrimitiveType.TRIANGLES, 0, vertexCount);
                     }
-                    _fontVertexArrayObject.Unbind();
                 }
-                _fontShader.Unuse();
+                material.Unbind();
             }
-            _font1.Texture.Unbind(0);
-
-            _fontVertexBuffer.Clear();
+            vertexArray.Unbind();
         }
     }
 
     public void Dispose()
     {
-        _vertexArrayObject.Dispose();
-        _vertexBufferObject.Dispose();
-
-        _textureVertexArrayObject.Dispose();
-        _textureVertexBufferObject.Dispose();
-
-        _fontVertexArrayObject.Dispose();
-        _fontVertexBufferObject.Dispose();
+        foreach (var (_, perMaterialData) in _perMaterialDatas)
+        {
+            perMaterialData.Dispose();
+        }
     }
 }

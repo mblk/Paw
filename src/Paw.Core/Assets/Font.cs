@@ -18,8 +18,6 @@ public class FontLoader : AssetLoader<Font>
 
     public override AssetLoadResult<Font> Load(string name)
     {
-        var texture = AssetManager.LoadTexture("font1");
-
         var metaDataPath = Reader.GetAssetPath(AssetType.Font, $"{name}.fnt");
         byte[] metaDataBytes = Reader.ReadFileAsBytes(metaDataPath);
 
@@ -27,7 +25,7 @@ public class FontLoader : AssetLoader<Font>
 
         var sourceFiles = new HashSet<string>() { metaDataPath };
 
-        var font = new Font(GL, texture, metaData);
+        var font = new Font(metaData);
 
         return new AssetLoadResult<Font>(font, sourceFiles);
     }
@@ -55,8 +53,6 @@ public class FontMetaData
     public required int TextureHeight { get; init; }
 
     public required IReadOnlyDictionary<uint, CharacterData> Characters { get; init; }
-
-
 }
 
 public static class FontMetaDataLoader
@@ -340,19 +336,11 @@ public static class FontMetaDataLoader
 
 public class Font : Asset, IDisposable
 {
-    private readonly GL _gl;
-    private readonly Texture _texture;
-    private readonly FontMetaData _metaData;
+    public FontMetaData MetaData { get; }
 
-    public Texture Texture => _texture;
-
-    public FontMetaData MetaData => _metaData;
-
-    public Font(GL gl, Texture texture, FontMetaData metaData)
+    public Font(FontMetaData metaData)
     {
-        _gl = gl;
-        _texture = texture;
-        _metaData = metaData;
+        MetaData = metaData;
     }
 
     public void Dispose()

@@ -1,0 +1,6 @@
+{
+  "Name": "font1",
+  "Shader": "font",
+  "Textures": [ "font1" ],
+  "Passes": 2
+}

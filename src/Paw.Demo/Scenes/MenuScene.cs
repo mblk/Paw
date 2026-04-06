@@ -89,17 +89,17 @@ internal class MenuScene : Scene
         var font = _renderer.GetFont("font1");
 
 
-        defaultWriter.AddRectangle(
-            new Vector2(WorldWidth * 0.5f, WorldHeight * 0.5f),
-            new Vector2(WorldWidth, WorldHeight),
-            new Vector3(0.2f, 0.1f, 0.1f));
+        //defaultWriter.AddRectangle(
+        //    new Vector2(WorldWidth * 0.5f, WorldHeight * 0.5f),
+        //    new Vector2(WorldWidth, WorldHeight),
+        //    new Vector3(0.2f, 0.1f, 0.1f));
 
-        const float textScale = 1f / 64f;
+        //const float textScale = 1f / 64f;
 
-        fontWriter.AddText(font, new Vector2(1, 1), textScale, "Hello!");
-        fontWriter.AddText(font, new Vector2(1, 3), textScale, $"1: Render test 1 {(_selected == 0 ? "<" : "")}");
-        fontWriter.AddText(font, new Vector2(1, 4), textScale, $"2: Render test 2 {(_selected == 1 ? "<" : "")}");
-        fontWriter.AddText(font, new Vector2(1, 5), textScale, $"3: Exit {(_selected == 2 ? "<" : "")}");
+        //fontWriter.AddText(font, new Vector2(1, 1), textScale, "Hello!");
+        //fontWriter.AddText(font, new Vector2(1, 3), textScale, $"1: Render test 1 {(_selected == 0 ? "<" : "")}");
+        //fontWriter.AddText(font, new Vector2(1, 4), textScale, $"2: Render test 2 {(_selected == 1 ? "<" : "")}");
+        //fontWriter.AddText(font, new Vector2(1, 5), textScale, $"3: Exit {(_selected == 2 ? "<" : "")}");
 
         _renderer.Render(mvp);
     }

@@ -16,7 +16,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
     public struct VertexPCT
     {
         public Vector2 Position;
-        public Vector3 Color;
+        public Vector4 Color;
         public Vector2 UV;
     }
 
@@ -25,7 +25,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
     private readonly FrozenDictionary<string, PerMaterialData> _perMaterialDatas;
     private readonly FrozenDictionary<string, Font> _fonts;
 
-
+    private readonly GL _gl;
 
 
     public class PerMaterialData : IDisposable
@@ -61,14 +61,14 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             _vertices = vertices;
         }
 
-        public void AddTriangle(Vector2 p1, Vector3 c1, Vector2 p2, Vector3 c2, Vector2 p3, Vector3 c3)
+        public void AddTriangle(Vector2 p1, Vector4 c1, Vector2 p2, Vector4 c2, Vector2 p3, Vector4 c3)
         {
             _vertices.Add(new VertexPCT() { Position = p1, Color = c1, UV = new(0.0f, 0.0f) });
             _vertices.Add(new VertexPCT() { Position = p2, Color = c2, UV = new(1.0f, 0.0f) });
             _vertices.Add(new VertexPCT() { Position = p3, Color = c3, UV = new(0.5f, 1.0f) });
         }
 
-        public void AddRectangle(Vector2 center, Vector2 size, Vector3 color)
+        public void AddRectangle(Vector2 center, Vector2 size, Vector4 color)
         {
             Vector2 halfSize = size * 0.5f;
 
@@ -86,7 +86,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
         }
 
-        public void AddRectangleWithPositionSize(Vector2 topLeft, Vector2 size, Vector3 color) // need to find better naming schema
+        public void AddRectangleWithPositionSize(Vector2 topLeft, Vector2 size, Vector4 color) // need to find better naming schema
         {
             Vector2 tl = topLeft;
             Vector2 tr = new(topLeft.X + size.X, topLeft.Y);
@@ -102,7 +102,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
         }
 
-        public void AddRotatedRectangle(Vector2 center, Vector2 size, float angle, Vector3 color)
+        public void AddRotatedRectangle(Vector2 center, Vector2 size, float angle, Vector4 color)
         {
             Vector2 halfSize = size * 0.5f;
 
@@ -120,7 +120,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
         }
 
-        public void AddRectangleWithUV(Vector2 center, Vector2 size, Vector3 color, Vector2 uvMin, Vector2 uvMax)
+        public void AddRectangleWithUV(Vector2 center, Vector2 size, Vector4 color, Vector2 uvMin, Vector2 uvMax)
         {
             Vector2 halfSize = size * 0.5f;
 
@@ -137,10 +137,8 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
         }
 
-        public void AddText(Font font, Vector2 position, float scale, string text)
+        public void AddText(Font font, Vector2 position, Vector4 color, float scale, string text)
         {
-            Vector3 color = new Vector3(1, 1, 1);
-
             Vector2 currentPosition = position;
 
             foreach (char c in text)
@@ -203,6 +201,8 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             fonts.Add(fontId, font);
         }
         _fonts = fonts.ToFrozenDictionary();
+
+        _gl = assetManager.GL;
     }
 
     public Writer GetWriter(string materialId)
@@ -246,6 +246,10 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
 
                 material.SetUniform("uMVP", mvp);
                 material.Bind();
+
+                _gl.Enable(GL.EnableCap.BLEND);
+                _gl.BlendFunc(GL.BlendingFactor.SRC_ALPHA, GL.BlendingFactor.ONE_MINUS_SRC_ALPHA);
+
                 {
                     for (int pass = 1; pass <= material.Passes; pass++)
                     {
@@ -253,6 +257,9 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
                         vertexArray.Draw(GL.PrimitiveType.TRIANGLES, 0, vertexCount);
                     }
                 }
+
+                _gl.Disable(GL.EnableCap.BLEND);
+
                 material.Unbind();
             }
             vertexArray.Unbind();

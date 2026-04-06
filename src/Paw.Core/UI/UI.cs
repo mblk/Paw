@@ -12,6 +12,27 @@ public class UI : IDisposable
     private const float _buttonBorderWidth = 1f;
     private const float _scrollableBorderWidth = 2f;
 
+    private const float _clipMargin = 5f;
+
+    private readonly Vector4 _windowBorderColor = new(0.2f, 0.2f, 0.2f, 1.0f);
+    private readonly Vector4 _windowTitleBarColor = new(0.2f, 0.2f, 0.2f, 1.0f);
+    private readonly Vector4 _windowTitleTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
+    private readonly Vector4 _windowBackgroundColor = new(0.4f, 0.4f, 0.4f, 1.0f);
+
+    private readonly Vector4 _overlayBackgroundColor = new(0.0f);
+    private readonly Vector4 _overlayTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
+
+    private readonly Vector4 _labelBackgroundColor = new(0.5f, 0.5f, 0.5f, 1.0f);
+    private readonly Vector4 _labelTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
+
+    private readonly Vector4 _buttonBorderColor = new(0.2f, 0.2f, 0.2f, 1.0f);
+    private readonly Vector4 _buttonBackgroundColor = new(0.5f, 0.2f, 0.2f, 1.0f);
+    private readonly Vector4 _buttonTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
+
+    private readonly Vector4 _scrollableBorderColor = new(0.2f, 0.2f, 0.2f, 1.0f);
+    private readonly Vector4 _scrollableBackgroundColor = new(0.5f, 0.5f, 0.5f, 1.0f);
+
+
     private class ClipRect
     {
         public Vector2 Position;
@@ -26,9 +47,12 @@ public class UI : IDisposable
     private readonly record struct DrawCommand(
         Vector2 Position,
         Vector2 Size,
-        Vector3 Color,
+        Vector4 ShapeColor,
+        Vector4? TextColor,
         string? Text
     );
+
+    // TextCommand ?
 
     private ClipRect _root = null!;
     private ClipRect _current = null!;
@@ -85,7 +109,7 @@ public class UI : IDisposable
 
         void ProcessClipRect(ClipRect clipRect, Vector2 outerPosition, Vector2 outerSize)
         {
-            const float clipMargin = 5f;
+            float clipMargin = clipRect == _root ? 0f : _clipMargin;
 
             Vector2 clipRectPosition = outerPosition + clipRect.Position;
 
@@ -102,13 +126,14 @@ public class UI : IDisposable
             {
                 Vector2 p = clipRectPosition + drawCommand.Position;
                 Vector2 s = drawCommand.Size;
-                Vector3 c = drawCommand.Color;
+                Vector4 c1 = drawCommand.ShapeColor;
+                Vector4? c2 = drawCommand.TextColor;
                 string? t = drawCommand.Text;
 
-                shapesWriter.AddRectangleWithPositionSize(p, s, c);
+                shapesWriter.AddRectangleWithPositionSize(p, s, c1);
 
-                if (!string.IsNullOrWhiteSpace(t))
-                    textWriter.AddText(font, p, 0.5f, t);
+                if (!string.IsNullOrWhiteSpace(t) && c2.HasValue)
+                    textWriter.AddText(font, p, c2.Value, 0.5f, t);
             }
 
             void SetupUniforms(Material material)
@@ -149,20 +174,22 @@ public class UI : IDisposable
 
         // draw window on parent clip rect - not in new clip rect
         // border
-        parentClipRect.DrawCommands.Add(new DrawCommand(parentClipRect.Cursor, size, new Vector3(0.2f), null));
+        parentClipRect.DrawCommands.Add(new DrawCommand(parentClipRect.Cursor, size, _windowBorderColor, null, null));
 
         // title bar
         parentClipRect.DrawCommands.Add(new DrawCommand(
             parentClipRect.Cursor + new Vector2(5, 5),
             new Vector2(size.X - 10f, _titleBarHeight),
-            new Vector3(0.2f),
+            _windowTitleBarColor,
+            _windowTitleTextColor,
             title));
 
         // window background
         parentClipRect.DrawCommands.Add(new DrawCommand(
             parentClipRect.Cursor + new Vector2(5, 5f + _titleBarHeight + 5f),
             new Vector2(size.X - 10f, size.Y - _titleBarHeight - 5f - 5f - 5f),
-            new Vector3(0.4f),
+            _windowBackgroundColor,
+            null,
             null));
 
         parentClipRect.Cursor.X += size.X + 10f;
@@ -187,14 +214,17 @@ public class UI : IDisposable
 
     public void Overlay(string text)
     {
-        //
+        var size = new Vector2(0, 0);
+
+        _current.DrawCommands.Add(new DrawCommand(_current.Cursor, size, _overlayBackgroundColor, _overlayTextColor, text));
+        _current.Cursor += new Vector2(0, 25f);
     }
 
     public void Label(string text)
     {
         var size = new Vector2(200, 30);
 
-        _current.DrawCommands.Add(new DrawCommand(_current.Cursor, size, new Vector3(0.5f), text));
+        _current.DrawCommands.Add(new DrawCommand(_current.Cursor, size, _labelBackgroundColor, _labelTextColor, text));
         _current.Cursor += new Vector2(0, size.Y + 10f);
     }
 
@@ -203,13 +233,14 @@ public class UI : IDisposable
         var size = new Vector2(200, 50);
 
         // border
-        _current.DrawCommands.Add(new DrawCommand(_current.Cursor, size, new Vector3(0.2f), null));
+        _current.DrawCommands.Add(new DrawCommand(_current.Cursor, size, _buttonBorderColor, null, null));
 
         // fill
         _current.DrawCommands.Add(new DrawCommand(
             _current.Cursor + new Vector2(_buttonBorderWidth, _buttonBorderWidth),
             size - new Vector2(2 * _buttonBorderWidth, 2 * _buttonBorderWidth),
-            new Vector3(0.5f, 0.2f, 0.2f),
+            _buttonBackgroundColor,
+            _buttonTextColor,
             text));
 
         _current.Cursor += new Vector2(0, size.Y + 10f);
@@ -231,13 +262,14 @@ public class UI : IDisposable
 
         // draw scrollable on parent clip rect - not on new clip rect
         // border
-        parentClipRect.DrawCommands.Add(new DrawCommand(parentClipRect.Cursor, size, new Vector3(0.2f), null));
+        parentClipRect.DrawCommands.Add(new DrawCommand(parentClipRect.Cursor, size, _scrollableBorderColor, null, null));
 
         // content
         parentClipRect.DrawCommands.Add(new DrawCommand(
             parentClipRect.Cursor + new Vector2(_scrollableBorderWidth, _scrollableBorderWidth),
             size - new Vector2(2 * _scrollableBorderWidth, 2 * _scrollableBorderWidth),
-            new Vector3(0.4f),
+            _scrollableBackgroundColor,
+            null,
             null));
 
         parentClipRect.Cursor.Y += size.Y + 10f;
@@ -309,9 +341,9 @@ public class UiTestScene : Scene
         //
         UI.SetCursor(new Vector2(0, 0));
 
-        UI.Label($"Hello");
-        UI.Label($"World");
-        UI.Label($"FPS: {_avgFramerate:F1}");
+        UI.Overlay($"Hello");
+        UI.Overlay($"World");
+        UI.Overlay($"FPS: {_avgFramerate:F1}");
 
         //
         // window 1

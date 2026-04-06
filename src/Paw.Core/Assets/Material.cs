@@ -100,6 +100,11 @@ public class Material : Asset
         }
     }
 
+    public void SetUniform(string name, Vector2 value)
+    {
+        _shader.SetUniform(name, value);
+    }
+
     public void SetUniform(string name, Matrix4x4 value, bool transpose = false)
     {
         _shader.SetUniform(name, value, transpose);

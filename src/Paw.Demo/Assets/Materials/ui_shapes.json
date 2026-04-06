@@ -1,0 +1,6 @@
+{
+  "Name": "ui_shapes",
+  "Shader": "ui_shapes",
+  "Textures": [ ],
+  "Passes": 1
+}

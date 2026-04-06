@@ -84,7 +84,7 @@ public abstract class App
 
             gl.Viewport(0, 0, windowWidth, windowHeight);
 
-            gl.ClearColor(0f, 0f, 0f, 1f);
+            gl.ClearColor(0.1f, 0.1f, 0.3f, 1f);
             gl.Clear(GL.ClearBufferMask.COLOR_BUFFER_BIT);
 
             sceneManager.Render(new RenderContext()

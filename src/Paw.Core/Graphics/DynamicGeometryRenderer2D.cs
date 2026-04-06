@@ -86,6 +86,22 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
         }
 
+        public void AddRectangleWithPositionSize(Vector2 topLeft, Vector2 size, Vector3 color) // need to find better naming schema
+        {
+            Vector2 tl = topLeft;
+            Vector2 tr = new(topLeft.X + size.X, topLeft.Y);
+            Vector2 br = new(topLeft.X + size.X, topLeft.Y + size.Y);
+            Vector2 bl = new(topLeft.X, topLeft.Y + size.Y);
+
+            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(1.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+
+            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
+        }
+
         public void AddRotatedRectangle(Vector2 center, Vector2 size, float angle, Vector3 color)
         {
             Vector2 halfSize = size * 0.5f;
@@ -205,7 +221,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
         return font;
     }
 
-    public void Render(Matrix4x4 mvp)
+    public void Render(Matrix4x4 mvp, Action<Material>? uniformConfig = null)
     {
         foreach (var (_, perMaterialData) in _perMaterialDatas)
         {
@@ -223,6 +239,11 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
 
             vertexArray.Bind();
             {
+                if (uniformConfig is not null) // TODO need MaterialInstance type/asset - one material can have multiple users (each with different uniforms, etc)
+                {
+                    uniformConfig(material);
+                }
+
                 material.SetUniform("uMVP", mvp);
                 material.Bind();
                 {

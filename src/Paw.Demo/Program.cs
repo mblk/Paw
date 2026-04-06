@@ -1,6 +1,7 @@
 ﻿using Paw.Core;
 using Paw.Core.Platforms;
 using Paw.Core.Resources;
+using Paw.Core.UI;
 using Paw.Demo.Scenes;
 
 namespace Paw.Demo;
@@ -20,11 +21,14 @@ public class Program : App
         app.Run();
     }
 
-    protected override void RegisterScenes(SceneManager sceneManager)
+    protected override void RegisterScenes(SceneManager sceneManager) // TODO pass as config instead? like the other options
     {
         sceneManager.RegisterScene("menu", c => new MenuScene(c));
         sceneManager.RegisterScene("rendertest1", c => new RenderTest1Scene(c));
 
-        sceneManager.SetCurrentScene("menu");
+        sceneManager.RegisterScene("uitest1", c => new UiTestScene(c));
+
+        sceneManager.SetCurrentScene("uitest1");
+        //sceneManager.SetCurrentScene("menu");
     }
 }

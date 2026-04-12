@@ -1,0 +1,6 @@
+{
+  "Name": "ui_text",
+  "Shader": "ui",
+  "Textures": [ "font2" ],
+  "Passes": 1
+}

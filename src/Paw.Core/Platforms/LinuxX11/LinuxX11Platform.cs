@@ -187,6 +187,10 @@ public unsafe class LinuxX11Platform : IPlatform
             return wasReleased;
         }
 
+        public void GetSnapshot(KeyboardState state)
+        {
+        }
+
         public void Deactivate()
         {
             for (int i = 0; i < _currStates.Length; i++)
@@ -349,6 +353,30 @@ public unsafe class LinuxX11Platform : IPlatform
 
     private class Mouse : IMouse
     {
+        public int X => 0;
+
+        public int Y => 0;
+
+        public int WheelDelta => 0;
+
+        public bool Get(MouseButton key)
+        {
+            return false;
+        }
+
+        public bool WasPressed(MouseButton key)
+        {
+            return false;
+        }
+
+        public bool WasReleased(MouseButton key)
+        {
+            return false;
+        }
+
+        public void GetSnapshot(MouseState state)
+        {
+        }
     }
 
     private class Window : IWindow

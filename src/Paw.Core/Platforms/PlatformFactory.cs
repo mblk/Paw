@@ -1,4 +1,5 @@
 ﻿using Paw.Core.Graphics;
+using System.Runtime.CompilerServices;
 
 namespace Paw.Core.Platforms;
 
@@ -94,14 +95,106 @@ public enum Key : uint
     MaxValue
 }
 
+public enum MouseButton : uint
+{
+    Left,
+    Middle,
+    Right,
+    // what about all the special keys (back, forward, etc?)
+
+    MaxValue,
+}
+
 public interface IKeyboard
 {
     bool Get(Key key);
     bool WasPressed(Key key); // edge
     bool WasReleased(Key key); // edge
+
+    void GetSnapshot(KeyboardState state);
 }
 
 public interface IMouse
 {
-    // ...
+    int X { get; }
+    int Y { get; }
+    int WheelDelta { get; }
+
+    bool Get(MouseButton key);
+    bool WasPressed(MouseButton key); // edge
+    bool WasReleased(MouseButton key); // edge
+
+    void GetSnapshot(MouseState state);
+}
+
+public class KeyboardState
+{
+    public readonly bool[] CurrStates = new bool[(int)Key.MaxValue];
+    public readonly bool[] PrevStates = new bool[(int)Key.MaxValue];
+
+    public bool Get(Key key)
+    {
+        int idx = GetIndex(key);
+        return CurrStates[idx];
+    }
+
+    public bool WasPressed(Key key)
+    {
+        int idx = GetIndex(key);
+        bool wasPressed = CurrStates[idx] && !PrevStates[idx];
+        PrevStates[idx] = CurrStates[idx];
+        return wasPressed;
+    }
+
+    public bool WasReleased(Key key)
+    {
+        int idx = GetIndex(key);
+        bool wasReleased = !CurrStates[idx] && PrevStates[idx];
+        PrevStates[idx] = CurrStates[idx];
+        return wasReleased;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int GetIndex(Key key)
+    {
+        return (int)key;
+    }
+}
+
+public class MouseState
+{
+    public readonly bool[] CurrStates = new bool[(int)MouseButton.MaxValue];
+    public readonly bool[] PrevStates = new bool[(int)MouseButton.MaxValue];
+
+    public int X;
+    public int Y;
+    public int WheelDelta;
+
+    public bool Get(MouseButton button)
+    {
+        int idx = GetIndex(button);
+        return CurrStates[idx];
+    }
+
+    public bool WasPressed(MouseButton button)
+    {
+        int idx = GetIndex(button);
+        bool wasPressed = CurrStates[idx] && !PrevStates[idx];
+        PrevStates[idx] = CurrStates[idx];
+        return wasPressed;
+    }
+
+    public bool WasReleased(MouseButton button)
+    {
+        int idx = GetIndex(button);
+        bool wasReleased = !CurrStates[idx] && PrevStates[idx];
+        PrevStates[idx] = CurrStates[idx];
+        return wasReleased;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int GetIndex(MouseButton button)
+    {
+        return (int)button;
+    }
 }

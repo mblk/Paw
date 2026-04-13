@@ -269,7 +269,7 @@ internal unsafe class WindowsPlatform : IPlatform
 
     private class Keyboard : IKeyboard
     {
-        private readonly bool[] _currStates = new bool[(int)Key.MaxValue];
+        private readonly bool[] _currStates = new bool[(int)Key.MaxValue]; // TODO: use KeyboardState?
         private readonly bool[] _prevStates = new bool[(int)Key.MaxValue];
 
         public Keyboard()
@@ -299,6 +299,12 @@ internal unsafe class WindowsPlatform : IPlatform
             return wasReleased;
         }
 
+        public void GetSnapshot(KeyboardState state)
+        {
+            new Span<bool>(_currStates).CopyTo(new Span<bool>(state.CurrStates));
+            new Span<bool>(_prevStates).CopyTo(new Span<bool>(state.PrevStates));
+        }
+
         public void HandleRawInput(User32.RAWKEYBOARD* input)
         {
             ushort scancode = input->MakeCode; // ScanCode (Set 1)
@@ -315,11 +321,11 @@ internal unsafe class WindowsPlatform : IPlatform
             SetState(key.Value, isPress);
         }
 
-        private void SetState(Key key, bool isPress)
+        private void SetState(Key key, bool isPressed)
         {
             //Console.WriteLine($"{key} >> {isPress}");
 
-            _currStates[GetIndex(key)] = isPress;
+            _currStates[GetIndex(key)] = isPressed;
         }
 
         public void NextFrame()
@@ -463,29 +469,169 @@ internal unsafe class WindowsPlatform : IPlatform
 
     private class Mouse : IMouse
     {
+        private readonly bool[] _currStates = new bool[(int)MouseButton.MaxValue];
+        private readonly bool[] _prevStates = new bool[(int)MouseButton.MaxValue];
+
+        public int X { get; private set; }
+        public int Y { get; private set; }
+
+        public int WheelDelta { get; private set; }
+
         public Mouse()
         {
             Activate();
         }
 
+        public bool Get(MouseButton button)
+        {
+            int idx = GetIndex(button);
+            return _currStates[idx];
+        }
+
+        public bool WasPressed(MouseButton button)
+        {
+            int idx = GetIndex(button);
+            bool wasPressed = _currStates[idx] && !_prevStates[idx];
+            _prevStates[idx] = _currStates[idx];
+            return wasPressed;
+        }
+
+        public bool WasReleased(MouseButton button)
+        {
+            int idx = GetIndex(button);
+            bool wasReleased = !_currStates[idx] && _prevStates[idx];
+            _prevStates[idx] = _currStates[idx];
+            return wasReleased;
+        }
+
+        public void GetSnapshot(MouseState state)
+        {
+            new Span<bool>(_currStates).CopyTo(new Span<bool>(state.CurrStates));
+            new Span<bool>(_prevStates).CopyTo(new Span<bool>(state.PrevStates));
+
+            state.X = X;
+            state.Y = Y;
+            state.WheelDelta = WheelDelta;
+        }
+
         public void HandleRawInput(User32.RAWMOUSE* mouse)
         {
             // ...
+            //Console.WriteLine($"raw mouse: {mouse->lLastX} {mouse->lLastY} {mouse->ulRawButtons}");
+        }
+
+        public void HandleWindowMessage(uint msg, nuint wParam, nint lParam)
+        {
+            switch (msg)
+            {
+                case User32.WM_MOUSEMOVE:
+                {
+                    (X, Y) = ExtractMousePosition(lParam);
+                    break;
+                }
+
+                case User32.WM_LBUTTONDOWN:
+                case User32.WM_MBUTTONDOWN:
+                case User32.WM_RBUTTONDOWN:
+                case User32.WM_LBUTTONUP:
+                case User32.WM_MBUTTONUP:
+                case User32.WM_RBUTTONUP:
+                {
+                    (X, Y) = ExtractMousePosition(lParam);
+                    SetState(GetMouseButtonFromMessage(msg), GetMouseButtonStateFromMessage(msg));
+                    break;
+                }
+
+                case User32.WM_MOUSEWHEEL:
+                {
+                    WheelDelta = ExtractMouseWheelDelta(wParam);
+                    break;
+                }
+
+                default:
+                {
+                    throw new NotImplementedException("Unknown message");
+                }
+            }
+        }
+
+        private static MouseButton GetMouseButtonFromMessage(uint msg)
+        {
+            return msg switch
+            {
+                User32.WM_LBUTTONDOWN or User32.WM_LBUTTONUP => MouseButton.Left,
+                User32.WM_MBUTTONDOWN or User32.WM_MBUTTONUP => MouseButton.Middle,
+                User32.WM_RBUTTONDOWN or User32.WM_RBUTTONUP => MouseButton.Right,
+                _ => throw new NotImplementedException("Unknown message"),
+            };
+        }
+
+        private static bool GetMouseButtonStateFromMessage(uint msg)
+        {
+            return msg switch
+            {
+                User32.WM_LBUTTONDOWN or User32.WM_MBUTTONDOWN or User32.WM_RBUTTONDOWN => true,
+                User32.WM_LBUTTONUP or User32.WM_MBUTTONUP or User32.WM_RBUTTONUP => false,
+                _ => throw new NotImplementedException("Unknown message"),
+            };
+        }
+
+        private static (int, int) ExtractMousePosition(nint lParam)
+        {
+            UInt32 lParam32 = (UInt32)lParam;
+            UInt16 mouseX = (UInt16)(lParam32 & 0xFFFF);
+            UInt16 mouseY = (UInt16)((lParam32 & 0xFFFF0000) >> 16);
+            return (mouseX, mouseY);
+        }
+
+        private static int ExtractMouseWheelDelta(nuint wParam)
+        {
+            UInt32 wParam32 = (UInt32)wParam;
+            int delta = (Int16)((wParam32 & 0xFFFF0000) >> 16);
+            delta /= 120;
+            return delta;
         }
 
         public void NextFrame()
         {
-            // ...
+            for (int i = 0; i < _currStates.Length; i++)
+            {
+                _prevStates[i] = _currStates[i];
+            }
+            WheelDelta = 0;
         }
 
         public void Deactivate()
         {
-            // ...
+            for (int i = 0; i < _currStates.Length; i++)
+            {
+                _currStates[i] = false;
+                _prevStates[i] = false;
+            }
+            WheelDelta = 0;
         }
 
         public void Activate()
         {
-            // ...
+            for (int i = 0; i < _currStates.Length; i++)
+            {
+                _currStates[i] = false; // TODO: maybe query actual button state?
+                _prevStates[i] = false;
+            }
+            WheelDelta = 0;
+        }
+
+        private void SetState(MouseButton button, bool isPressed)
+        {
+            //Console.WriteLine($"{button} >> {isPressed}");
+
+            _currStates[GetIndex(button)] = isPressed;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int GetIndex(MouseButton button)
+        {
+            return (int)button;
         }
     }
 
@@ -561,6 +707,19 @@ internal unsafe class WindowsPlatform : IPlatform
                     return IntPtr.Zero;
                 }
 
+                case User32.WM_MOUSEMOVE:
+                case User32.WM_LBUTTONDOWN:
+                case User32.WM_LBUTTONUP:
+                case User32.WM_MBUTTONDOWN:
+                case User32.WM_MBUTTONUP:
+                case User32.WM_RBUTTONDOWN:
+                case User32.WM_RBUTTONUP:
+                case User32.WM_MOUSEWHEEL:
+                {
+                    _mouse.HandleWindowMessage(msg, wParam, lParam);
+                    return IntPtr.Zero;
+                }
+
                 case User32.WM_CHAR:
                 {
                     uint cp = wParam.ToUInt32();
@@ -578,15 +737,29 @@ internal unsafe class WindowsPlatform : IPlatform
 
                     if (isActive)
                     {
+                        Console.WriteLine("WM_ACTIVATEAPP: activate");
                         _keyboard.Activate();
                         _mouse.Activate();
                     }
                     else
                     {
+                        Console.WriteLine("WM_ACTIVATEAPP: deactivate");
                         _keyboard.Deactivate();
                         _mouse.Deactivate();
                     }
 
+                    return IntPtr.Zero;
+                }
+
+                case User32.WM_SETFOCUS:
+                {
+                    Console.WriteLine("WM_SETFOCUS");
+                    return IntPtr.Zero;
+                }
+
+                case User32.WM_KILLFOCUS:
+                {
+                    Console.WriteLine("WM_KILLFOCUS");
                     return IntPtr.Zero;
                 }
             }
@@ -692,7 +865,6 @@ internal unsafe class WindowsPlatform : IPlatform
             {
                 Console.WriteLine($"ProcessEvents: New size is {w} {h}");
                 Size = (w, h);
-                //GL.Viewport(0, 0, Math.Max(1, w), Math.Max(1, h));
             }
 
             return running;

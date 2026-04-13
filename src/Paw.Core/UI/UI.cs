@@ -1,5 +1,6 @@
 ﻿using Paw.Core.Assets;
 using Paw.Core.Graphics;
+using Paw.Core.Platforms;
 using Paw.Core.Resources;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -130,6 +131,12 @@ public unsafe class UI : IDisposable
     private readonly VertexArrayObject<Vertex> _vertexArray;
 
 
+    // input state snapshot
+    private readonly KeyboardState _keyboardState = new();
+    private readonly MouseState _mouseState = new();
+
+
+
     public UI(AssetManager assetManager)
     {
         _gl = assetManager.GL;
@@ -149,8 +156,10 @@ public unsafe class UI : IDisposable
         _vertexBuffer.Dispose();
     }
 
-    public void Update()
+    public void Update(UpdateContext context)
     {
+        context.Input.Keyboard.GetSnapshot(_keyboardState);
+        context.Input.Mouse.GetSnapshot(_mouseState);
     }
 
     public void Render(RenderContext context)
@@ -394,6 +403,13 @@ public unsafe class UI : IDisposable
         _cursor = clipEntry.NextCursor;
     }
 
+    private bool IsMouseWithin(Vector2 min, Vector2 max)
+    {
+        var mp = new Vector2(_mouseState.X, _mouseState.Y);
+
+        return min.X <= mp.X && mp.X <= max.X &&
+               min.Y <= mp.Y && mp.Y <= max.Y;
+    }
 
 
     public Scope BeginWindow(Vector2 size, string title)
@@ -449,15 +465,27 @@ public unsafe class UI : IDisposable
     {
         var size = new Vector2(100, 20);
 
+        //xxx
+        var wasPressed = false;
+        Vector4 backgroundColor = _buttonBackgroundColor;
+
+        if (IsMouseWithin(_cursor, _cursor + size))
+        {
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+
+            wasPressed = _mouseState.WasPressed(MouseButton.Left);
+        }
+        //xxx
+
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(_cursor, _cursor + size, _buttonBorderColor, _buttonBackgroundColor);
+        vertexCount += EmitBoxWithBorder(_cursor, _cursor + size, _buttonBorderColor, backgroundColor);
         vertexCount += EmitTextVerts(_cursor, _buttonTextColor, text);
 
         AddDrawCommand(vertexCount);
 
         _cursor.Y += size.Y + 5;
 
-        return false;
+        return wasPressed;
     }
 
     public Scope BeginScrollable(Vector2 size)
@@ -499,7 +527,16 @@ public unsafe class UI : IDisposable
 
 public class UiTestScene : Scene
 {
+    private int _mouseX;
+    private int _mouseY;
+
+    private int _numFrames;
+    private double _totalTime;
+    private double _avgFramerate;
+
+
     private UI UI { get; set; } = null!;
+
 
     public UiTestScene(SceneContext context)
         : base(context)
@@ -522,11 +559,13 @@ public class UiTestScene : Scene
         {
             context.SceneController.RequestExit();
         }
-    }
 
-    private int _numFrames;
-    private double _totalTime;
-    private double _avgFramerate;
+        // TODO add Input to RenderContext?
+        _mouseX = context.Input.Mouse.X;
+        _mouseY = context.Input.Mouse.Y;
+
+        UI.Update(context);
+    }
 
     public override void Render(RenderContext context)
     {
@@ -550,6 +589,8 @@ public class UiTestScene : Scene
 
         UI.Overlay($"UI vertices: {UI.Statistics.VertexCount}");
         UI.Overlay($"UI draw calls: {UI.Statistics.DrawCalls}");
+
+        UI.Overlay($"Mouse: {_mouseX} {_mouseY}");
 
         //
         // window 1
@@ -621,6 +662,17 @@ public class UiTestScene : Scene
                 Console.WriteLine($"button 11");
             }
         }
+
+        //
+        // Window 3
+        //
+
+        //UI.SetCursor(new Vector2(_mouseX, _mouseY));
+
+        //using (var window = UI.BeginWindow(new Vector2(100, 100), "window 3"))
+        //{
+        //    //
+        //}
 
         //
         //

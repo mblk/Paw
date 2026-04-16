@@ -14,6 +14,9 @@ internal unsafe static class X11
     {
         KeyPress = 1L << 0,
         KeyRelease = 1L << 1,
+        ButtonPress = 1L << 2,
+        ButtonRelease = 1L << 3,
+        PointerMotion = 1L << 6,
         Exposure = 1L << 15,
         StructureNotify = 1L << 17,
     }
@@ -22,6 +25,9 @@ internal unsafe static class X11
     {
         KeyPress = 2,
         KeyRelease = 3,
+        ButtonPress = 4,
+        ButtonRelease = 5,
+        MotionNotify = 6,
         ConfigureNotify = 22,
         ClientMessage = 33,
     }
@@ -89,9 +95,12 @@ internal unsafe static class X11
     [StructLayout(LayoutKind.Explicit, Size = 192)]
     public struct XEvent
     {
+        // All fields with offset 0 means this works like a union in c.
         [FieldOffset(0)] public EventType type;
         [FieldOffset(0)] public XEventAny any;
         [FieldOffset(0)] public XKeyEvent key;
+        [FieldOffset(0)] public XButtonEvent button;
+        [FieldOffset(0)] public XMotionEvent motion;
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -119,6 +128,42 @@ internal unsafe static class X11
         public int x_root, y_root;
         public uint state;
         public uint keycode;
+        public int same_screen;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XButtonEvent
+    {
+        public EventType type;
+        public ulong serial;
+        public int send_event;
+        public nint display;
+        public ulong window;
+        public ulong root;
+        public ulong subwindow;
+        public ulong time;
+        public int x, y;
+        public int x_root, y_root;
+        public uint state;
+        public uint button;
+        public int same_screen;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XMotionEvent
+    {
+        public EventType type;
+        public ulong serial;
+        public int send_event;
+        public nint display;
+        public ulong window;
+        public ulong root;
+        public ulong subwindow;
+        public ulong time;
+        public int x, y;
+        public int x_root, y_root;
+        public uint state;
+        public byte is_hint;
         public int same_screen;
     }
 

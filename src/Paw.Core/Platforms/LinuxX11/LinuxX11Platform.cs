@@ -75,6 +75,9 @@ public unsafe class LinuxX11Platform : IPlatform
             event_mask = X11.EventMask.Exposure |
                          X11.EventMask.KeyPress |
                          X11.EventMask.KeyRelease |
+                         X11.EventMask.ButtonPress |
+                         X11.EventMask.ButtonRelease |
+                         X11.EventMask.PointerMotion |
                          X11.EventMask.StructureNotify
         };
 
@@ -189,6 +192,16 @@ public unsafe class LinuxX11Platform : IPlatform
 
         public void GetSnapshot(KeyboardState state)
         {
+            new Span<bool>(_currStates).CopyTo(new Span<bool>(state.CurrStates));
+            new Span<bool>(_prevStates).CopyTo(new Span<bool>(state.PrevStates));
+        }
+
+        public void NextFrame()
+        {
+            for (int i = 0; i < _currStates.Length; i++)
+            {
+                _prevStates[i] = _currStates[i];
+            }
         }
 
         public void Deactivate()
@@ -209,7 +222,7 @@ public unsafe class LinuxX11Platform : IPlatform
             }
         }
 
-        public void HandleInput(in X11.XKeyEvent keyEvent)
+        public void HandleInput(in X11.XKeyEvent keyEvent) // in = struct is passed by reference
         {
             bool isPress = keyEvent.type == X11.EventType.KeyPress;
             bool isRelease = keyEvent.type == X11.EventType.KeyRelease;
@@ -353,29 +366,115 @@ public unsafe class LinuxX11Platform : IPlatform
 
     private class Mouse : IMouse
     {
-        public int X => 0;
+        private readonly bool[] _currStates = new bool[(int)MouseButton.MaxValue];
+        private readonly bool[] _prevStates = new bool[(int)MouseButton.MaxValue];
 
-        public int Y => 0;
+        public int X { get; private set; }
+        public int Y { get; private set; }
 
-        public int WheelDelta => 0;
+        public int WheelDelta { get; private set; }
 
-        public bool Get(MouseButton key)
+        public Mouse()
         {
-            return false;
+            Activate();
         }
 
-        public bool WasPressed(MouseButton key)
+        public bool Get(MouseButton button)
         {
-            return false;
+            int idx = GetIndex(button);
+            return _currStates[idx];
         }
 
-        public bool WasReleased(MouseButton key)
+        public bool WasPressed(MouseButton button)
         {
-            return false;
+            int idx = GetIndex(button);
+            bool wasPressed = _currStates[idx] && !_prevStates[idx];
+            _prevStates[idx] = _currStates[idx];
+            return wasPressed;
+        }
+
+        public bool WasReleased(MouseButton button)
+        {
+            int idx = GetIndex(button);
+            bool wasReleased = !_currStates[idx] && _prevStates[idx];
+            _prevStates[idx] = _currStates[idx];
+            return wasReleased;
         }
 
         public void GetSnapshot(MouseState state)
         {
+            new Span<bool>(_currStates).CopyTo(new Span<bool>(state.CurrStates));
+            new Span<bool>(_prevStates).CopyTo(new Span<bool>(state.PrevStates));
+
+            state.X = X;
+            state.Y = Y;
+            state.WheelDelta = WheelDelta;
+        }
+
+        public void HandleButton(in X11.XButtonEvent button) // in = struct is passed by reference
+        {
+            bool isPress = button.type == X11.EventType.ButtonPress;
+
+            switch (button.button)
+            {
+                case 1: SetState(MouseButton.Left, isPress); break;
+                case 2: SetState(MouseButton.Middle, isPress); break;
+                case 3: SetState(MouseButton.Right, isPress); break;
+                case 4: WheelDelta++; break;
+                case 5: WheelDelta--; break;
+                default: Console.WriteLine($"unknown x11 button: {button.button}"); break;
+            }
+
+            X = button.x;
+            Y = button.y;
+        }
+
+        public void HandleMotion(in X11.XMotionEvent motion)
+        {
+            X = motion.x;
+            Y = motion.y;
+        }
+
+        public void NextFrame()
+        {
+            for (int i = 0; i < _currStates.Length; i++)
+            {
+                _prevStates[i] = _currStates[i];
+            }
+            WheelDelta = 0;
+        }
+
+        public void Deactivate()
+        {
+            for (int i = 0; i < _currStates.Length; i++)
+            {
+                _currStates[i] = false;
+                _prevStates[i] = false;
+            }
+            WheelDelta = 0;
+        }
+
+        public void Activate()
+        {
+            for (int i = 0; i < _currStates.Length; i++)
+            {
+                _currStates[i] = false; // TODO: maybe query actual button state?
+                _prevStates[i] = false;
+            }
+            WheelDelta = 0;
+        }
+
+        private void SetState(MouseButton button, bool isPressed)
+        {
+            //Console.WriteLine($"{button} >> {isPressed}");
+
+            _currStates[GetIndex(button)] = isPressed;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int GetIndex(MouseButton button)
+        {
+            return (int)button;
         }
     }
 
@@ -415,17 +514,29 @@ public unsafe class LinuxX11Platform : IPlatform
             var eventSize2 = Unsafe.SizeOf<X11.XEvent>();
             var keySize1 = Marshal.SizeOf<X11.XKeyEvent>();
             var keySize2 = Unsafe.SizeOf<X11.XKeyEvent>();
+            var buttonSize1 = Marshal.SizeOf<X11.XButtonEvent>();
+            var buttonSize2 = Unsafe.SizeOf<X11.XButtonEvent>();
+            var motionSize1 = Marshal.SizeOf<X11.XMotionEvent>();
+            var motionSize2 = Unsafe.SizeOf<X11.XMotionEvent>();
 
             Console.WriteLine($"XEvent sizes {eventSize1} {eventSize2} {keySize1} {keySize2}");
+            Console.WriteLine($"button {buttonSize1} {buttonSize2} motion {motionSize1} {motionSize2}");
 
             Debug.Assert(eventSize1 == 192);
             Debug.Assert(eventSize2 == 192);
             Debug.Assert(keySize1 == 96);
             Debug.Assert(keySize2 == 96);
+            Debug.Assert(buttonSize1 == 96);
+            Debug.Assert(buttonSize2 == 96);
+            Debug.Assert(motionSize1 == 96);
+            Debug.Assert(motionSize2 == 96);
         }
 
         public bool ProcessEvents()
         {
+            _keyboard.NextFrame();
+            _mouse.NextFrame();
+
             const int bufferSize = 256; // 192 plus a little extra
             void* eventBuffer = stackalloc byte[bufferSize];
             var running = true;
@@ -464,6 +575,24 @@ public unsafe class LinuxX11Platform : IPlatform
                     case X11.EventType.KeyRelease:
                     {
                         _keyboard.HandleInput(@event->key);
+                        break;
+                    }
+
+                    case X11.EventType.ButtonPress:
+                    {
+                        _mouse.HandleButton(@event->button);
+                        break;
+                    }
+
+                    case X11.EventType.ButtonRelease:
+                    {
+                        _mouse.HandleButton(@event->button);
+                        break;
+                    }
+
+                    case X11.EventType.MotionNotify:
+                    {
+                        _mouse.HandleMotion(@event->motion);
                         break;
                     }
 

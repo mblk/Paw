@@ -48,23 +48,23 @@ public unsafe class UI : IDisposable
 
     private class DrawCommand
     {
-        public required Vector2 ClipMin;
-        public required Vector2 ClipMax;
+        public required Rect Clip;
         public required int VertexCount;
     }
 
     private class ClipEntry
     {
-        public required Vector2 Min;
-        public required Vector2 Max;
-
+        public required Rect Rect;
         public required Vector2 NextCursor;
     }
 
-    public class Stats
+    private readonly record struct Rect(Vector2 Min, Vector2 Max)
     {
-        public int VertexCount { get; set; }
-        public int DrawCalls { get; set; }
+        public bool Contains(Vector2 p)
+        {
+            return Min.X <= p.X && p.X <= Max.X &&
+                   Min.Y <= p.Y && p.Y <= Max.Y;
+        }
     }
 
     public readonly ref struct Scope : IDisposable
@@ -98,7 +98,11 @@ public unsafe class UI : IDisposable
         }
     }
 
-
+    public class Stats
+    {
+        public int VertexCount { get; set; }
+        public int DrawCalls { get; set; }
+    }
 
     public Stats Statistics { get; private set; } = new Stats();
 
@@ -194,10 +198,10 @@ public unsafe class UI : IDisposable
         {
             var drawCommand = _drawCommands[i];
 
-            int x = (int)drawCommand.ClipMin.X;
-            int y = (int)drawCommand.ClipMin.Y;
-            int w = Math.Max(0, (int)(drawCommand.ClipMax.X - drawCommand.ClipMin.X));
-            int h = Math.Max(0, (int)(drawCommand.ClipMax.Y - drawCommand.ClipMin.Y));
+            int x = (int)drawCommand.Clip.Min.X;
+            int y = (int)drawCommand.Clip.Min.Y;
+            int w = Math.Max(0, (int)(drawCommand.Clip.Max.X - drawCommand.Clip.Min.X));
+            int h = Math.Max(0, (int)(drawCommand.Clip.Max.Y - drawCommand.Clip.Min.Y));
 
             // flip y because scissor(0, 0) is bottom left
             y = height - y - h;
@@ -237,22 +241,21 @@ public unsafe class UI : IDisposable
         _clipStack.Clear();
         _clipStack.Push(new ClipEntry()
         {
-            Min = new Vector2(0, 0),
-            Max = new Vector2(windowWidth, windowHeight),
+            Rect = new Rect(new Vector2(0, 0), new Vector2(windowWidth, windowHeight)),
             NextCursor = new Vector2(0, 0),
         });
 
         _cursor = new Vector2(0, 0);
     }
 
-    private int EmitQuad(Vector2 min, Vector2 max, Vector4 color)
+    private int EmitQuad(Rect rect, Vector4 color)
     {
-        Vector2 tl = min;
-        Vector2 tr = new(max.X, min.Y);
-        Vector2 bl = new(min.X, max.Y);
-        Vector2 br = max;
+        Vector2 tl = rect.Min;
+        Vector2 tr = new(rect.Max.X, rect.Min.Y);
+        Vector2 bl = new(rect.Min.X, rect.Max.Y);
+        Vector2 br = rect.Max;
 
-        Vector2 uv = new(1f, 1f); // magic uv coord
+        Vector2 uv = new(2f, 2f); // magic uv coord
 
         _vertices.Add(new Vertex() { Position = tl, Color = color, UV = uv });
         _vertices.Add(new Vertex() { Position = tr, Color = color, UV = uv });
@@ -265,11 +268,11 @@ public unsafe class UI : IDisposable
         return 6;
     }
 
-    private int EmitBoxWithBorder(Vector2 min, Vector2 max, Vector4 borderColor, Vector4 fillColor)
+    private int EmitBoxWithBorder(Rect rect, Vector4 borderColor, Vector4 fillColor)
     {
         int vertexCount = 0;
-        vertexCount += EmitQuad(min, max, borderColor);
-        vertexCount += EmitQuad(min + new Vector2(_borderWidth), max - new Vector2(_borderWidth), fillColor);
+        vertexCount += EmitQuad(rect, borderColor);
+        vertexCount += EmitQuad(new Rect(rect.Min + new Vector2(_borderWidth), rect.Max - new Vector2(_borderWidth)), fillColor);
         return vertexCount;
     }
 
@@ -361,8 +364,7 @@ public unsafe class UI : IDisposable
         {
             DrawCommand mostRecent = _drawCommands[^1];
 
-            if (mostRecent.ClipMin == clipEntry.Min &&
-                mostRecent.ClipMax == clipEntry.Max)
+            if (mostRecent.Clip == clipEntry.Rect)
             {
                 mostRecent.VertexCount += vertexCount;
                 return;
@@ -372,8 +374,7 @@ public unsafe class UI : IDisposable
         // new command
         _drawCommands.Add(new DrawCommand()
         {
-            ClipMin = clipEntry.Min,
-            ClipMax = clipEntry.Max,
+            Clip = clipEntry.Rect,
             VertexCount = vertexCount,
         });
     }
@@ -383,8 +384,10 @@ public unsafe class UI : IDisposable
         var outerClipEntry = _clipStack.Peek();
         var innerClipEntry = new ClipEntry()
         {
-            Min = Vector2.Max(outerClipEntry.Min, _cursor + new Vector2(1)),
-            Max = Vector2.Min(outerClipEntry.Max, _cursor + size - new Vector2(2)),
+            Rect = new Rect(
+                Vector2.Max(outerClipEntry.Rect.Min, _cursor + new Vector2(1)),
+                Vector2.Min(outerClipEntry.Rect.Max, _cursor + size - new Vector2(2))
+                ),
             NextCursor = _cursor + new Vector2(0, size.Y + 10),
         };
 
@@ -403,20 +406,30 @@ public unsafe class UI : IDisposable
         _cursor = clipEntry.NextCursor;
     }
 
-    private bool IsMouseWithin(Vector2 min, Vector2 max)
+    private bool IsMouseWithin(Rect rect)
     {
         var mp = new Vector2(_mouseState.X, _mouseState.Y);
 
-        return min.X <= mp.X && mp.X <= max.X &&
-               min.Y <= mp.Y && mp.Y <= max.Y;
+        var topClipEntry = _clipStack.Peek();
+
+        if (!topClipEntry.Rect.Contains(mp))
+            return false;
+
+        if (!rect.Contains(mp))
+            return false;
+
+        return true;
     }
 
 
     public Scope BeginWindow(Vector2 size, string title)
     {
+        var windowRect = new Rect(_cursor, _cursor + size);
+        var titleRect = new Rect(_cursor, _cursor + new Vector2(size.X, _titleBarHeight));
+
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(_cursor, _cursor + size, _windowBorderColor, _windowBackgroundColor);
-        vertexCount += EmitBoxWithBorder(_cursor, _cursor + new Vector2(size.X, _titleBarHeight), _windowBorderColor, _windowTitleBarColor);
+        vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor);
+        vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, _windowTitleBarColor);
         vertexCount += EmitTextVerts(_cursor, _windowTitleTextColor, title);
 
         AddDrawCommand(vertexCount); // before pushing new clip entry!
@@ -438,9 +451,10 @@ public unsafe class UI : IDisposable
     public void Overlay(string text)
     {
         var size = MeasureTextLine(text);
+        var rect = new Rect(_cursor, _cursor + size);
 
         int vertexCount = 0;
-        vertexCount += EmitQuad(_cursor, _cursor + size, _overlayBackgroundColor);
+        vertexCount += EmitQuad(rect, _overlayBackgroundColor);
         vertexCount += EmitTextVerts(_cursor, _overlayTextColor, text);
 
         AddDrawCommand(vertexCount);
@@ -451,9 +465,10 @@ public unsafe class UI : IDisposable
     public void Label(string text)
     {
         var size = MeasureTextLine(text);
+        var rect = new Rect(_cursor, _cursor + size);
 
         int vertexCount = 0;
-        vertexCount += EmitQuad(_cursor, _cursor + size, _labelBackgroundColor);
+        vertexCount += EmitQuad(rect, _labelBackgroundColor);
         vertexCount += EmitTextVerts(_cursor, _labelTextColor, text);
 
         AddDrawCommand(vertexCount);
@@ -464,12 +479,13 @@ public unsafe class UI : IDisposable
     public bool Button(string text)
     {
         var size = new Vector2(100, 20);
+        var rect = new Rect(_cursor, _cursor + size);
 
         //xxx
         var wasPressed = false;
         Vector4 backgroundColor = _buttonBackgroundColor;
 
-        if (IsMouseWithin(_cursor, _cursor + size))
+        if (IsMouseWithin(rect))
         {
             backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
 
@@ -478,7 +494,7 @@ public unsafe class UI : IDisposable
         //xxx
 
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(_cursor, _cursor + size, _buttonBorderColor, backgroundColor);
+        vertexCount += EmitBoxWithBorder(rect, _buttonBorderColor, backgroundColor);
         vertexCount += EmitTextVerts(_cursor, _buttonTextColor, text);
 
         AddDrawCommand(vertexCount);
@@ -490,8 +506,10 @@ public unsafe class UI : IDisposable
 
     public Scope BeginScrollable(Vector2 size)
     {
+        var rect = new Rect(_cursor, _cursor + size);
+
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(_cursor, _cursor + size, _scrollableBorderColor, _scrollableBackgroundColor);
+        vertexCount += EmitBoxWithBorder(rect, _scrollableBorderColor, _scrollableBackgroundColor);
 
         AddDrawCommand(vertexCount); // before pushing new clip entry!
 

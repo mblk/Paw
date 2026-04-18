@@ -22,7 +22,7 @@ void main()
 //              step(p.x, uClipMax.x) *
 //              step(p.y, uClipMax.y);
 
-    float no_tex = step(0.999, fUV.x) * step(0.999, fUV.y);
+    float no_tex = step(1, fUV.x) * step(1, fUV.y);
     float use_tex = 1.0 - no_tex;
 
     float f = texture(uTex, fUV).r;

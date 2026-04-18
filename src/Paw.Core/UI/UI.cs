@@ -67,10 +67,22 @@ public unsafe class UI : IDisposable
         public Vector2 TopRight => new(Max.X, Min.Y);
         public Vector2 BottomLeft => new(Min.X, Max.Y);
 
+        public Vector2 Size => Max - Min;
+
         public bool Contains(Vector2 p)
         {
             return Min.X <= p.X && p.X <= Max.X &&
                    Min.Y <= p.Y && p.Y <= Max.Y;
+        }
+
+        public Rect FromTopLeft(Vector2 size)
+        {
+            return new Rect(Min, Min + size);
+        }
+
+        public Rect FromBottomRight(Vector2 size)
+        {
+            return new Rect(Max - size, Max);
         }
     }
 
@@ -116,9 +128,12 @@ public unsafe class UI : IDisposable
             int hc = s.GetHashCode();
 
             return new Id(hc)
+#if DEBUG
             {
                 Path = s,
-            };
+            }
+#endif
+            ;
         }
 
         public Id Combine(string s)
@@ -127,10 +142,21 @@ public unsafe class UI : IDisposable
             int hc2 = HashCode.Combine(this.HC, hc);
 
             return new Id(hc2)
+#if DEBUG
             {
                 Path = $"{this.Path}/{s}",
-            };
+            }
+#endif
+            ;
         }
+    }
+
+    private class WindowState
+    {
+        public Rect Rect;
+
+        // TODO draw commands
+        // TODO open closed
     }
 
 
@@ -146,23 +172,37 @@ public unsafe class UI : IDisposable
 
 
 
-    private const int _initialVertexBufferSize = 1024;
-    private readonly List<Vertex> _vertices = new(_initialVertexBufferSize);
-    // TODO should we also use element buffers?
-    //private readonly List<uint> _indices = new(_initialVertexBufferSize);
+    //
+    // ui state
+    //
 
     private readonly List<DrawCommand> _drawCommands = [];
+
     private readonly Stack<ClipEntry> _clipStack = [];
+    private ClipEntry _rootClipEntry;
 
     private readonly Stack<Id> _idStack = [];
     private Id _selectedControl = default;
+
+    private readonly Dictionary<Id, WindowState> _windowStates = [];
 
     private int _openScopeCount;
 
     private Vector2 _cursor;
 
+    private enum GrabType
+    {
+        None,
+        Move,
+        Resize,
+    }
+    private GrabType _grabType;
+    private Vector2 _grabOffset;
 
 
+    //
+    // rendering
+    //
 
     private readonly GL _gl;
     private readonly Font _font;
@@ -171,10 +211,24 @@ public unsafe class UI : IDisposable
     private readonly BufferObject _vertexBuffer;
     private readonly VertexArrayObject<Vertex> _vertexArray;
 
+    private const int _initialVertexBufferSize = 1024;
+    private readonly List<Vertex> _vertices = new(_initialVertexBufferSize);
+    // TODO should we also use element buffers?
+    //private readonly List<uint> _indices = new(_initialVertexBufferSize);
 
+
+
+    //
     // input state snapshot
+    //
+
     private readonly KeyboardState _keyboardState = new();
     private readonly MouseState _mouseState = new();
+    private bool _keyboardInputConsumed;
+    private bool _mouseInputConsumed;
+    private Vector2 _mousePosition;
+    private Vector2 _mouseDelta;
+    private bool _mouseMoved;
 
 
 
@@ -201,6 +255,14 @@ public unsafe class UI : IDisposable
     {
         context.Input.Keyboard.GetSnapshot(_keyboardState);
         context.Input.Mouse.GetSnapshot(_mouseState);
+
+        _keyboardInputConsumed = false;
+        _mouseInputConsumed = false;
+
+        var prevMousePosition = _mousePosition;
+        _mousePosition = new Vector2(_mouseState.X, _mouseState.Y);
+        _mouseDelta = _mousePosition - prevMousePosition;
+        _mouseMoved = _mouseDelta != default;
     }
 
     public void Render(RenderContext context)
@@ -277,12 +339,13 @@ public unsafe class UI : IDisposable
         _vertices.Clear();
         _drawCommands.Clear();
 
-        _clipStack.Clear();
-        _clipStack.Push(new ClipEntry()
+        _rootClipEntry = new ClipEntry()
         {
             Rect = new Rect(new Vector2(0, 0), new Vector2(windowWidth, windowHeight)),
             NextCursor = new Vector2(0, 0),
-        });
+        };
+        _clipStack.Clear();
+        _clipStack.Push(_rootClipEntry);
 
         _idStack.Clear();
         _idStack.Push(Id.Create("root"));
@@ -310,6 +373,21 @@ public unsafe class UI : IDisposable
         _vertices.Add(new Vertex() { Position = br, Color = color, UV = uv });
 
         return 6;
+    }
+
+    private int EmitTriangleBottomRight(Rect rect, Vector4 color)
+    {
+        Vector2 tr = rect.TopRight;
+        Vector2 bl = rect.BottomLeft;
+        Vector2 br = rect.BottomRight;
+
+        Vector2 uv = new(2f, 2f); // magic uv coord: always white
+
+        _vertices.Add(new Vertex() { Position = bl, Color = color, UV = uv });
+        _vertices.Add(new Vertex() { Position = tr, Color = color, UV = uv });
+        _vertices.Add(new Vertex() { Position = br, Color = color, UV = uv });
+
+        return 3;
     }
 
     private int EmitBoxWithBorder(Rect rect, Vector4 borderColor, Vector4 fillColor)
@@ -452,24 +530,66 @@ public unsafe class UI : IDisposable
 
     private bool IsMouseWithin(Rect rect)
     {
-        var mp = new Vector2(_mouseState.X, _mouseState.Y);
-
         var topClipEntry = _clipStack.Peek();
 
-        if (!topClipEntry.Rect.Contains(mp))
+        if (!topClipEntry.Rect.Contains(_mousePosition))
             return false;
 
-        if (!rect.Contains(mp))
+        if (!rect.Contains(_mousePosition))
             return false;
 
         return true;
     }
 
-    private void PushId(string s)
+    private Rect EnsureRectIsOnScreenByMoving(Rect rect)
+    {
+        var pos = rect.Min;
+        var size = rect.Size;
+
+        if (pos.X < 0)
+            pos.X = 0;
+
+        if (pos.Y < 0)
+            pos.Y = 0;
+
+        Rect root = _rootClipEntry.Rect;
+
+        if (pos.X + size.X > root.Max.X)
+            pos.X = root.Max.X - size.X;
+
+        if (pos.Y + size.Y > root.Max.Y)
+            pos.Y = root.Max.Y - size.Y;
+
+        return new Rect(pos, pos + size);
+    }
+
+    private Rect EnsureRectIsOnScreenByResizing(Rect rect)
+    {
+        var pos = rect.Min;
+        var size = rect.Size;
+
+        if (pos.X < 0)
+            pos.X = 0;
+
+        if (pos.Y < 0)
+            pos.Y = 0;
+
+        Rect root = _rootClipEntry.Rect;
+
+        if (pos.X + size.X > root.Max.X)
+            size.X = root.Max.X - pos.X;
+
+        if (pos.Y + size.Y > root.Max.Y)
+            size.Y = root.Max.Y - pos.Y;
+
+        return new Rect(pos, pos + size);
+    }
+
+    private Id PushId(string s)
     {
         var id = Id.Create(s);
-
         _idStack.Push(id);
+        return id;
     }
 
     private void PopId()
@@ -480,26 +600,116 @@ public unsafe class UI : IDisposable
         _idStack.Pop();
     }
 
+    #region Controls implementation/API
 
-
-
-    #region API for Controls
-
-    public Scope BeginWindow(Vector2 size, string title)
+    public Scope BeginWindow(Vector2 initialSize, string title)
     {
-        PushId(title);
+        Id id = PushId(title);
 
-        var windowRect = new Rect(_cursor, _cursor + size);
-        var titleRect = new Rect(_cursor, _cursor + new Vector2(size.X, _titleBarHeight));
+        if (!_windowStates.TryGetValue(id, out WindowState? windowState))
+        {
+            _windowStates.Add(id, windowState = new WindowState()
+            {
+                Rect = new Rect(_cursor, _cursor + initialSize),
+            });
+        }
 
+        var windowRect = windowState.Rect;
+        var titleRect = windowRect.FromTopLeft(new Vector2(windowRect.Size.X, _titleBarHeight));
+        var resizeRect = windowRect.FromBottomRight(new Vector2(15));
+
+        //xxx
+        if (IsMouseWithin(titleRect) && _mouseState.WasPressed(MouseButton.Left))
+        {
+            _selectedControl = id;
+
+            _grabType = GrabType.Move;
+            _grabOffset = _mousePosition - windowRect.Min;
+
+            Console.WriteLine($"start moving window (offset {_grabOffset})");
+        }
+        else if (IsMouseWithin(resizeRect) && _mouseState.WasPressed(MouseButton.Left))
+        {
+            _selectedControl = id;
+
+            _grabType = GrabType.Resize;
+            _grabOffset = windowRect.Max - _mousePosition;
+
+            Console.WriteLine($"start resize window (offset {_grabOffset})");
+        }
+
+        if (_selectedControl == id && _mouseMoved)
+        {
+            if (_grabType == GrabType.Move)
+            {
+                var currentSize = windowState.Rect.Size;
+                var newPos = _mousePosition - _grabOffset;
+
+                windowState.Rect = new Rect(newPos, newPos + currentSize);
+            }
+            else if (_grabType == GrabType.Resize)
+            {
+                var min = windowState.Rect.Min;
+                var newMax = _mousePosition + _grabOffset;
+
+                var newSize = newMax - min;
+
+                if (newSize.X < 100) newSize.X = 100;
+                if (newSize.Y < 100) newSize.Y = 100;
+
+                newMax = min + newSize;
+
+                windowState.Rect = EnsureRectIsOnScreenByResizing(new Rect(min, newMax));
+            }
+        }
+
+        if (_selectedControl == id && !_mouseState.Get(MouseButton.Left))
+        {
+            Console.WriteLine($"stop moving/resize window");
+
+            _selectedControl = default;
+
+            _grabType = default;
+            _grabOffset = default;
+        }
+
+        // make sure window is always inside root clip bounds (also after game window resize)
+        Rect fixedRect = EnsureRectIsOnScreenByMoving(windowState.Rect);
+
+        if (fixedRect != windowState.Rect)
+        {
+            windowState.Rect = fixedRect;
+        }
+
+        // update rects
+        windowRect = windowState.Rect;
+        titleRect = new Rect(windowRect.Min, windowRect.Min + new Vector2(windowRect.Size.X, _titleBarHeight));
+        resizeRect = windowRect.FromBottomRight(new Vector2(15));
+
+        // color highlights
+        var titleBarColor = _windowTitleBarColor;
+        if (IsMouseWithin(titleRect))
+        {
+            titleBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0);
+        }
+        var resizeRectColor = _windowBorderColor;
+        if (IsMouseWithin(resizeRect))
+        {
+            resizeRectColor = new Vector4(1, 1, 1, 0) - resizeRectColor;
+            resizeRectColor.W = 1;
+        }
+        //xxx
+
+        _cursor = windowState.Rect.Min;
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor);
-        vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, _windowTitleBarColor);
+        vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, titleBarColor);
         vertexCount += EmitTextVerts(_cursor, _windowTitleTextColor, title);
+        vertexCount += EmitTriangleBottomRight(resizeRect, resizeRectColor); // TODO draw in EndWindow so it's always on top
 
         AddDrawCommand(vertexCount); // before pushing new clip entry!
 
-        PushClipEntry(size);
+        PushClipEntry(windowRect.Size);
 
         _cursor += new Vector2(10f, _titleBarHeight + 10f); // change cursor last!
 

@@ -164,7 +164,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
                 float xr = xl + size.X;
 
                 float yt = currentPosition.Y + offset.Y;
-                float yb = currentPosition.Y + font.MetaData.LineBase * scale;
+                float yb = yt + size.Y;
 
                 Vector2 tl = new(xl, yt);
                 Vector2 tr = new(xr, yt);

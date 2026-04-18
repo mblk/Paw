@@ -272,6 +272,9 @@ internal unsafe class WindowsPlatform : IPlatform
         private readonly bool[] _currStates = new bool[(int)Key.MaxValue]; // TODO: use KeyboardState?
         private readonly bool[] _prevStates = new bool[(int)Key.MaxValue];
 
+        private readonly char[] _charInput = new char[8];
+        private int _numChars = 0;
+
         public Keyboard()
         {
             Activate();
@@ -303,6 +306,9 @@ internal unsafe class WindowsPlatform : IPlatform
         {
             new Span<bool>(_currStates).CopyTo(new Span<bool>(state.CurrStates));
             new Span<bool>(_prevStates).CopyTo(new Span<bool>(state.PrevStates));
+
+            new Span<char>(_charInput).CopyTo(new Span<char>(state.Chars));
+            state.NumChars = _numChars;
         }
 
         public void HandleRawInput(User32.RAWKEYBOARD* input)
@@ -321,6 +327,17 @@ internal unsafe class WindowsPlatform : IPlatform
             SetState(key.Value, isPress);
         }
 
+        public void HandleCharacterInput(char c)
+        {
+            if (_numChars >= _charInput.Length)
+            {
+                Console.WriteLine($"HandleCharacterInput: char input buffer full");
+                return;
+            }
+
+            _charInput[_numChars++] = c;
+        }
+
         private void SetState(Key key, bool isPressed)
         {
             //Console.WriteLine($"{key} >> {isPress}");
@@ -334,6 +351,11 @@ internal unsafe class WindowsPlatform : IPlatform
             {
                 _prevStates[i] = _currStates[i];
             }
+            for (int i = 0; i < _charInput.Length; i++)
+            {
+                _charInput[i] = (char)0;
+            }
+            _numChars = 0;
         }
 
         public void Deactivate()
@@ -723,9 +745,18 @@ internal unsafe class WindowsPlatform : IPlatform
                 case User32.WM_CHAR:
                 {
                     uint cp = wParam.ToUInt32();
-                    string s = char.ConvertFromUtf32((int)cp);
+                    string s = char.ConvertFromUtf32((int)cp); // TODO can this also return more chan 1 char?
 
-                    //Console.WriteLine($"WM_CHAR: '{s}'");
+                    if (s.Length == 1)
+                    {
+                        char c = s[0];
+                        //Console.WriteLine($"WM_CHAR: {(int)c} '{c}'");
+                        _keyboard.HandleCharacterInput(c);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"WM_CHAR ConvertFromUtf32 returned unexpected value");
+                    }
 
                     return IntPtr.Zero;
                 }

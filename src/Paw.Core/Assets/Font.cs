@@ -226,9 +226,9 @@ public static class FontMetaDataLoader
                                 characters.Add(ci.Id, new FontMetaData.CharacterData()
                                 {
                                     UvMin = new Vector2((float)ci.X / (float)commonBlock.ScaleW,
-                                                        (float)ci.Y / (float)commonBlock.ScaleW),
+                                                        (float)ci.Y / (float)commonBlock.ScaleH),
                                     UvMax = new Vector2((float)(ci.X + ci.Width) / (float)commonBlock.ScaleW,
-                                                        (float)(ci.Y + ci.Height) / (float)commonBlock.ScaleW),
+                                                        (float)(ci.Y + ci.Height) / (float)commonBlock.ScaleH),
                                     Size = new Vector2(ci.Width, ci.Height),
                                     Offset = new Vector2(ci.XOffset, ci.YOffset),
                                     XAdvance = ci.XAdvance,

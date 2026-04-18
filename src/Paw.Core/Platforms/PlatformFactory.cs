@@ -132,6 +132,9 @@ public class KeyboardState
     public readonly bool[] CurrStates = new bool[(int)Key.MaxValue];
     public readonly bool[] PrevStates = new bool[(int)Key.MaxValue];
 
+    public readonly char[] Chars = new char[8];
+    public int NumChars = 0;
+
     public bool Get(Key key)
     {
         int idx = GetIndex(key);

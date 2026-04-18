@@ -1,0 +1,170 @@
+﻿using Paw.Core.Resources;
+using System.Numerics;
+
+namespace Paw.Core.UI;
+
+public class UiTestScene : Scene
+{
+    private int _mouseX;
+    private int _mouseY;
+
+    private int _numFrames;
+    private double _totalTime;
+    private double _avgFramerate;
+
+
+    private UI UI { get; set; } = null!;
+
+
+    private string _string1 = "Hello";
+    private string _string2 = "World";
+    private string _string3 = "";
+    private string _string4 = "";
+
+
+
+
+    public UiTestScene(SceneContext context)
+        : base(context)
+    {
+    }
+
+    public override void Load()
+    {
+        UI = new UI(AssetManager);
+    }
+
+    public override void Unload()
+    {
+        UI.Dispose();
+    }
+
+    public override void Update(UpdateContext context)
+    {
+        if (context.Input.Keyboard.WasPressed(Platforms.Key.Escape))
+        {
+            context.SceneController.RequestExit();
+        }
+
+        // TODO add Input to RenderContext?
+        _mouseX = context.Input.Mouse.X;
+        _mouseY = context.Input.Mouse.Y;
+
+        UI.Update(context);
+    }
+
+    public override void Render(RenderContext context)
+    {
+        _totalTime += context.DeltaTime;
+        _numFrames++;
+        if (_totalTime > 0.25)
+        {
+            _avgFramerate = 1.0 / (_totalTime / _numFrames);
+            _totalTime = 0;
+            _numFrames = 0;
+        }
+
+        //
+        // overlays
+        //
+        UI.SetCursor(new Vector2(0, 0));
+
+        UI.Overlay($"Hello");
+        UI.Overlay($"World");
+        UI.Overlay($"FPS: {_avgFramerate:F1}");
+
+        UI.ShowDebuggingOverlay();
+
+        //
+        // window 1
+        //
+
+        UI.SetCursor(new Vector2(400, 200));
+
+        using (var window = UI.BeginWindow(new Vector2(500, 500), "window 1"))
+        {
+            UI.Label("label 1");
+            UI.Label("label 2");
+
+            if (UI.Button("button 1"))
+            {
+                Console.WriteLine($"button 1");
+            }
+            if (UI.Button("button 2"))
+            {
+                Console.WriteLine($"button 2");
+            }
+
+            UI.Input("string1", ref _string1);
+            UI.Input("string2", ref _string2);
+            UI.Input("string3", ref _string3);
+            UI.Input("string4", ref _string4);
+
+            using (UI.BeginScrollable(new Vector2(200, 100)))
+            {
+                UI.Label("label 1.1");
+                UI.Label("label 1.2");
+                if (UI.Button("button 1.3"))
+                {
+                    Console.WriteLine($"button 1.3");
+                }
+                if (UI.Button("button 1.4"))
+                {
+                    Console.WriteLine($"button 1.4");
+                }
+                UI.Label("label 1.5");
+                UI.Label("label 1.6");
+                if (UI.Button("button 1.7"))
+                {
+                    Console.WriteLine($"button 1.7");
+                }
+            }
+
+            UI.Label("label 5");
+
+            using (UI.BeginScrollable(new Vector2(1000, 100)))
+            {
+                UI.Label("label 6");
+                UI.Label("label 7");
+                UI.Label("label 8");
+                UI.Label("label 9");
+            }
+
+            UI.Label("label 10");
+        }
+
+        //
+        // window 2
+        //
+
+        UI.SetCursor(new Vector2(1000, 200));
+
+        using (var window = UI.BeginWindow(new Vector2(300, 200), "window 2"))
+        {
+            if (UI.Button("button 10"))
+            {
+                Console.WriteLine($"button 10");
+            }
+            if (UI.Button("button 11"))
+            {
+                Console.WriteLine($"button 11");
+            }
+        }
+
+        //
+        // Window 3
+        //
+
+        //UI.SetCursor(new Vector2(_mouseX, _mouseY));
+
+        //using (var window = UI.BeginWindow(new Vector2(100, 100), "window 3"))
+        //{
+        //    //
+        //}
+
+        //
+        //
+        //
+        UI.Render(context);
+    }
+}

@@ -13,7 +13,7 @@ public unsafe class UI : IDisposable
 
     private const float _titleBarHeight = 20f;
 
-    private const float _textScale = 0.8f;
+    private const float _textScale = 0.666f;
 
     private readonly Vector2 _textMargin = new(3, 3);
 
@@ -31,6 +31,10 @@ public unsafe class UI : IDisposable
     private readonly Vector4 _buttonBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _buttonBackgroundColor = new(0.5f, 0.2f, 0.2f, 1.0f);
     private readonly Vector4 _buttonTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
+
+    private readonly Vector4 _inputBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
+    private readonly Vector4 _inputBackgroundColor = new(0.2f, 0.2f, 0.5f, 1.0f);
+    private readonly Vector4 _inputTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
     private readonly Vector4 _scrollableBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _scrollableBackgroundColor = new(0.5f, 0.5f, 0.5f, 1.0f);
@@ -52,14 +56,17 @@ public unsafe class UI : IDisposable
         public required int VertexCount;
     }
 
-    private class ClipEntry
+    private readonly record struct ClipEntry(Rect Rect, Vector2 NextCursor)
     {
-        public required Rect Rect;
-        public required Vector2 NextCursor;
     }
 
     private readonly record struct Rect(Vector2 Min, Vector2 Max)
     {
+        public Vector2 TopLeft => Min;
+        public Vector2 BottomRight => Max;
+        public Vector2 TopRight => new(Max.X, Min.Y);
+        public Vector2 BottomLeft => new(Min.X, Max.Y);
+
         public bool Contains(Vector2 p)
         {
             return Min.X <= p.X && p.X <= Max.X &&
@@ -98,27 +105,57 @@ public unsafe class UI : IDisposable
         }
     }
 
+    private readonly record struct Id(int HC)
+    {
+#if DEBUG
+        public required string Path { get; init; }
+#endif
+
+        public static Id Create(string s)
+        {
+            int hc = s.GetHashCode();
+
+            return new Id(hc)
+            {
+                Path = s,
+            };
+        }
+
+        public Id Combine(string s)
+        {
+            int hc = s.GetHashCode();
+            int hc2 = HashCode.Combine(this.HC, hc);
+
+            return new Id(hc2)
+            {
+                Path = $"{this.Path}/{s}",
+            };
+        }
+    }
+
+
     public class Stats
     {
         public int VertexCount { get; set; }
         public int DrawCalls { get; set; }
     }
 
-    public Stats Statistics { get; private set; } = new Stats();
+    private readonly Stats _stats = new();
+
 
 
 
 
     private const int _initialVertexBufferSize = 1024;
-
     private readonly List<Vertex> _vertices = new(_initialVertexBufferSize);
-
     // TODO should we also use element buffers?
     //private readonly List<uint> _indices = new(_initialVertexBufferSize);
 
     private readonly List<DrawCommand> _drawCommands = [];
-
     private readonly Stack<ClipEntry> _clipStack = [];
+
+    private readonly Stack<Id> _idStack = [];
+    private Id _selectedControl = default;
 
     private int _openScopeCount;
 
@@ -224,8 +261,8 @@ public unsafe class UI : IDisposable
 
 
         NextFrame(width, height);
-        Statistics.VertexCount = totalVertexCount;
-        Statistics.DrawCalls = totalDrawCalls;
+        _stats.VertexCount = totalVertexCount;
+        _stats.DrawCalls = totalDrawCalls;
     }
 
     private void NextFrame(int windowWidth, int windowHeight)
@@ -234,6 +271,8 @@ public unsafe class UI : IDisposable
             throw new InvalidOperationException($"Unbalanced UI scopes: {_openScopeCount} scopes were not disposed");
         if (_clipStack.Count > 1)
             throw new InvalidOperationException($"Clip stack was not cleaned up on end of frame. Items left: {_clipStack.Count}");
+        if (_idStack.Count > 1)
+            throw new InvalidOperationException($"ID stack was not cleaned up on end of frame. Items left: {_idStack.Count}");
 
         _vertices.Clear();
         _drawCommands.Clear();
@@ -245,17 +284,22 @@ public unsafe class UI : IDisposable
             NextCursor = new Vector2(0, 0),
         });
 
+        _idStack.Clear();
+        _idStack.Push(Id.Create("root"));
+
         _cursor = new Vector2(0, 0);
     }
 
+    #region Geometry emission
+
     private int EmitQuad(Rect rect, Vector4 color)
     {
-        Vector2 tl = rect.Min;
-        Vector2 tr = new(rect.Max.X, rect.Min.Y);
-        Vector2 bl = new(rect.Min.X, rect.Max.Y);
-        Vector2 br = rect.Max;
+        Vector2 tl = rect.TopLeft;
+        Vector2 tr = rect.TopRight;
+        Vector2 bl = rect.BottomLeft;
+        Vector2 br = rect.BottomRight;
 
-        Vector2 uv = new(2f, 2f); // magic uv coord
+        Vector2 uv = new(2f, 2f); // magic uv coord: always white
 
         _vertices.Add(new Vertex() { Position = tl, Color = color, UV = uv });
         _vertices.Add(new Vertex() { Position = tr, Color = color, UV = uv });
@@ -305,7 +349,7 @@ public unsafe class UI : IDisposable
             float xr = xl + size.X;
 
             float yt = currentPosition.Y + offset.Y;
-            float yb = currentPosition.Y + _font.MetaData.LineBase * _textScale;
+            float yb = yt + size.Y;
 
             Vector2 tl = new(xl, yt);
             Vector2 tr = new(xr, yt);
@@ -355,6 +399,8 @@ public unsafe class UI : IDisposable
         return new Vector2(currentPosition.X, maxHeight);
     }
 
+    #endregion
+
     private void AddDrawCommand(int vertexCount)
     {
         var clipEntry = _clipStack.Peek();
@@ -397,9 +443,7 @@ public unsafe class UI : IDisposable
     private void PopClipEntry()
     {
         if (_clipStack.Count < 2)
-        {
             throw new InvalidOperationException("Unbalanced Begin/End calls to clip stack");
-        }
 
         var clipEntry = _clipStack.Pop();
 
@@ -421,9 +465,30 @@ public unsafe class UI : IDisposable
         return true;
     }
 
+    private void PushId(string s)
+    {
+        var id = Id.Create(s);
+
+        _idStack.Push(id);
+    }
+
+    private void PopId()
+    {
+        if (_idStack.Count < 1)
+            throw new InvalidOperationException("Unbalanced Begin/End calls to ID stack");
+
+        _idStack.Pop();
+    }
+
+
+
+
+    #region API for Controls
 
     public Scope BeginWindow(Vector2 size, string title)
     {
+        PushId(title);
+
         var windowRect = new Rect(_cursor, _cursor + size);
         var titleRect = new Rect(_cursor, _cursor + new Vector2(size.X, _titleBarHeight));
 
@@ -446,6 +511,7 @@ public unsafe class UI : IDisposable
     {
         _openScopeCount--;
         PopClipEntry();
+        PopId();
     }
 
     public void Overlay(string text)
@@ -488,7 +554,6 @@ public unsafe class UI : IDisposable
         if (IsMouseWithin(rect))
         {
             backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
-
             wasPressed = _mouseState.WasPressed(MouseButton.Left);
         }
         //xxx
@@ -502,6 +567,74 @@ public unsafe class UI : IDisposable
         _cursor.Y += size.Y + 5;
 
         return wasPressed;
+    }
+
+    public bool Input(string label, ref string value)
+    {
+        Id id = _idStack.Peek().Combine(label);
+
+        var size = new Vector2(100, 20);
+        var rect = new Rect(_cursor, _cursor + size);
+
+        //xxx
+        var wasPressed = false;
+        Vector4 backgroundColor = _inputBackgroundColor;
+
+        if (IsMouseWithin(rect))
+        {
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            wasPressed = _mouseState.WasPressed(MouseButton.Left);
+
+            if (_selectedControl != id && wasPressed)
+            {
+                _selectedControl = id;
+            }
+        }
+
+        string valueToShow = value;
+
+        if (_selectedControl == id)
+        {
+            if (_keyboardState.NumChars > 0)
+            {
+                char c = _keyboardState.Chars[0];
+
+                if (c == 8) // backspace
+                {
+                    if (value.Length > 0)
+                    {
+                        value = value[0..^1];
+                    }
+                }
+                else if (c == 9) // tab
+                {
+                    _selectedControl = default;
+                }
+                else if (c == 10 || c == 13) // enter
+                {
+                    _selectedControl = default;
+                }
+                else if (!char.IsControl(c))
+                {
+                    value += c;
+                }
+            }
+
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            valueToShow = value + "_";
+        }
+        //xxx
+
+        int vertexCount = 0;
+        vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
+        vertexCount += EmitTextVerts(_cursor, _inputTextColor, valueToShow);
+        vertexCount += EmitTextVerts(_cursor + new Vector2(size.X + 5, 0), _labelTextColor, label);
+
+        AddDrawCommand(vertexCount);
+
+        _cursor.Y += size.Y + 5;
+
+        return false;
     }
 
     public Scope BeginScrollable(Vector2 size)
@@ -541,160 +674,20 @@ public unsafe class UI : IDisposable
     {
         // ...
     }
-}
 
-public class UiTestScene : Scene
-{
-    private int _mouseX;
-    private int _mouseY;
+    #endregion
 
-    private int _numFrames;
-    private double _totalTime;
-    private double _avgFramerate;
+    #region Debugging
 
-
-    private UI UI { get; set; } = null!;
-
-
-    public UiTestScene(SceneContext context)
-        : base(context)
+    public void ShowDebuggingOverlay()
     {
+        Overlay($"UI vertices: {_stats.VertexCount}");
+        Overlay($"UI draw calls: {_stats.DrawCalls}");
+
+        Overlay($"Mouse: {_mouseState.X} {_mouseState.Y}");
+
+        Overlay($"Selected: {_selectedControl}");
     }
 
-    public override void Load()
-    {
-        UI = new UI(AssetManager);
-    }
-
-    public override void Unload()
-    {
-        UI.Dispose();
-    }
-
-    public override void Update(UpdateContext context)
-    {
-        if (context.Input.Keyboard.WasPressed(Platforms.Key.Escape))
-        {
-            context.SceneController.RequestExit();
-        }
-
-        // TODO add Input to RenderContext?
-        _mouseX = context.Input.Mouse.X;
-        _mouseY = context.Input.Mouse.Y;
-
-        UI.Update(context);
-    }
-
-    public override void Render(RenderContext context)
-    {
-        _totalTime += context.DeltaTime;
-        _numFrames++;
-        if (_totalTime > 0.25)
-        {
-            _avgFramerate = 1.0 / (_totalTime / _numFrames);
-            _totalTime = 0;
-            _numFrames = 0;
-        }
-
-        //
-        // overlays
-        //
-        UI.SetCursor(new Vector2(0, 0));
-
-        UI.Overlay($"Hello");
-        UI.Overlay($"World");
-        UI.Overlay($"FPS: {_avgFramerate:F1}");
-
-        UI.Overlay($"UI vertices: {UI.Statistics.VertexCount}");
-        UI.Overlay($"UI draw calls: {UI.Statistics.DrawCalls}");
-
-        UI.Overlay($"Mouse: {_mouseX} {_mouseY}");
-
-        //
-        // window 1
-        //
-
-        UI.SetCursor(new Vector2(400, 200));
-
-        using (var window = UI.BeginWindow(new Vector2(500, 500), "window 1"))
-        {
-            UI.Label("label 1");
-            UI.Label("label 2");
-
-            if (UI.Button("button 1"))
-            {
-                Console.WriteLine($"button 1");
-            }
-            if (UI.Button("button 2"))
-            {
-                Console.WriteLine($"button 2");
-            }
-
-            using (UI.BeginScrollable(new Vector2(200, 100)))
-            {
-                UI.Label("label 1.1");
-                UI.Label("label 1.2");
-                if (UI.Button("button 1.3"))
-                {
-                    Console.WriteLine($"button 1.3");
-                }
-                if (UI.Button("button 1.4"))
-                {
-                    Console.WriteLine($"button 1.4");
-                }
-                UI.Label("label 1.5");
-                UI.Label("label 1.6");
-                if (UI.Button("button 1.7"))
-                {
-                    Console.WriteLine($"button 1.7");
-                }
-            }
-
-            UI.Label("label 5");
-
-            using (UI.BeginScrollable(new Vector2(1000, 100)))
-            {
-                UI.Label("label 6");
-                UI.Label("label 7");
-                UI.Label("label 8");
-                UI.Label("label 9");
-            }
-
-            UI.Label("label 10");
-        }
-
-        //
-        // window 2
-        //
-
-        UI.SetCursor(new Vector2(1000, 200));
-
-        using (var window = UI.BeginWindow(new Vector2(300, 200), "window 2"))
-        {
-            if (UI.Button("button 10"))
-            {
-                Console.WriteLine($"button 10");
-            }
-            if (UI.Button("button 11"))
-            {
-                Console.WriteLine($"button 11");
-            }
-        }
-
-        //
-        // Window 3
-        //
-
-        //UI.SetCursor(new Vector2(_mouseX, _mouseY));
-
-        //using (var window = UI.BeginWindow(new Vector2(100, 100), "window 3"))
-        //{
-        //    //
-        //}
-
-        //
-        //
-        //
-        UI.Render(context);
-    }
+    #endregion
 }

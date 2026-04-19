@@ -290,7 +290,7 @@ internal unsafe class WindowsPlatform : IPlatform
         {
             int idx = GetIndex(key);
             bool wasPressed = _currStates[idx] && !_prevStates[idx];
-            _prevStates[idx] = _currStates[idx];
+            //_prevStates[idx] = _currStates[idx];
             return wasPressed;
         }
 
@@ -298,7 +298,7 @@ internal unsafe class WindowsPlatform : IPlatform
         {
             int idx = GetIndex(key);
             bool wasReleased = !_currStates[idx] && _prevStates[idx];
-            _prevStates[idx] = _currStates[idx];
+            //_prevStates[idx] = _currStates[idx];
             return wasReleased;
         }
 
@@ -514,7 +514,7 @@ internal unsafe class WindowsPlatform : IPlatform
         {
             int idx = GetIndex(button);
             bool wasPressed = _currStates[idx] && !_prevStates[idx];
-            _prevStates[idx] = _currStates[idx];
+            //_prevStates[idx] = _currStates[idx];
             return wasPressed;
         }
 
@@ -522,7 +522,7 @@ internal unsafe class WindowsPlatform : IPlatform
         {
             int idx = GetIndex(button);
             bool wasReleased = !_currStates[idx] && _prevStates[idx];
-            _prevStates[idx] = _currStates[idx];
+            //_prevStates[idx] = _currStates[idx];
             return wasReleased;
         }
 

@@ -53,6 +53,7 @@ public unsafe class UI : IDisposable
     private class DrawCommand
     {
         public required Rect Clip;
+        public required int VertexOffset;
         public required int VertexCount;
     }
 
@@ -153,9 +154,14 @@ public unsafe class UI : IDisposable
 
     private class WindowState
     {
+        public required Id Id;
+
         public Rect Rect;
 
-        // TODO draw commands
+        public readonly List<DrawCommand> DrawCommands = [];
+
+        public required LinkedListNode<Id> ZOrderNode;
+
         // TODO open closed
     }
 
@@ -176,7 +182,7 @@ public unsafe class UI : IDisposable
     // ui state
     //
 
-    private readonly List<DrawCommand> _drawCommands = [];
+
 
     private readonly Stack<ClipEntry> _clipStack = [];
     private ClipEntry _rootClipEntry;
@@ -185,6 +191,11 @@ public unsafe class UI : IDisposable
     private Id _selectedControl = default;
 
     private readonly Dictionary<Id, WindowState> _windowStates = [];
+    private readonly LinkedList<Id> _windowZOrder = [];
+
+    private readonly List<DrawCommand> _globalDrawCommands = [];
+    private WindowState? _activeWindow;
+    private bool _mouseBlockedByOtherWindow;
 
     private int _openScopeCount;
 
@@ -224,8 +235,8 @@ public unsafe class UI : IDisposable
 
     private readonly KeyboardState _keyboardState = new();
     private readonly MouseState _mouseState = new();
-    private bool _keyboardInputConsumed;
-    private bool _mouseInputConsumed;
+    //private bool _keyboardInputConsumed;
+    //private bool _mouseInputConsumed;
     private Vector2 _mousePosition;
     private Vector2 _mouseDelta;
     private bool _mouseMoved;
@@ -256,8 +267,8 @@ public unsafe class UI : IDisposable
         context.Input.Keyboard.GetSnapshot(_keyboardState);
         context.Input.Mouse.GetSnapshot(_mouseState);
 
-        _keyboardInputConsumed = false;
-        _mouseInputConsumed = false;
+        //_keyboardInputConsumed = false;
+        //_mouseInputConsumed = false;
 
         var prevMousePosition = _mousePosition;
         _mousePosition = new Vector2(_mouseState.X, _mouseState.Y);
@@ -291,12 +302,23 @@ public unsafe class UI : IDisposable
 
         _gl.Enable(GL.EnableCap.SCISSOR_TEST);
 
-        int vertexOffset = 0;
-
-        for (int i = 0; i < _drawCommands.Count; i++)
+        foreach (var id in _windowZOrder)
         {
-            var drawCommand = _drawCommands[i];
+            var windowState = _windowStates[id];
 
+            for (int i = 0; i < windowState.DrawCommands.Count; i++)
+            {
+                ProcessDrawCommand(windowState.DrawCommands[i]);
+            }
+        }
+
+        for (int i = 0; i < _globalDrawCommands.Count; i++)
+        {
+            ProcessDrawCommand(_globalDrawCommands[i]);
+        }
+
+        void ProcessDrawCommand(DrawCommand drawCommand)
+        {
             int x = (int)drawCommand.Clip.Min.X;
             int y = (int)drawCommand.Clip.Min.Y;
             int w = Math.Max(0, (int)(drawCommand.Clip.Max.X - drawCommand.Clip.Min.X));
@@ -307,9 +329,8 @@ public unsafe class UI : IDisposable
 
             _gl.Scissor(x, y, w, h);
 
-            _vertexArray.Draw(GL.PrimitiveType.TRIANGLES, vertexOffset, drawCommand.VertexCount);
+            _vertexArray.Draw(GL.PrimitiveType.TRIANGLES, drawCommand.VertexOffset, drawCommand.VertexCount);
 
-            vertexOffset += drawCommand.VertexCount;
             totalDrawCalls++;
         }
 
@@ -335,9 +356,16 @@ public unsafe class UI : IDisposable
             throw new InvalidOperationException($"Clip stack was not cleaned up on end of frame. Items left: {_clipStack.Count}");
         if (_idStack.Count > 1)
             throw new InvalidOperationException($"ID stack was not cleaned up on end of frame. Items left: {_idStack.Count}");
+        if (_activeWindow is not null)
+            throw new InvalidOperationException($"EndWindow was not called");
 
         _vertices.Clear();
-        _drawCommands.Clear();
+        _globalDrawCommands.Clear();
+
+        foreach (var (_, windowState) in _windowStates)
+        {
+            windowState.DrawCommands.Clear();
+        }
 
         _rootClipEntry = new ClipEntry()
         {
@@ -351,6 +379,9 @@ public unsafe class UI : IDisposable
         _idStack.Push(Id.Create("root"));
 
         _cursor = new Vector2(0, 0);
+
+        _activeWindow = null;
+        _mouseBlockedByOtherWindow = false;
     }
 
     #region Geometry emission
@@ -483,10 +514,14 @@ public unsafe class UI : IDisposable
     {
         var clipEntry = _clipStack.Peek();
 
+        List<DrawCommand> drawCommands = _activeWindow is not null
+            ? _activeWindow.DrawCommands
+            : _globalDrawCommands;
+
         // try to merge
-        if (_drawCommands.Count > 0)
+        if (drawCommands.Count > 0)
         {
-            DrawCommand mostRecent = _drawCommands[^1];
+            DrawCommand mostRecent = drawCommands[^1];
 
             if (mostRecent.Clip == clipEntry.Rect)
             {
@@ -496,9 +531,10 @@ public unsafe class UI : IDisposable
         }
 
         // new command
-        _drawCommands.Add(new DrawCommand()
+        drawCommands.Add(new DrawCommand()
         {
             Clip = clipEntry.Rect,
+            VertexOffset = _vertices.Count - vertexCount, // xxx not sure
             VertexCount = vertexCount,
         });
     }
@@ -539,6 +575,16 @@ public unsafe class UI : IDisposable
             return false;
 
         return true;
+    }
+
+    private void MoveWindowToFront(Id id)
+    {
+        if (!_windowStates.TryGetValue(id, out WindowState? windowState))
+            throw new InvalidOperationException($"Window '{id}' not found in window states dict");
+
+        var node = windowState.ZOrderNode;
+        _windowZOrder.Remove(node);
+        _windowZOrder.AddLast(node);
     }
 
     private Rect EnsureRectIsOnScreenByMoving(Rect rect)
@@ -604,22 +650,50 @@ public unsafe class UI : IDisposable
 
     public Scope BeginWindow(Vector2 initialSize, string title)
     {
+        if (_activeWindow is not null)
+            throw new InvalidOperationException("BeginWindow called while a window is active");
+
         Id id = PushId(title);
 
+        // Get / create window state
         if (!_windowStates.TryGetValue(id, out WindowState? windowState))
         {
             _windowStates.Add(id, windowState = new WindowState()
             {
+                Id = id,
                 Rect = new Rect(_cursor, _cursor + initialSize),
+                ZOrderNode = _windowZOrder.AddLast(id),
             });
         }
+        _activeWindow = windowState;
 
+        // Check if mouse is blocked by other window
+        _mouseBlockedByOtherWindow = false;
+        {
+            LinkedListNode<Id>? currentNode = windowState.ZOrderNode.Next;
+            while (currentNode is not null)
+            {
+                if (IsMouseWithin(_windowStates[currentNode.Value].Rect))
+                {
+                    _mouseBlockedByOtherWindow = true;
+                    break;
+                }
+                currentNode = currentNode.Next;
+            }
+        }
+
+        if (IsMouseWithin(_activeWindow.Rect) && _mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
+        {
+            //Console.WriteLine("Move window to front");
+            MoveWindowToFront(_activeWindow.Id);
+        }
+
+        // Handle window movement/resize
         var windowRect = windowState.Rect;
         var titleRect = windowRect.FromTopLeft(new Vector2(windowRect.Size.X, _titleBarHeight));
         var resizeRect = windowRect.FromBottomRight(new Vector2(15));
 
-        //xxx
-        if (IsMouseWithin(titleRect) && _mouseState.WasPressed(MouseButton.Left))
+        if (IsMouseWithin(titleRect) && _mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
         {
             _selectedControl = id;
 
@@ -628,7 +702,7 @@ public unsafe class UI : IDisposable
 
             Console.WriteLine($"start moving window (offset {_grabOffset})");
         }
-        else if (IsMouseWithin(resizeRect) && _mouseState.WasPressed(MouseButton.Left))
+        else if (IsMouseWithin(resizeRect) && _mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
         {
             _selectedControl = id;
 
@@ -681,25 +755,25 @@ public unsafe class UI : IDisposable
             windowState.Rect = fixedRect;
         }
 
-        // update rects
+        // update rects after resize/move
         windowRect = windowState.Rect;
         titleRect = new Rect(windowRect.Min, windowRect.Min + new Vector2(windowRect.Size.X, _titleBarHeight));
         resizeRect = windowRect.FromBottomRight(new Vector2(15));
 
         // color highlights
         var titleBarColor = _windowTitleBarColor;
-        if (IsMouseWithin(titleRect))
+        if (IsMouseWithin(titleRect) && !_mouseBlockedByOtherWindow)
         {
             titleBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0);
         }
         var resizeRectColor = _windowBorderColor;
-        if (IsMouseWithin(resizeRect))
+        if (IsMouseWithin(resizeRect) && !_mouseBlockedByOtherWindow)
         {
             resizeRectColor = new Vector4(1, 1, 1, 0) - resizeRectColor;
             resizeRectColor.W = 1;
         }
-        //xxx
 
+        // Emit geometry
         _cursor = windowState.Rect.Min;
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor);
@@ -719,6 +793,11 @@ public unsafe class UI : IDisposable
 
     private void EndWindow()
     {
+        if (_activeWindow is null)
+            throw new InvalidOperationException("EndWindow called while no window is active");
+
+        _activeWindow = null;
+
         _openScopeCount--;
         PopClipEntry();
         PopId();
@@ -761,7 +840,7 @@ public unsafe class UI : IDisposable
         var wasPressed = false;
         Vector4 backgroundColor = _buttonBackgroundColor;
 
-        if (IsMouseWithin(rect))
+        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
         {
             backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
             wasPressed = _mouseState.WasPressed(MouseButton.Left);
@@ -790,7 +869,7 @@ public unsafe class UI : IDisposable
         var wasPressed = false;
         Vector4 backgroundColor = _inputBackgroundColor;
 
-        if (IsMouseWithin(rect))
+        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
         {
             backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
             wasPressed = _mouseState.WasPressed(MouseButton.Left);

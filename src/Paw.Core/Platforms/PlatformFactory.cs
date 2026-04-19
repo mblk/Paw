@@ -145,7 +145,7 @@ public class KeyboardState
     {
         int idx = GetIndex(key);
         bool wasPressed = CurrStates[idx] && !PrevStates[idx];
-        PrevStates[idx] = CurrStates[idx];
+        //PrevStates[idx] = CurrStates[idx];
         return wasPressed;
     }
 
@@ -153,7 +153,7 @@ public class KeyboardState
     {
         int idx = GetIndex(key);
         bool wasReleased = !CurrStates[idx] && PrevStates[idx];
-        PrevStates[idx] = CurrStates[idx];
+        //PrevStates[idx] = CurrStates[idx];
         return wasReleased;
     }
 
@@ -183,7 +183,7 @@ public class MouseState
     {
         int idx = GetIndex(button);
         bool wasPressed = CurrStates[idx] && !PrevStates[idx];
-        PrevStates[idx] = CurrStates[idx];
+        //PrevStates[idx] = CurrStates[idx];
         return wasPressed;
     }
 
@@ -191,7 +191,7 @@ public class MouseState
     {
         int idx = GetIndex(button);
         bool wasReleased = !CurrStates[idx] && PrevStates[idx];
-        PrevStates[idx] = CurrStates[idx];
+        //PrevStates[idx] = CurrStates[idx];
         return wasReleased;
     }
 

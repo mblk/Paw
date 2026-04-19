@@ -178,7 +178,7 @@ public unsafe class LinuxX11Platform : IPlatform
         {
             int idx = GetIndex(key);
             bool wasPressed = _currStates[idx] && !_prevStates[idx];
-            _prevStates[idx] = _currStates[idx];
+            //_prevStates[idx] = _currStates[idx];
             return wasPressed;
         }
 
@@ -186,7 +186,7 @@ public unsafe class LinuxX11Platform : IPlatform
         {
             int idx = GetIndex(key);
             bool wasReleased = !_currStates[idx] && _prevStates[idx];
-            _prevStates[idx] = _currStates[idx];
+            //_prevStates[idx] = _currStates[idx];
             return wasReleased;
         }
 
@@ -389,7 +389,7 @@ public unsafe class LinuxX11Platform : IPlatform
         {
             int idx = GetIndex(button);
             bool wasPressed = _currStates[idx] && !_prevStates[idx];
-            _prevStates[idx] = _currStates[idx];
+            //_prevStates[idx] = _currStates[idx];
             return wasPressed;
         }
 
@@ -397,7 +397,7 @@ public unsafe class LinuxX11Platform : IPlatform
         {
             int idx = GetIndex(button);
             bool wasReleased = !_currStates[idx] && _prevStates[idx];
-            _prevStates[idx] = _currStates[idx];
+            //_prevStates[idx] = _currStates[idx];
             return wasReleased;
         }
 

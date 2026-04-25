@@ -141,6 +141,8 @@ public class UiTestScene : Scene
 
         using (var window = UI.BeginWindow(new Vector2(300, 200), "window 2"))
         {
+            UI.Horizontal();
+
             if (UI.Button("button 10"))
             {
                 Console.WriteLine($"button 10");

@@ -200,7 +200,7 @@ public unsafe class UI : IDisposable
 
     private int _openScopeCount;
 
-    private Vector2 _cursor;
+    private Vector2 _cursor; // TODO maybe add per-window-cursor and keep one global-cursor?
 
     // next window position
     public enum WindowPositionMode
@@ -230,6 +230,15 @@ public unsafe class UI : IDisposable
     }
     private GrabType _grabType;
     private Vector2 _grabOffset;
+
+    // layout
+    private enum LayoutMode
+    {
+        Vertical,
+        Horizontal,
+    }
+    private LayoutMode _layoutMode;
+    private Vector2 _layoutParentSize;
 
     //
     // rendering
@@ -394,6 +403,9 @@ public unsafe class UI : IDisposable
         _nextWindowPositionMode = default;
         _nextWindowExplicitOpeningPosition = null;
         _nextWindowExplicitPosition = null;
+
+        _layoutMode = default;
+        _layoutParentSize = _rootClipEntry.Rect.Size;
     }
 
     #region Geometry emission
@@ -877,7 +889,9 @@ public unsafe class UI : IDisposable
 
         PushClipEntry(windowRect.Size);
 
-        _cursor += new Vector2(10f, _titleBarHeight + 10f); // change cursor last!
+        _cursor += new Vector2(10f, _titleBarHeight + 10f); // change cursor after PushClipEntry
+
+        _layoutParentSize = windowState.Rect.Size - new Vector2(10f + 10f, _titleBarHeight + 10f + 10f);
 
         _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Window, true);
@@ -911,24 +925,72 @@ public unsafe class UI : IDisposable
 
     public void Label(string text)
     {
-        var size = MeasureTextLine(text);
-        var rect = new Rect(_cursor, _cursor + size);
+        // layout
+        Vector2 controlSize;
+        Vector2 cursorChange;
 
+        switch (_layoutMode)
+        {
+            case LayoutMode.Vertical:
+            {
+                controlSize = new Vector2(_layoutParentSize.X, 20);
+                cursorChange = new Vector2(0, 20 + 5);
+                break;
+            }
+
+            case LayoutMode.Horizontal:
+            {
+                Vector2 textSize = MeasureTextLine(text);
+                controlSize = new Vector2(textSize.X, _layoutParentSize.Y);
+                cursorChange = new Vector2(textSize.X + 5, 0);
+                break;
+            }
+
+            default: throw new NotImplementedException();
+        }
+
+        Rect rect = new Rect(_cursor, _cursor + controlSize);
+
+        // geometry
         int vertexCount = 0;
         vertexCount += EmitQuad(rect, _labelBackgroundColor);
         vertexCount += EmitTextVerts(_cursor, _labelTextColor, text);
 
         AddDrawCommand(vertexCount);
 
-        _cursor.Y += size.Y + 5;
+        // cursor
+        _cursor += cursorChange;
     }
 
     public bool Button(string text)
     {
-        var size = new Vector2(100, 20);
-        var rect = new Rect(_cursor, _cursor + size);
+        // layout
+        Vector2 controlSize;
+        Vector2 cursorChange;
 
-        //xxx
+        switch (_layoutMode)
+        {
+            case LayoutMode.Vertical:
+            {
+                controlSize = new Vector2(_layoutParentSize.X, 20);
+                cursorChange = new Vector2(0, 20 + 5);
+                break;
+            }
+
+            case LayoutMode.Horizontal:
+            {
+                Vector2 textSize = MeasureTextLine(text);
+                controlSize = new Vector2(textSize.X, _layoutParentSize.Y);
+                cursorChange = new Vector2(textSize.X + 5, 0);
+                break;
+            }
+
+            default: throw new NotImplementedException();
+        }
+
+        Rect rect = new Rect(_cursor, _cursor + controlSize);
+
+        // input
         var wasPressed = false;
         Vector4 backgroundColor = _buttonBackgroundColor;
 
@@ -937,27 +999,112 @@ public unsafe class UI : IDisposable
             backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
             wasPressed = _mouseState.WasPressed(MouseButton.Left);
         }
-        //xxx
 
+        // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _buttonBorderColor, backgroundColor);
         vertexCount += EmitTextVerts(_cursor, _buttonTextColor, text);
 
         AddDrawCommand(vertexCount);
 
-        _cursor.Y += size.Y + 5;
+        // cursor
+        _cursor += cursorChange;
 
         return wasPressed;
     }
 
     public bool Input(string label, ref string value)
     {
-        Id id = _idStack.Peek().Combine(label);
+        // TODO need some kind of table:
+        //
+        // |---------------|
+        // | label | input |
+        // |---------------|
+        //
+        // BeginTable()
+        //  Label()
+        //  NextCol()
+        //  Input()
+        // EndTable()
+        //
+        // general form:
+        //
+        // BeginTable()
+        //  C1
+        //  NextCol()
+        //  C2
+        //  NextRow()
+        //  C3
+        //  NextCol()
+        //  C4
+        // EndTable()
+        //
 
-        var size = new Vector2(100, 20);
-        var rect = new Rect(_cursor, _cursor + size);
+        var totalSize = _layoutParentSize;
+        var cellSize = new Vector2(totalSize.X * 0.5f, totalSize.Y);
 
-        //xxx
+        // PushLayout()
+        var cursorBefore = _cursor;
+        _layoutParentSize = cellSize;
+
+        // draw cell 1
+        var cursorBeforeLabel = _cursor;
+        Label(label);
+        var cursorAfterLabel = _cursor;
+
+        _cursor = cursorBeforeLabel + new Vector2(cellSize.X, 0);
+        _layoutParentSize = cellSize;
+
+        // draw cell 2
+        PushId(label);
+        var cursorBeforeInput = _cursor;
+        bool r = Input(ref value);
+        var cursorAfterInput = _cursor;
+        PopId();
+
+        // PopLayout();
+        _layoutParentSize = totalSize;
+
+        var labelSize = cursorAfterLabel - cursorBeforeLabel;
+        var inputSize = cursorAfterInput - cursorBeforeInput;
+        var maxSize = Vector2.Max(labelSize, inputSize);
+
+        _cursor = cursorBefore + maxSize; // ??
+
+        return r;
+    }
+
+    public bool Input(ref string value)
+    {
+        // layout
+        Vector2 controlSize;
+        Vector2 cursorChange;
+
+        switch (_layoutMode)
+        {
+            case LayoutMode.Vertical:
+            {
+                controlSize = new Vector2(_layoutParentSize.X, 20);
+                cursorChange = new Vector2(0, 20 + 5);
+                break;
+            }
+
+            case LayoutMode.Horizontal:
+            {
+                Vector2 textSize = MeasureTextLine(value);
+                controlSize = new Vector2(textSize.X, _layoutParentSize.Y);
+                cursorChange = new Vector2(textSize.X + 5, 0);
+                break;
+            }
+
+            default: throw new NotImplementedException();
+        }
+
+        Rect rect = new Rect(_cursor, _cursor + controlSize);
+
+        // input
+        Id id = _idStack.Peek();
+
         var wasPressed = false;
         Vector4 backgroundColor = _inputBackgroundColor;
 
@@ -1004,16 +1151,16 @@ public unsafe class UI : IDisposable
             backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
             valueToShow = value + "_";
         }
-        //xxx
 
+        // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
         vertexCount += EmitTextVerts(_cursor, _inputTextColor, valueToShow);
-        vertexCount += EmitTextVerts(_cursor + new Vector2(size.X + 5, 0), _labelTextColor, label);
 
         AddDrawCommand(vertexCount);
 
-        _cursor.Y += size.Y + 5;
+        // cursor
+        _cursor += cursorChange;
 
         return false;
     }
@@ -1029,7 +1176,7 @@ public unsafe class UI : IDisposable
 
         PushClipEntry(size);
 
-        _cursor += new Vector2(10, 10); // change cursor last!
+        _cursor += new Vector2(10, 10); // change cursor after PushClipEntry
 
         _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Scrollable, true);
@@ -1041,19 +1188,19 @@ public unsafe class UI : IDisposable
         PopClipEntry();
     }
 
-    //public void SetCursor(Vector2 position)
-    //{
-    //    _cursor = position;
-    //}
+    public void SetCursor(Vector2 position)
+    {
+        _cursor = position;
+    }
 
     public void Horizontal()
     {
-        // ...
+        _layoutMode = LayoutMode.Horizontal;
     }
 
     public void Vertical()
     {
-        // ...
+        _layoutMode = LayoutMode.Vertical;
     }
 
     #endregion

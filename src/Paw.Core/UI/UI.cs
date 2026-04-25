@@ -182,14 +182,15 @@ public unsafe class UI : IDisposable
     // ui state
     //
 
-
-
+    // clipping
     private readonly Stack<ClipEntry> _clipStack = [];
     private ClipEntry _rootClipEntry;
 
+    // id
     private readonly Stack<Id> _idStack = [];
     private Id _selectedControl = default;
 
+    // windows
     private readonly Dictionary<Id, WindowState> _windowStates = [];
     private readonly LinkedList<Id> _windowZOrder = [];
 
@@ -201,6 +202,26 @@ public unsafe class UI : IDisposable
 
     private Vector2 _cursor;
 
+    // next window position
+    public enum WindowPositionMode
+    {
+        Cascading,
+        Center,
+        Left,
+        Right,
+        Top,
+        Bottom,
+        Explicit,
+    }
+    private static readonly Vector2 _initialCascadingWindowPosition = new Vector2(200, 200);
+    private static readonly Vector2 _maxCascadingWindowPosition = new Vector2(300, 300);
+    private static readonly Vector2 _cascadingWindowOffset = new Vector2(40, 40);
+    private WindowPositionMode _nextWindowPositionMode;
+    private Vector2? _nextWindowExplicitOpeningPosition;
+    private Vector2 _nextCascadingWindowPosition = _initialCascadingWindowPosition;
+    private Vector2? _nextWindowExplicitPosition;
+
+    // grabbing
     private enum GrabType
     {
         None,
@@ -209,7 +230,6 @@ public unsafe class UI : IDisposable
     }
     private GrabType _grabType;
     private Vector2 _grabOffset;
-
 
     //
     // rendering
@@ -235,8 +255,6 @@ public unsafe class UI : IDisposable
 
     private readonly KeyboardState _keyboardState = new();
     private readonly MouseState _mouseState = new();
-    //private bool _keyboardInputConsumed;
-    //private bool _mouseInputConsumed;
     private Vector2 _mousePosition;
     private Vector2 _mouseDelta;
     private bool _mouseMoved;
@@ -267,9 +285,6 @@ public unsafe class UI : IDisposable
         context.Input.Keyboard.GetSnapshot(_keyboardState);
         context.Input.Mouse.GetSnapshot(_mouseState);
 
-        //_keyboardInputConsumed = false;
-        //_mouseInputConsumed = false;
-
         var prevMousePosition = _mousePosition;
         _mousePosition = new Vector2(_mouseState.X, _mouseState.Y);
         _mouseDelta = _mousePosition - prevMousePosition;
@@ -289,9 +304,7 @@ public unsafe class UI : IDisposable
         int totalDrawCalls = 0;
         int totalVertexCount = _vertices.Count;
 
-
         _vertexBuffer.SetData(_vertices, GL.BufferUsage.STREAM_DRAW);
-
         _vertexArray.Bind();
 
         _material.SetUniform("uMVP", mvp);
@@ -299,7 +312,6 @@ public unsafe class UI : IDisposable
 
         _gl.Enable(GL.EnableCap.BLEND);
         _gl.BlendFunc(GL.BlendingFactor.SRC_ALPHA, GL.BlendingFactor.ONE_MINUS_SRC_ALPHA);
-
         _gl.Enable(GL.EnableCap.SCISSOR_TEST);
 
         foreach (var id in _windowZOrder)
@@ -328,20 +340,16 @@ public unsafe class UI : IDisposable
             y = height - y - h;
 
             _gl.Scissor(x, y, w, h);
-
             _vertexArray.Draw(GL.PrimitiveType.TRIANGLES, drawCommand.VertexOffset, drawCommand.VertexCount);
-
             totalDrawCalls++;
         }
 
         _gl.Disable(GL.EnableCap.SCISSOR_TEST);
-
         _gl.Disable(GL.EnableCap.BLEND);
 
         _material.Unbind();
 
         _vertexArray.Unbind();
-
 
         NextFrame(width, height);
         _stats.VertexCount = totalVertexCount;
@@ -382,6 +390,10 @@ public unsafe class UI : IDisposable
 
         _activeWindow = null;
         _mouseBlockedByOtherWindow = false;
+
+        _nextWindowPositionMode = default;
+        _nextWindowExplicitOpeningPosition = null;
+        _nextWindowExplicitPosition = null;
     }
 
     #region Geometry emission
@@ -439,7 +451,6 @@ public unsafe class UI : IDisposable
         {
             if (!_font.MetaData.Characters.TryGetValue(c, out var charData))
             {
-                Console.WriteLine($"char data {(uint)c} '{c}' not found");
                 continue;
             }
 
@@ -488,7 +499,6 @@ public unsafe class UI : IDisposable
         {
             if (!_font.MetaData.Characters.TryGetValue(c, out var charData))
             {
-                Console.WriteLine($"char data {(uint)c} '{c}' not found");
                 continue;
             }
 
@@ -648,6 +658,87 @@ public unsafe class UI : IDisposable
 
     #region Controls implementation/API
 
+    public void SetNextWindowPositionMode(WindowPositionMode mode, Vector2? explicitPosition = null)
+    {
+        if ((mode == WindowPositionMode.Explicit) != (explicitPosition is not null))
+            throw new ArgumentException($"Incorrect usage of explicit position");
+
+        _nextWindowPositionMode = mode;
+        _nextWindowExplicitOpeningPosition = explicitPosition;
+    }
+
+    public void SetNextWindowPosition(Vector2 position)
+    {
+        if (_nextWindowExplicitPosition is not null)
+            throw new InvalidOperationException("Next window position already set");
+
+        _nextWindowExplicitPosition = position;
+    }
+
+    private Vector2 GetNewWindowPosition(Vector2 initialSize)
+    {
+        switch (_nextWindowPositionMode)
+        {
+            case WindowPositionMode.Cascading:
+            {
+                Vector2 p = _nextCascadingWindowPosition;
+                _nextCascadingWindowPosition += _cascadingWindowOffset;
+
+                if (_nextCascadingWindowPosition.X > _maxCascadingWindowPosition.X || _nextCascadingWindowPosition.Y > _maxCascadingWindowPosition.Y)
+                    _nextCascadingWindowPosition = _initialCascadingWindowPosition;
+
+                return p;
+            }
+
+            case WindowPositionMode.Center:
+            {
+                Vector2 screenSize = _rootClipEntry.Rect.Size;
+                Vector2 p = new Vector2(screenSize.X * 0.5f - initialSize.X * 0.5f, screenSize.Y * 0.5f - initialSize.Y * 0.5f);
+                return p;
+            }
+
+            case WindowPositionMode.Left:
+            {
+                Vector2 screenSize = _rootClipEntry.Rect.Size;
+                Vector2 p = new Vector2(0f, screenSize.Y * 0.5f - initialSize.Y * 0.5f);
+                return p;
+            }
+
+            case WindowPositionMode.Right:
+            {
+                Vector2 screenSize = _rootClipEntry.Rect.Size;
+                Vector2 p = new Vector2(screenSize.X - initialSize.X, screenSize.Y * 0.5f - initialSize.Y * 0.5f);
+                return p;
+            }
+
+            case WindowPositionMode.Top:
+            {
+                Vector2 screenSize = _rootClipEntry.Rect.Size;
+                Vector2 p = new Vector2(screenSize.X * 0.5f - initialSize.X * 0.5f, 0f);
+                return p;
+            }
+
+            case WindowPositionMode.Bottom:
+            {
+                Vector2 screenSize = _rootClipEntry.Rect.Size;
+                Vector2 p = new Vector2(screenSize.X * 0.5f - initialSize.X * 0.5f, screenSize.Y - initialSize.Y);
+                return p;
+            }
+
+            case WindowPositionMode.Explicit:
+            {
+                if (_nextWindowExplicitOpeningPosition is null)
+                    throw new InvalidOperationException($"{nameof(_nextWindowExplicitOpeningPosition)} not set");
+
+                Vector2 p = _nextWindowExplicitOpeningPosition.Value;
+                _nextWindowExplicitOpeningPosition = null;
+                return p;
+            }
+
+            default: throw new NotImplementedException();
+        }
+    }
+
     public Scope BeginWindow(Vector2 initialSize, string title)
     {
         if (_activeWindow is not null)
@@ -658,10 +749,12 @@ public unsafe class UI : IDisposable
         // Get / create window state
         if (!_windowStates.TryGetValue(id, out WindowState? windowState))
         {
+            Vector2 openingPosition = GetNewWindowPosition(initialSize);
+
             _windowStates.Add(id, windowState = new WindowState()
             {
                 Id = id,
-                Rect = new Rect(_cursor, _cursor + initialSize),
+                Rect = new Rect(openingPosition, openingPosition + initialSize),
                 ZOrderNode = _windowZOrder.AddLast(id),
             });
         }
@@ -684,7 +777,6 @@ public unsafe class UI : IDisposable
 
         if (IsMouseWithin(_activeWindow.Rect) && _mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
         {
-            //Console.WriteLine("Move window to front");
             MoveWindowToFront(_activeWindow.Id);
         }
 
@@ -699,8 +791,6 @@ public unsafe class UI : IDisposable
 
             _grabType = GrabType.Move;
             _grabOffset = _mousePosition - windowRect.Min;
-
-            Console.WriteLine($"start moving window (offset {_grabOffset})");
         }
         else if (IsMouseWithin(resizeRect) && _mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
         {
@@ -708,8 +798,6 @@ public unsafe class UI : IDisposable
 
             _grabType = GrabType.Resize;
             _grabOffset = windowRect.Max - _mousePosition;
-
-            Console.WriteLine($"start resize window (offset {_grabOffset})");
         }
 
         if (_selectedControl == id && _mouseMoved)
@@ -737,10 +825,14 @@ public unsafe class UI : IDisposable
             }
         }
 
+        if (_nextWindowExplicitPosition is not null)
+        {
+            Vector2 p = _nextWindowExplicitPosition.Value;
+            windowState.Rect = EnsureRectIsOnScreenByMoving(new Rect(p, p + windowState.Rect.Size));
+        }
+
         if (_selectedControl == id && !_mouseState.Get(MouseButton.Left))
         {
-            Console.WriteLine($"stop moving/resize window");
-
             _selectedControl = default;
 
             _grabType = default;
@@ -949,10 +1041,10 @@ public unsafe class UI : IDisposable
         PopClipEntry();
     }
 
-    public void SetCursor(Vector2 position)
-    {
-        _cursor = position;
-    }
+    //public void SetCursor(Vector2 position)
+    //{
+    //    _cursor = position;
+    //}
 
     public void Horizontal()
     {

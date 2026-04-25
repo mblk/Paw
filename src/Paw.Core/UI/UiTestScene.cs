@@ -21,6 +21,8 @@ public class UiTestScene : Scene
     private string _string3 = "";
     private string _string4 = "";
 
+    private bool _showWindow3;
+    private bool _showWindow4;
 
 
 
@@ -67,8 +69,6 @@ public class UiTestScene : Scene
         //
         // overlays
         //
-        UI.SetCursor(new Vector2(0, 0));
-
         UI.Overlay($"Hello");
         UI.Overlay($"World");
         UI.Overlay($"FPS: {_avgFramerate:F1}");
@@ -79,20 +79,20 @@ public class UiTestScene : Scene
         // window 1
         //
 
-        UI.SetCursor(new Vector2(400, 200));
-
         using (var window = UI.BeginWindow(new Vector2(500, 500), "window 1"))
         {
             UI.Label("label 1");
             UI.Label("label 2");
 
-            if (UI.Button("button 1"))
+            if (UI.Button(_showWindow3 ? "hide window3" : "show window3"))
             {
                 Console.WriteLine($"button 1");
+                _showWindow3 = !_showWindow3;
             }
-            if (UI.Button("button 2"))
+            if (UI.Button(_showWindow4 ? "hide window4" : "show window4"))
             {
                 Console.WriteLine($"button 2");
+                _showWindow4 = !_showWindow4;
             }
 
             UI.Input("string1", ref _string1);
@@ -137,7 +137,7 @@ public class UiTestScene : Scene
         // window 2
         //
 
-        UI.SetCursor(new Vector2(1000, 200));
+        UI.SetNextWindowPositionMode(UI.WindowPositionMode.Right);
 
         using (var window = UI.BeginWindow(new Vector2(300, 200), "window 2"))
         {
@@ -155,12 +155,29 @@ public class UiTestScene : Scene
         // Window 3
         //
 
-        //UI.SetCursor(new Vector2(_mouseX, _mouseY));
+        if (_showWindow3)
+        {
+            UI.SetNextWindowPositionMode(UI.WindowPositionMode.Center);
 
-        //using (var window = UI.BeginWindow(new Vector2(100, 100), "window 3"))
-        //{
-        //    //
-        //}
+            using (var window = UI.BeginWindow(new Vector2(100, 100), "window 3"))
+            {
+                UI.Label("hello");
+            }
+        }
+
+        //
+        // Window 4
+        //
+
+        if (_showWindow4)
+        {
+            UI.SetNextWindowPosition(new Vector2(_mouseX + 50, _mouseY + 50));
+
+            using (var window = UI.BeginWindow(new Vector2(100, 100), "window 4"))
+            {
+                UI.Label("hello");
+            }
+        }
 
         //
         //

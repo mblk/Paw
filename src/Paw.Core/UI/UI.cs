@@ -15,6 +15,9 @@ public unsafe class UI : IDisposable
 
     private const float _textScale = 0.666f;
 
+    private const float _simpleLayoutSpacing = 5f; // horizontal/vertical layouts
+    private const float _nestedControlSpacing = 5f; // window/scrollable
+
     private readonly Vector2 _textMargin = new(3, 3);
 
     private readonly Vector4 _windowBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
@@ -37,7 +40,7 @@ public unsafe class UI : IDisposable
     private readonly Vector4 _inputTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
     private readonly Vector4 _scrollableBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
-    private readonly Vector4 _scrollableBackgroundColor = new(0.5f, 0.5f, 0.5f, 1.0f);
+    private readonly Vector4 _scrollableBackgroundColor = new(0.4f, 0.4f, 0.4f, 1.0f);
 
 
 
@@ -57,7 +60,7 @@ public unsafe class UI : IDisposable
         public required int VertexCount;
     }
 
-    private readonly record struct ClipEntry(Rect Rect, Vector2 NextCursor)
+    private readonly record struct ClipEntry(Rect Rect)
     {
     }
 
@@ -91,8 +94,12 @@ public unsafe class UI : IDisposable
     {
         internal enum ScopeType
         {
+            Null,
             Window,
             Scrollable,
+            Vertical,
+            Horizontal,
+            Table,
         }
 
         private readonly UI _ui;
@@ -111,8 +118,12 @@ public unsafe class UI : IDisposable
         {
             switch (_scopeType)
             {
+                case ScopeType.Null: _ui.EndNullScope(); break;
                 case ScopeType.Window: _ui.EndWindow(); break;
                 case ScopeType.Scrollable: _ui.EndScrollable(); break;
+                case ScopeType.Vertical: _ui.EndVertical(); break;
+                case ScopeType.Horizontal: _ui.EndHorizontal(); break;
+                case ScopeType.Table: _ui.EndTable(); break;
                 default: throw new NotImplementedException();
             }
         }
@@ -166,6 +177,8 @@ public unsafe class UI : IDisposable
     }
 
 
+
+
     public class Stats
     {
         public int VertexCount { get; set; }
@@ -200,8 +213,6 @@ public unsafe class UI : IDisposable
 
     private int _openScopeCount;
 
-    private Vector2 _cursor; // TODO maybe add per-window-cursor and keep one global-cursor?
-
     // next window position
     public enum WindowPositionMode
     {
@@ -213,8 +224,8 @@ public unsafe class UI : IDisposable
         Bottom,
         Explicit,
     }
-    private static readonly Vector2 _initialCascadingWindowPosition = new Vector2(200, 200);
-    private static readonly Vector2 _maxCascadingWindowPosition = new Vector2(300, 300);
+    private static readonly Vector2 _initialCascadingWindowPosition = new Vector2(250, 250);
+    private static readonly Vector2 _maxCascadingWindowPosition = new Vector2(500, 500);
     private static readonly Vector2 _cascadingWindowOffset = new Vector2(40, 40);
     private WindowPositionMode _nextWindowPositionMode;
     private Vector2? _nextWindowExplicitOpeningPosition;
@@ -236,9 +247,111 @@ public unsafe class UI : IDisposable
     {
         Vertical,
         Horizontal,
+        Table,
     }
-    private LayoutMode _layoutMode;
-    private Vector2 _layoutParentSize;
+    private class LayoutItem
+    {
+        public readonly LayoutMode Mode;
+        public Rect TotalRect;
+        public Vector2 Cursor;
+        public Vector2 MaxCursor;
+
+        // table
+        public float[]? ColumnWidths;
+        public int Row;
+        public int Column;
+        public float MaxRowHeight;
+
+        public LayoutItem(LayoutMode mode, Rect totalRect)
+        {
+            Mode = mode;
+            TotalRect = totalRect;
+            Cursor = totalRect.TopLeft;
+            MaxCursor = totalRect.TopLeft;
+        }
+
+        public Rect GetRemainingSpace()
+        {
+            return new Rect(Cursor, TotalRect.BottomRight);
+        }
+
+        public Vector2 GetAvailableSize()
+        {
+            return TotalRect.BottomRight - Cursor;
+        }
+
+        public Vector2 AdjustSize(Vector2 requestedSize)
+        {
+            switch (Mode)
+            {
+                case LayoutMode.Vertical:
+                {
+                    var remainingSpace = TotalRect.BottomRight - Cursor;
+                    return new Vector2(TotalRect.Size.X, Math.Min(remainingSpace.Y, requestedSize.Y));
+                }
+
+                case LayoutMode.Horizontal:
+                {
+                    var remainingSpace = TotalRect.BottomRight - Cursor;
+                    return new Vector2(Math.Min(remainingSpace.X, requestedSize.X), TotalRect.Size.Y);
+                }
+
+                case LayoutMode.Table:
+                {
+                    var colWidth = GetCurrentColumnWidth();
+                    return new Vector2(colWidth, requestedSize.Y);
+                }
+
+                default: throw new NotImplementedException();
+            }
+        }
+
+        public Rect Layout(Vector2 size)
+        {
+            var pos = Cursor;
+            var rect = new Rect(pos, pos + size);
+
+            switch (Mode)
+            {
+                case LayoutMode.Vertical:
+                    Cursor.Y += size.Y + _simpleLayoutSpacing;
+                    break;
+
+                case LayoutMode.Horizontal:
+                    Cursor.X += size.X + _simpleLayoutSpacing;
+                    break;
+
+                case LayoutMode.Table:
+                {
+                    MaxRowHeight = Math.Max(MaxRowHeight, size.Y);
+                    break;
+                }
+
+                default: throw new NotImplementedException();
+            }
+
+            MaxCursor = Vector2.Max(MaxCursor, rect.BottomRight);
+
+            return rect;
+        }
+
+        public float GetCurrentColumnWidth()
+        {
+            if (ColumnWidths is null)
+                throw new InvalidOperationException("Not a table");
+
+            var colWidth = ColumnWidths![Column];
+
+            if (colWidth <= 1.0f)
+            {
+                colWidth *= TotalRect.Size.X;
+            }
+
+            return colWidth;
+        }
+    }
+
+    private readonly Stack<LayoutItem> _layoutItems = [];
 
     //
     // rendering
@@ -375,6 +488,8 @@ public unsafe class UI : IDisposable
             throw new InvalidOperationException($"ID stack was not cleaned up on end of frame. Items left: {_idStack.Count}");
         if (_activeWindow is not null)
             throw new InvalidOperationException($"EndWindow was not called");
+        if (_layoutItems.Count > 1)
+            throw new InvalidOperationException($"Layout stack was not cleaned up on end of frame. Items left: {_layoutItems.Count}");
 
         _vertices.Clear();
         _globalDrawCommands.Clear();
@@ -387,15 +502,12 @@ public unsafe class UI : IDisposable
         _rootClipEntry = new ClipEntry()
         {
             Rect = new Rect(new Vector2(0, 0), new Vector2(windowWidth, windowHeight)),
-            NextCursor = new Vector2(0, 0),
         };
         _clipStack.Clear();
         _clipStack.Push(_rootClipEntry);
 
         _idStack.Clear();
         _idStack.Push(Id.Create("root"));
-
-        _cursor = new Vector2(0, 0);
 
         _activeWindow = null;
         _mouseBlockedByOtherWindow = false;
@@ -404,8 +516,8 @@ public unsafe class UI : IDisposable
         _nextWindowExplicitOpeningPosition = null;
         _nextWindowExplicitPosition = null;
 
-        _layoutMode = default;
-        _layoutParentSize = _rootClipEntry.Rect.Size;
+        _layoutItems.Clear();
+        PushLayoutItem(LayoutMode.Vertical, new Rect(new Vector2(0, 0), new Vector2(windowWidth, windowHeight)));
     }
 
     #region Geometry emission
@@ -561,16 +673,15 @@ public unsafe class UI : IDisposable
         });
     }
 
-    private void PushClipEntry(Vector2 size)
+    private void PushClipEntry(Rect clipRect)
     {
         var outerClipEntry = _clipStack.Peek();
         var innerClipEntry = new ClipEntry()
         {
             Rect = new Rect(
-                Vector2.Max(outerClipEntry.Rect.Min, _cursor + new Vector2(1)),
-                Vector2.Min(outerClipEntry.Rect.Max, _cursor + size - new Vector2(2))
+                Vector2.Max(outerClipEntry.Rect.Min, clipRect.TopLeft),
+                Vector2.Min(outerClipEntry.Rect.Max, clipRect.BottomRight)
                 ),
-            NextCursor = _cursor + new Vector2(0, size.Y + 10),
         };
 
         _clipStack.Push(innerClipEntry);
@@ -581,9 +692,34 @@ public unsafe class UI : IDisposable
         if (_clipStack.Count < 2)
             throw new InvalidOperationException("Unbalanced Begin/End calls to clip stack");
 
-        var clipEntry = _clipStack.Pop();
+        _ = _clipStack.Pop();
+    }
 
-        _cursor = clipEntry.NextCursor;
+    private LayoutItem PushLayoutItem(LayoutMode mode, Rect totalRect)
+    {
+        var item = new LayoutItem(mode, totalRect);
+
+        _layoutItems.Push(item);
+
+        return item;
+    }
+
+    private LayoutItem PopLayoutItem()
+    {
+        if (_layoutItems.Count < 2)
+            throw new InvalidOperationException("Unbalanced Push/Pop calls to layout stack");
+
+        return _layoutItems.Pop();
+    }
+
+    private Rect Layout(Vector2 size)
+    {
+        return _layoutItems.Peek().Layout(size);
+    }
+
+    private Vector2 AdjustSize(Vector2 size)
+    {
+        return _layoutItems.Peek().AdjustSize(size);
     }
 
     private bool IsMouseWithin(Rect rect)
@@ -841,6 +977,7 @@ public unsafe class UI : IDisposable
         {
             Vector2 p = _nextWindowExplicitPosition.Value;
             windowState.Rect = EnsureRectIsOnScreenByMoving(new Rect(p, p + windowState.Rect.Size));
+            _nextWindowExplicitPosition = null;
         }
 
         if (_selectedControl == id && !_mouseState.Get(MouseButton.Left))
@@ -878,20 +1015,22 @@ public unsafe class UI : IDisposable
         }
 
         // Emit geometry
-        _cursor = windowState.Rect.Min;
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor);
         vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, titleBarColor);
-        vertexCount += EmitTextVerts(_cursor, _windowTitleTextColor, title);
+        vertexCount += EmitTextVerts(titleRect.TopLeft, _windowTitleTextColor, title);
         vertexCount += EmitTriangleBottomRight(resizeRect, resizeRectColor); // TODO draw in EndWindow so it's always on top
 
-        AddDrawCommand(vertexCount); // before pushing new clip entry!
+        AddDrawCommand(vertexCount);
 
-        PushClipEntry(windowRect.Size);
+        PushClipEntry(new Rect(
+            windowRect.TopLeft + new Vector2(_nestedControlSpacing),
+            windowRect.BottomRight - new Vector2(_nestedControlSpacing)));
 
-        _cursor += new Vector2(10f, _titleBarHeight + 10f); // change cursor after PushClipEntry
+        Rect contentRect = new Rect(windowState.Rect.TopLeft + new Vector2(_nestedControlSpacing, _titleBarHeight + _nestedControlSpacing),
+                                    windowState.Rect.BottomRight - new Vector2(_nestedControlSpacing));
 
-        _layoutParentSize = windowState.Rect.Size - new Vector2(10f + 10f, _titleBarHeight + 10f + 10f);
+        PushLayoutItem(LayoutMode.Vertical, contentRect);
 
         _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Window, true);
@@ -905,90 +1044,201 @@ public unsafe class UI : IDisposable
         _activeWindow = null;
 
         _openScopeCount--;
+
+        PopLayoutItem();
         PopClipEntry();
         PopId();
+    }
+
+    public Scope BeginScrollable(Vector2 size)
+    {
+        size = AdjustSize(size);
+
+        if (size.X <= 0 || size.Y <= 0)
+        {
+            _openScopeCount++;
+            return new Scope(this, Scope.ScopeType.Null, false);
+        }
+
+        var rect = Layout(size);
+
+        int vertexCount = 0;
+        vertexCount += EmitBoxWithBorder(rect, _scrollableBorderColor, _scrollableBackgroundColor);
+
+        AddDrawCommand(vertexCount);
+
+        PushClipEntry(new Rect(
+            rect.TopLeft + new Vector2(_nestedControlSpacing),
+            rect.BottomRight - new Vector2(_nestedControlSpacing)));
+
+        var contentRect = new Rect(rect.TopLeft + new Vector2(_nestedControlSpacing), new Vector2(10_000, 10_000)); // TODO max value?
+
+        PushLayoutItem(LayoutMode.Vertical, contentRect);
+
+        _openScopeCount++;
+        return new Scope(this, Scope.ScopeType.Scrollable, true);
+    }
+
+    private void EndScrollable()
+    {
+        PopLayoutItem();
+
+        _openScopeCount--;
+        PopClipEntry();
+    }
+
+    public Scope BeginVertical(float? maxWidth = null)
+    {
+        Rect rect = _layoutItems.Peek().GetRemainingSpace();
+
+        if (maxWidth is not null && rect.Size.X > maxWidth.Value)
+        {
+            rect = new Rect(rect.TopLeft, rect.BottomLeft + new Vector2(maxWidth.Value, 0));
+        }
+
+        _ = PushLayoutItem(LayoutMode.Vertical, rect);
+
+        _openScopeCount++;
+        return new Scope(this, Scope.ScopeType.Vertical, true);
+    }
+
+    private void EndVertical()
+    {
+        if (_layoutItems.Peek().Mode != LayoutMode.Vertical)
+            throw new InvalidOperationException("Unbalanced BeginVertical/EndVertical");
+
+        // consume space in parent layout
+        var vertical = PopLayoutItem();
+        var consumedSize = vertical.MaxCursor - vertical.TotalRect.TopLeft;
+        _ = Layout(consumedSize);
+
+        _openScopeCount--;
+    }
+
+    public Scope BeginHorizontal(float? maxHeight = null)
+    {
+        Rect rect = _layoutItems.Peek().GetRemainingSpace();
+
+        if (maxHeight is not null && rect.Size.Y > maxHeight.Value)
+        {
+            rect = new Rect(rect.TopLeft, rect.TopRight + new Vector2(0, maxHeight.Value));
+        }
+
+        _ = PushLayoutItem(LayoutMode.Horizontal, rect);
+
+        _openScopeCount++;
+        return new Scope(this, Scope.ScopeType.Horizontal, true);
+    }
+
+    private void EndHorizontal()
+    {
+        if (_layoutItems.Peek().Mode != LayoutMode.Horizontal)
+            throw new InvalidOperationException("Unbalanced BeginHorizontal/EndHorizontal");
+
+        // consume space in parent layout
+        var horizontal = PopLayoutItem();
+        var consumedSize = horizontal.MaxCursor - horizontal.TotalRect.TopLeft;
+        _ = Layout(consumedSize);
+
+        _openScopeCount--;
+    }
+
+    public Scope BeginTable(params float[] columnWidths)
+    {
+        var item = PushLayoutItem(LayoutMode.Table, _layoutItems.Peek().GetRemainingSpace());
+
+        item.ColumnWidths = columnWidths;
+        item.Row = 0;
+        item.Column = 0;
+        item.MaxRowHeight = 0;
+
+        _openScopeCount++;
+        return new Scope(this, Scope.ScopeType.Table, true);
+    }
+
+    private void EndTable()
+    {
+        if (_layoutItems.Peek().Mode != LayoutMode.Table)
+            throw new InvalidOperationException("Unbalanced BeginTable/EndTable");
+
+        var table = PopLayoutItem();
+        var consumedSize = table.MaxCursor - table.TotalRect.TopLeft;
+        _ = Layout(consumedSize);
+
+        _openScopeCount--;
+    }
+
+    public void NextColumn()
+    {
+        if (_layoutItems.Peek().Mode != LayoutMode.Table)
+            throw new InvalidOperationException("NextColumn called without active table");
+
+        var table = _layoutItems.Peek();
+
+        if (table.Column >= table.ColumnWidths!.Length - 1)
+            throw new InvalidOperationException("No more columns in table");
+
+        var colWidth = table.GetCurrentColumnWidth();
+
+        table.Column++;
+
+        table.Cursor += new Vector2(colWidth, 0);
+    }
+
+    public void NextRow()
+    {
+        if (_layoutItems.Peek().Mode != LayoutMode.Table)
+            throw new InvalidOperationException("NextRow called without active table");
+
+        var table = _layoutItems.Peek();
+
+        table.Row++;
+        table.Column = 0;
+
+        table.Cursor = new Vector2(table.TotalRect.TopLeft.X, table.Cursor.Y + table.MaxRowHeight);
+
+        table.MaxRowHeight = 0;
     }
 
     public void Overlay(string text)
     {
         var size = MeasureTextLine(text);
-        var rect = new Rect(_cursor, _cursor + size);
+        var rect = Layout(size);
 
         int vertexCount = 0;
         vertexCount += EmitQuad(rect, _overlayBackgroundColor);
-        vertexCount += EmitTextVerts(_cursor, _overlayTextColor, text);
+        vertexCount += EmitTextVerts(rect.TopLeft, _overlayTextColor, text);
 
         AddDrawCommand(vertexCount);
-
-        _cursor.Y += size.Y;
     }
 
     public void Label(string text)
     {
-        // layout
-        Vector2 controlSize;
-        Vector2 cursorChange;
+        var size = MeasureTextLine(text);
+        size = AdjustSize(size);
 
-        switch (_layoutMode)
-        {
-            case LayoutMode.Vertical:
-            {
-                controlSize = new Vector2(_layoutParentSize.X, 20);
-                cursorChange = new Vector2(0, 20 + 5);
-                break;
-            }
+        if (size.X <= 0 || size.Y <= 0)
+            return;
 
-            case LayoutMode.Horizontal:
-            {
-                Vector2 textSize = MeasureTextLine(text);
-                controlSize = new Vector2(textSize.X, _layoutParentSize.Y);
-                cursorChange = new Vector2(textSize.X + 5, 0);
-                break;
-            }
-
-            default: throw new NotImplementedException();
-        }
-
-        Rect rect = new Rect(_cursor, _cursor + controlSize);
+        var rect = Layout(size);
 
         // geometry
         int vertexCount = 0;
         vertexCount += EmitQuad(rect, _labelBackgroundColor);
-        vertexCount += EmitTextVerts(_cursor, _labelTextColor, text);
+        vertexCount += EmitTextVerts(rect.TopLeft, _labelTextColor, text);
 
         AddDrawCommand(vertexCount);
-
-        // cursor
-        _cursor += cursorChange;
     }
 
     public bool Button(string text)
     {
-        // layout
-        Vector2 controlSize;
-        Vector2 cursorChange;
+        var size = MeasureTextLine(text) + new Vector2(5, 5);
+        size = AdjustSize(size);
 
-        switch (_layoutMode)
-        {
-            case LayoutMode.Vertical:
-            {
-                controlSize = new Vector2(_layoutParentSize.X, 20);
-                cursorChange = new Vector2(0, 20 + 5);
-                break;
-            }
+        if (size.X <= 0 || size.Y <= 0)
+            return false;
 
-            case LayoutMode.Horizontal:
-            {
-                Vector2 textSize = MeasureTextLine(text);
-                controlSize = new Vector2(textSize.X, _layoutParentSize.Y);
-                cursorChange = new Vector2(textSize.X + 5, 0);
-                break;
-            }
-
-            default: throw new NotImplementedException();
-        }
-
-        Rect rect = new Rect(_cursor, _cursor + controlSize);
+        var rect = Layout(size);
 
         // input
         var wasPressed = false;
@@ -1003,104 +1253,41 @@ public unsafe class UI : IDisposable
         // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _buttonBorderColor, backgroundColor);
-        vertexCount += EmitTextVerts(_cursor, _buttonTextColor, text);
+        vertexCount += EmitTextVerts(rect.TopLeft + new Vector2(2, 0), _buttonTextColor, text);
 
         AddDrawCommand(vertexCount);
-
-        // cursor
-        _cursor += cursorChange;
 
         return wasPressed;
     }
 
     public bool Input(string label, ref string value)
     {
-        // TODO need some kind of table:
-        //
-        // |---------------|
-        // | label | input |
-        // |---------------|
-        //
-        // BeginTable()
-        //  Label()
-        //  NextCol()
-        //  Input()
-        // EndTable()
-        //
-        // general form:
-        //
-        // BeginTable()
-        //  C1
-        //  NextCol()
-        //  C2
-        //  NextRow()
-        //  C3
-        //  NextCol()
-        //  C4
-        // EndTable()
-        //
+        bool r;
 
-        var totalSize = _layoutParentSize;
-        var cellSize = new Vector2(totalSize.X * 0.5f, totalSize.Y);
+        using (BeginTable(0.5f, _simpleLayoutSpacing, 0.5f))
+        {
+            Label(label);
+            NextColumn();
 
-        // PushLayout()
-        var cursorBefore = _cursor;
-        _layoutParentSize = cellSize;
+            NextColumn();
 
-        // draw cell 1
-        var cursorBeforeLabel = _cursor;
-        Label(label);
-        var cursorAfterLabel = _cursor;
-
-        _cursor = cursorBeforeLabel + new Vector2(cellSize.X, 0);
-        _layoutParentSize = cellSize;
-
-        // draw cell 2
-        PushId(label);
-        var cursorBeforeInput = _cursor;
-        bool r = Input(ref value);
-        var cursorAfterInput = _cursor;
-        PopId();
-
-        // PopLayout();
-        _layoutParentSize = totalSize;
-
-        var labelSize = cursorAfterLabel - cursorBeforeLabel;
-        var inputSize = cursorAfterInput - cursorBeforeInput;
-        var maxSize = Vector2.Max(labelSize, inputSize);
-
-        _cursor = cursorBefore + maxSize; // ??
+            PushId(label);
+            r = Input(ref value);
+            PopId();
+        }
 
         return r;
     }
 
     public bool Input(ref string value)
     {
-        // layout
-        Vector2 controlSize;
-        Vector2 cursorChange;
+        var size = new Vector2(200, 22);
+        size = AdjustSize(size);
 
-        switch (_layoutMode)
-        {
-            case LayoutMode.Vertical:
-            {
-                controlSize = new Vector2(_layoutParentSize.X, 20);
-                cursorChange = new Vector2(0, 20 + 5);
-                break;
-            }
+        if (size.X <= 0 || size.Y <= 0)
+            return false;
 
-            case LayoutMode.Horizontal:
-            {
-                Vector2 textSize = MeasureTextLine(value);
-                controlSize = new Vector2(textSize.X, _layoutParentSize.Y);
-                cursorChange = new Vector2(textSize.X + 5, 0);
-                break;
-            }
-
-            default: throw new NotImplementedException();
-        }
-
-        Rect rect = new Rect(_cursor, _cursor + controlSize);
+        var rect = Layout(size);
 
         // input
         Id id = _idStack.Peek();
@@ -1155,52 +1342,16 @@ public unsafe class UI : IDisposable
         // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
-        vertexCount += EmitTextVerts(_cursor, _inputTextColor, valueToShow);
+        vertexCount += EmitTextVerts(rect.TopLeft + new Vector2(2, 0), _inputTextColor, valueToShow);
 
         AddDrawCommand(vertexCount);
-
-        // cursor
-        _cursor += cursorChange;
 
         return false;
     }
 
-    public Scope BeginScrollable(Vector2 size)
-    {
-        var rect = new Rect(_cursor, _cursor + size);
-
-        int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(rect, _scrollableBorderColor, _scrollableBackgroundColor);
-
-        AddDrawCommand(vertexCount); // before pushing new clip entry!
-
-        PushClipEntry(size);
-
-        _cursor += new Vector2(10, 10); // change cursor after PushClipEntry
-
-        _openScopeCount++;
-        return new Scope(this, Scope.ScopeType.Scrollable, true);
-    }
-
-    private void EndScrollable()
+    private void EndNullScope()
     {
         _openScopeCount--;
-        PopClipEntry();
-    }
-
-    public void SetCursor(Vector2 position)
-    {
-        _cursor = position;
-    }
-
-    public void Horizontal()
-    {
-        _layoutMode = LayoutMode.Horizontal;
-    }
-
-    public void Vertical()
-    {
-        _layoutMode = LayoutMode.Vertical;
     }
 
     #endregion

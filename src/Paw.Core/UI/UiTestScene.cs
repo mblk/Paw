@@ -137,11 +137,12 @@ public class UiTestScene : Scene
         // window 2
         //
 
+#if true
         UI.SetNextWindowPositionMode(UI.WindowPositionMode.Right);
 
         using (var window = UI.BeginWindow(new Vector2(300, 200), "window 2"))
         {
-            UI.Horizontal();
+            //UI.Horizontal();
 
             if (UI.Button("button 10"))
             {
@@ -151,7 +152,23 @@ public class UiTestScene : Scene
             {
                 Console.WriteLine($"button 11");
             }
+
+            using (UI.BeginTable(0.333f, 0.666f))
+            {
+                UI.Label("1");
+                UI.NextColumn();
+
+                UI.Label("2");
+                UI.NextRow();
+
+                UI.Label("3");
+                UI.NextColumn();
+
+                UI.Label("4");
+                UI.NextRow();
+            }
         }
+#endif
 
         //
         // Window 3
@@ -180,6 +197,39 @@ public class UiTestScene : Scene
                 UI.Label("hello");
             }
         }
+
+        //
+        // Window 5
+        //
+
+        UI.SetNextWindowPositionMode(UI.WindowPositionMode.Bottom);
+
+        using (var window = UI.BeginWindow(new Vector2(500, 200), "window 5"))
+        {
+            using (UI.BeginHorizontal())
+            {
+                UI.Button("button 1");
+                UI.Label("label 1");
+                UI.Button("button 2");
+                UI.Label("label 2");
+                UI.Button("button 3");
+                UI.Label("label 3");
+
+                using (UI.BeginVertical(100))
+                {
+                    UI.Label("label a");
+                    UI.Label("label b");
+                    UI.Label("label c");
+                    UI.Button("button d");
+                }
+
+                UI.Button("button 4");
+                UI.Label("label 4");
+
+            }
+
+        }
+
 
         //
         //

@@ -17,6 +17,7 @@ public unsafe class UI : IDisposable
 
     private const float _simpleLayoutSpacing = 5f; // horizontal/vertical layouts
     private const float _nestedControlSpacing = 5f; // window/scrollable
+    private const float _tableSpacing = 5f;
 
     private readonly Vector2 _textMargin = new(3, 3);
 
@@ -339,15 +340,10 @@ public unsafe class UI : IDisposable
         {
             if (ColumnWidths is null)
                 throw new InvalidOperationException("Not a table");
+            if (Column < 0 || Column >= ColumnWidths.Length)
+                throw new InvalidOperationException("Invalid Column index");
 
-            var colWidth = ColumnWidths![Column];
-
-            if (colWidth <= 1.0f)
-            {
-                colWidth *= TotalRect.Size.X;
-            }
-
-            return colWidth;
+            return ColumnWidths[Column];
         }
     }
 
@@ -1050,7 +1046,7 @@ public unsafe class UI : IDisposable
         PopId();
     }
 
-    public Scope BeginScrollable(Vector2 size)
+    public Scope BeginScrollable(Vector2 size) // TODO enable/disable scroll-axis x/y
     {
         size = AdjustSize(size);
 
@@ -1143,17 +1139,68 @@ public unsafe class UI : IDisposable
         _openScopeCount--;
     }
 
+    /// <summary>
+    /// Define column widths:<br />
+    /// width &gt; 1: size in pixels<br />
+    /// 0 &lt; width &lt;= 1: fraction of remaining size<br />
+    /// </summary>
     public Scope BeginTable(params float[] columnWidths)
     {
-        var item = PushLayoutItem(LayoutMode.Table, _layoutItems.Peek().GetRemainingSpace());
+        if (columnWidths.Length < 1)
+            throw new ArgumentException("Column widths not specified", nameof(columnWidths));
 
-        item.ColumnWidths = columnWidths;
+        // error checking without allocations
+        {
+            var sumOfFractions = 0f;
+
+            for (var i = 0; i < columnWidths.Length; i++)
+            {
+                var w = columnWidths[i];
+                if (w <= 0f)
+                    throw new ArgumentOutOfRangeException(nameof(columnWidths), "Column widths must be greater than zero");
+
+                if (!float.IsFinite(w))
+                    throw new ArgumentOutOfRangeException(nameof(columnWidths), "Column widths must be finite (not NaN, Inf, etc)");
+
+                if (IsFractionalColumnWidth(w))
+                    sumOfFractions += w;
+            }
+
+            if (sumOfFractions > 1f)
+                throw new ArgumentOutOfRangeException(nameof(columnWidths), "Sum of column fractions must not be greater than one");
+        }
+
+        Rect rect = _layoutItems.Peek().GetRemainingSpace();
+
+        // calculate column widths in pixels
+        var actualColumnWidths = new float[columnWidths.Length];
+        var alreadyConsumedWidth = _tableSpacing * (columnWidths.Length - 1);
+        for (var i = 0; i < columnWidths.Length; i++)
+        {
+            if (columnWidths[i] > 1f)
+                alreadyConsumedWidth += columnWidths[i];
+        }
+        var remainingWidth = MathF.Max(0f, rect.Size.X - alreadyConsumedWidth);
+
+        for (var i = 0; i < columnWidths.Length; i++)
+        {
+            actualColumnWidths[i] = IsFractionalColumnWidth(columnWidths[i])
+                ? columnWidths[i] * remainingWidth
+                : columnWidths[i];
+        }
+
+        // create table layout item
+        var item = PushLayoutItem(LayoutMode.Table, rect);
+
+        item.ColumnWidths = actualColumnWidths;
         item.Row = 0;
         item.Column = 0;
         item.MaxRowHeight = 0;
 
         _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Table, true);
+
+        static bool IsFractionalColumnWidth(float columnWidth) => columnWidth <= 1f;
     }
 
     private void EndTable()
@@ -1181,8 +1228,7 @@ public unsafe class UI : IDisposable
         var colWidth = table.GetCurrentColumnWidth();
 
         table.Column++;
-
-        table.Cursor += new Vector2(colWidth, 0);
+        table.Cursor += new Vector2(colWidth + _tableSpacing, 0);
     }
 
     public void NextRow()
@@ -1194,9 +1240,7 @@ public unsafe class UI : IDisposable
 
         table.Row++;
         table.Column = 0;
-
-        table.Cursor = new Vector2(table.TotalRect.TopLeft.X, table.Cursor.Y + table.MaxRowHeight);
-
+        table.Cursor = new Vector2(table.TotalRect.TopLeft.X, table.Cursor.Y + table.MaxRowHeight + _tableSpacing);
         table.MaxRowHeight = 0;
     }
 
@@ -1258,25 +1302,6 @@ public unsafe class UI : IDisposable
         AddDrawCommand(vertexCount);
 
         return wasPressed;
-    }
-
-    public bool Input(string label, ref string value)
-    {
-        bool r;
-
-        using (BeginTable(0.5f, _simpleLayoutSpacing, 0.5f))
-        {
-            Label(label);
-            NextColumn();
-
-            NextColumn();
-
-            PushId(label);
-            r = Input(ref value);
-            PopId();
-        }
-
-        return r;
     }
 
     public bool Input(ref string value)
@@ -1352,6 +1377,27 @@ public unsafe class UI : IDisposable
     private void EndNullScope()
     {
         _openScopeCount--;
+    }
+
+    #endregion
+
+    #region Composite controls
+
+    public bool Input(string label, ref string value)
+    {
+        bool r;
+
+        using (BeginTable(0.5f, 0.5f))
+        {
+            Label(label);
+            NextColumn();
+
+            PushId(label);
+            r = Input(ref value);
+            PopId();
+        }
+
+        return r;
     }
 
     #endregion

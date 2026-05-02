@@ -167,6 +167,11 @@ public class UiTestScene : Scene
                 UI.Label("4");
                 UI.NextRow();
             }
+
+            if (UI.Button("button 12"))
+            {
+                Console.WriteLine($"button 11");
+            }
         }
 #endif
 

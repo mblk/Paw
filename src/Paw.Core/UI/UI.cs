@@ -94,6 +94,11 @@ public unsafe class UI : IDisposable
         {
             return new Rect(Max - size, Max);
         }
+
+        public Rect Move(Vector2 delta)
+        {
+            return new Rect(Min + delta, Max + delta);
+        }
     }
 
     public readonly ref struct Scope : IDisposable
@@ -124,7 +129,7 @@ public unsafe class UI : IDisposable
 
         public void Dispose()
         {
-            _ui.DecreateOpenScopeCount();
+            _ui.DecreaseOpenScopeCount();
 
             switch (_scopeType)
             {
@@ -235,6 +240,8 @@ public unsafe class UI : IDisposable
     private readonly Dictionary<Id, WindowState> _windowStates = [];
     private readonly LinkedList<Id> _windowZOrder = [];
 
+    private readonly Dictionary<Id, Vector2> _scrollOffsets = [];
+
     private readonly List<DrawCommand> _globalDrawCommands = [];
     private WindowState? _activeWindow;
     private bool _mouseBlockedByOtherWindow;
@@ -283,6 +290,7 @@ public unsafe class UI : IDisposable
         public readonly Rect TotalRect;
         public Vector2 Cursor;
         public Vector2 MaxCursor;
+        public Vector2 ScrollOffset;
 
         // table
         public float[]? ColumnWidths;
@@ -348,6 +356,10 @@ public unsafe class UI : IDisposable
 
             MaxCursor = Vector2.Max(MaxCursor, rect.BottomRight);
 
+            //xxx
+            rect = rect.Move(-ScrollOffset);
+            //xxx
+
             return rect;
         }
 
@@ -391,6 +403,7 @@ public unsafe class UI : IDisposable
     private Vector2 _mousePosition;
     private Vector2 _mouseDelta;
     private bool _mouseMoved;
+    private bool _mouseWheelConsumed;
 
 
 
@@ -422,6 +435,8 @@ public unsafe class UI : IDisposable
         _mousePosition = new Vector2(_mouseState.X, _mouseState.Y);
         _mouseDelta = _mousePosition - prevMousePosition;
         _mouseMoved = _mouseDelta != default;
+
+        _mouseWheelConsumed = false;
     }
 
     public void Render(RenderContext context)
@@ -698,12 +713,14 @@ public unsafe class UI : IDisposable
         _clipStack.Push(innerClipEntry);
     }
 
-    private void PopClipEntry()
+    private Rect PopClipEntry()
     {
         if (_clipStack.Count < 2) // prevent popping root
             throw new InvalidOperationException("Unbalanced Begin/End calls to clip stack");
 
-        _ = _clipStack.Pop();
+        var clipEntry = _clipStack.Pop();
+
+        return clipEntry.Rect;
     }
 
     private LayoutItem PushLayoutItem(LayoutMode mode, Rect totalRect)
@@ -817,12 +834,12 @@ public unsafe class UI : IDisposable
         return id;
     }
 
-    private void PopId()
+    private Id PopId()
     {
         if (_idStack.Count < 2) // prevent popping root
             throw new InvalidOperationException("Unbalanced Begin/End calls to ID stack");
 
-        _idStack.Pop();
+        return _idStack.Pop();
     }
 
     private void IncreaseOpenScopeCount()
@@ -830,7 +847,7 @@ public unsafe class UI : IDisposable
         _openScopeCount++;
     }
 
-    private void DecreateOpenScopeCount()
+    private void DecreaseOpenScopeCount()
     {
         if (_openScopeCount < 1)
             throw new InvalidOperationException("Open scope count is less than 1");
@@ -1081,8 +1098,9 @@ public unsafe class UI : IDisposable
         PopId();
     }
 
-    public Scope BeginScrollable(Vector2 size) // TODO enable/disable scroll-axis x/y
+    public Scope BeginScrollable(Vector2 size, string idText) // TODO enable/disable scroll-axis x/y
     {
+        // layout
         size = AdjustSize(size);
 
         if (size.X <= 0 || size.Y <= 0)
@@ -1092,26 +1110,67 @@ public unsafe class UI : IDisposable
 
         var rect = Layout(size);
 
+        // id
+        var id = PushId(idText);
+
+        // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _scrollableBorderColor, _scrollableBackgroundColor);
 
         AddDrawCommand(vertexCount);
 
+        //
         PushClipEntry(new Rect(
             rect.TopLeft + new Vector2(_nestedControlSpacing),
             rect.BottomRight - new Vector2(_nestedControlSpacing)));
 
-        var contentRect = new Rect(rect.TopLeft + new Vector2(_nestedControlSpacing), new Vector2(10_000, 10_000)); // TODO max value?
+        var maxContentSize = new Vector2(size.X - _nestedControlSpacing, 10_000); // TODO max value?
 
-        PushLayoutItem(LayoutMode.Vertical, contentRect);
+        var contentRect = new Rect(rect.TopLeft + new Vector2(_nestedControlSpacing), rect.TopLeft + maxContentSize);
+
+        var layoutItem = PushLayoutItem(LayoutMode.Vertical, contentRect);
+
+        if (!_scrollOffsets.TryGetValue(id, out var scrollOffset))
+            _scrollOffsets.Add(id, scrollOffset = new Vector2());
+
+        layoutItem.ScrollOffset += scrollOffset;
 
         return new Scope(this, Scope.ScopeType.Scrollable, true);
     }
 
     private void EndScrollable()
     {
-        PopLayoutItem();
-        PopClipEntry();
+        var verticalLayout = PopLayoutItem();
+        var rect = PopClipEntry();
+        var id = PopId();
+
+        // input
+        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow && _mouseState.WheelDelta != 0 && !_mouseWheelConsumed)
+        {
+            int dy = _mouseState.WheelDelta;
+
+            var prevScrollOffset = _scrollOffsets[id];
+            var newScrollOffset = prevScrollOffset;
+
+            newScrollOffset.Y -= dy * 10;
+
+            if (newScrollOffset.Y < 0)
+                newScrollOffset.Y = 0;
+
+            var contentSize = verticalLayout.MaxCursor - verticalLayout.TotalRect.TopLeft;
+
+            if (newScrollOffset.Y > contentSize.Y - rect.Size.Y)
+                newScrollOffset.Y = contentSize.Y - rect.Size.Y;
+
+            if (contentSize.Y < rect.Size.Y)
+                newScrollOffset.Y = 0;
+
+            if (newScrollOffset != prevScrollOffset)
+            {
+                _mouseWheelConsumed = true;
+                _scrollOffsets[id] = newScrollOffset;
+            }
+        }
     }
 
     public Scope BeginVertical(float? maxWidth = null)

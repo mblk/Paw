@@ -100,7 +100,7 @@ public class UiTestScene : Scene
             UI.Input("string3", ref _string3);
             UI.Input("string4", ref _string4);
 
-            using (UI.BeginScrollable(new Vector2(200, 100)))
+            using (UI.BeginScrollable(new Vector2(200, 200), "Scrollable1"))
             {
                 UI.Label("label 1.1");
                 UI.Label("label 1.2");
@@ -118,16 +118,24 @@ public class UiTestScene : Scene
                 {
                     Console.WriteLine($"button 1.7");
                 }
+
+                using (UI.BeginScrollable(new Vector2(200, 100), "Scrollable3"))
+                {
+                    for (int i = 0; i < 100; i++)
+                    {
+                        UI.Label($"Foo {i}");
+                    }
+                }
             }
 
             UI.Label("label 5");
 
-            using (UI.BeginScrollable(new Vector2(1000, 100)))
+            using (UI.BeginScrollable(new Vector2(1000, 100), "Scrollable2"))
             {
                 UI.Label("label 6");
                 UI.Label("label 7");
-                UI.Label("label 8");
-                UI.Label("label 9");
+                //UI.Label("label 8");
+                //UI.Label("label 9");
             }
 
             UI.Label("label 10");

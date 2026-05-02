@@ -116,13 +116,17 @@ public unsafe class UI : IDisposable
             _ui = ui;
             _scopeType = scopeType;
             IsOpen = isOpen;
+
+            ui.IncreaseOpenScopeCount();
         }
 
         public void Dispose()
         {
+            _ui.DecreateOpenScopeCount();
+
             switch (_scopeType)
             {
-                case ScopeType.Null: _ui.EndNullScope(); break;
+                case ScopeType.Null: break;
                 case ScopeType.Window: _ui.EndWindow(); break;
                 case ScopeType.Scrollable: _ui.EndScrollable(); break;
                 case ScopeType.Vertical: _ui.EndVertical(); break;
@@ -256,7 +260,7 @@ public unsafe class UI : IDisposable
     private class LayoutItem
     {
         public readonly LayoutMode Mode;
-        public Rect TotalRect;
+        public readonly Rect TotalRect;
         public Vector2 Cursor;
         public Vector2 MaxCursor;
 
@@ -279,34 +283,23 @@ public unsafe class UI : IDisposable
             return new Rect(Cursor, TotalRect.BottomRight);
         }
 
-        public Vector2 GetAvailableSize()
-        {
-            return TotalRect.BottomRight - Cursor;
-        }
-
         public Vector2 AdjustSize(Vector2 requestedSize)
         {
+            var remainingSpace = TotalRect.BottomRight - Cursor;
+
             switch (Mode)
             {
                 case LayoutMode.Vertical:
-                {
-                    var remainingSpace = TotalRect.BottomRight - Cursor;
                     return new Vector2(TotalRect.Size.X, Math.Min(remainingSpace.Y, requestedSize.Y));
-                }
 
                 case LayoutMode.Horizontal:
-                {
-                    var remainingSpace = TotalRect.BottomRight - Cursor;
                     return new Vector2(Math.Min(remainingSpace.X, requestedSize.X), TotalRect.Size.Y);
-                }
 
                 case LayoutMode.Table:
-                {
-                    var colWidth = GetCurrentColumnWidth();
-                    return new Vector2(colWidth, requestedSize.Y);
-                }
+                    return new Vector2(GetCurrentColumnWidth(), requestedSize.Y);
 
-                default: throw new NotImplementedException();
+                default:
+                    throw new NotImplementedException();
             }
         }
 
@@ -326,12 +319,11 @@ public unsafe class UI : IDisposable
                     break;
 
                 case LayoutMode.Table:
-                {
                     MaxRowHeight = Math.Max(MaxRowHeight, size.Y);
                     break;
-                }
 
-                default: throw new NotImplementedException();
+                default:
+                    throw new NotImplementedException();
             }
 
             MaxCursor = Vector2.Max(MaxCursor, rect.BottomRight);
@@ -1031,7 +1023,6 @@ public unsafe class UI : IDisposable
 
         PushLayoutItem(LayoutMode.Vertical, contentRect);
 
-        _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Window, true);
     }
 
@@ -1041,8 +1032,6 @@ public unsafe class UI : IDisposable
             throw new InvalidOperationException("EndWindow called while no window is active");
 
         _activeWindow = null;
-
-        _openScopeCount--;
 
         PopLayoutItem();
         PopClipEntry();
@@ -1055,7 +1044,6 @@ public unsafe class UI : IDisposable
 
         if (size.X <= 0 || size.Y <= 0)
         {
-            _openScopeCount++;
             return new Scope(this, Scope.ScopeType.Null, false);
         }
 
@@ -1074,15 +1062,12 @@ public unsafe class UI : IDisposable
 
         PushLayoutItem(LayoutMode.Vertical, contentRect);
 
-        _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Scrollable, true);
     }
 
     private void EndScrollable()
     {
         PopLayoutItem();
-
-        _openScopeCount--;
         PopClipEntry();
     }
 
@@ -1097,7 +1082,6 @@ public unsafe class UI : IDisposable
 
         _ = PushLayoutItem(LayoutMode.Vertical, rect);
 
-        _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Vertical, true);
     }
 
@@ -1110,8 +1094,6 @@ public unsafe class UI : IDisposable
         var vertical = PopLayoutItem();
         var consumedSize = vertical.MaxCursor - vertical.TotalRect.TopLeft;
         _ = Layout(consumedSize);
-
-        _openScopeCount--;
     }
 
     public Scope BeginHorizontal(float? maxHeight = null)
@@ -1125,7 +1107,6 @@ public unsafe class UI : IDisposable
 
         _ = PushLayoutItem(LayoutMode.Horizontal, rect);
 
-        _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Horizontal, true);
     }
 
@@ -1138,8 +1119,6 @@ public unsafe class UI : IDisposable
         var horizontal = PopLayoutItem();
         var consumedSize = horizontal.MaxCursor - horizontal.TotalRect.TopLeft;
         _ = Layout(consumedSize);
-
-        _openScopeCount--;
     }
 
     /// <summary>
@@ -1200,7 +1179,6 @@ public unsafe class UI : IDisposable
         item.Column = 0;
         item.MaxRowHeight = 0;
 
-        _openScopeCount++;
         return new Scope(this, Scope.ScopeType.Table, true);
 
         static bool IsFractionalColumnWidth(float columnWidth) => columnWidth <= 1f;
@@ -1214,8 +1192,6 @@ public unsafe class UI : IDisposable
         var table = PopLayoutItem();
         var consumedSize = table.MaxCursor - table.TotalRect.TopLeft;
         _ = Layout(consumedSize);
-
-        _openScopeCount--;
     }
 
     public void NextColumn()
@@ -1388,8 +1364,16 @@ public unsafe class UI : IDisposable
         return valueChanged;
     }
 
-    private void EndNullScope()
+    private void IncreaseOpenScopeCount()
     {
+        _openScopeCount++;
+    }
+
+    private void DecreateOpenScopeCount()
+    {
+        if (_openScopeCount < 1)
+            throw new InvalidOperationException("Open scope count is less than 1");
+
         _openScopeCount--;
     }
 

@@ -659,7 +659,7 @@ public unsafe class UI : IDisposable
         drawCommands.Add(new DrawCommand()
         {
             Clip = clipEntry.Rect,
-            VertexOffset = _vertices.Count - vertexCount, // xxx not sure
+            VertexOffset = _vertices.Count - vertexCount,
             VertexCount = vertexCount,
         });
     }
@@ -793,6 +793,19 @@ public unsafe class UI : IDisposable
             throw new InvalidOperationException("Unbalanced Begin/End calls to ID stack");
 
         _idStack.Pop();
+    }
+
+    private void IncreaseOpenScopeCount()
+    {
+        _openScopeCount++;
+    }
+
+    private void DecreateOpenScopeCount()
+    {
+        if (_openScopeCount < 1)
+            throw new InvalidOperationException("Open scope count is less than 1");
+
+        _openScopeCount--;
     }
 
     #region Controls implementation/API
@@ -1010,7 +1023,7 @@ public unsafe class UI : IDisposable
         vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor);
         vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, titleBarColor);
         vertexCount += EmitTextVerts(titleRect.TopLeft, _windowTitleTextColor, title);
-        vertexCount += EmitTriangleBottomRight(resizeRect, resizeRectColor); // TODO draw in EndWindow so it's always on top
+        vertexCount += EmitTriangleBottomRight(resizeRect, resizeRectColor);
 
         AddDrawCommand(vertexCount);
 
@@ -1362,19 +1375,6 @@ public unsafe class UI : IDisposable
         AddDrawCommand(vertexCount);
 
         return valueChanged;
-    }
-
-    private void IncreaseOpenScopeCount()
-    {
-        _openScopeCount++;
-    }
-
-    private void DecreateOpenScopeCount()
-    {
-        if (_openScopeCount < 1)
-            throw new InvalidOperationException("Open scope count is less than 1");
-
-        _openScopeCount--;
     }
 
     #endregion

@@ -11,7 +11,9 @@ public unsafe class UI : IDisposable
 {
     private const float _borderWidth = 1f;
 
-    private const float _titleBarHeight = 20f;
+    private const float _titleBarHeight = 24f;
+
+    private const float _simpleControlHeight = 24f;
 
     private const float _textScale = 0.666f;
 
@@ -19,7 +21,8 @@ public unsafe class UI : IDisposable
     private const float _nestedControlSpacing = 5f; // window/scrollable
     private const float _tableSpacing = 5f;
 
-    private readonly Vector2 _textMargin = new(3, 3);
+    private readonly Vector2 _textMargin = new(4, 4);
+    private readonly Vector2 _simpleControlTextOffset = new(2, 0);
 
     private readonly Vector4 _windowBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _windowTitleBarColor = new(0.2f, 0.2f, 0.2f, 1.0f);
@@ -29,7 +32,7 @@ public unsafe class UI : IDisposable
     private readonly Vector4 _overlayBackgroundColor = new(0.0f);
     private readonly Vector4 _overlayTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
-    private readonly Vector4 _labelBackgroundColor = new(0.5f, 0.5f, 0.5f, 1.0f);
+    private readonly Vector4 _labelBackgroundColor = new(0.5f, 0.5f, 0.5f, 0.0f); // a=1 for debugging
     private readonly Vector4 _labelTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
     private readonly Vector4 _buttonBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
@@ -1259,6 +1262,9 @@ public unsafe class UI : IDisposable
     public void Label(string text)
     {
         var size = MeasureTextLine(text);
+
+        size.Y = _simpleControlHeight;
+
         size = AdjustSize(size);
 
         if (size.X <= 0 || size.Y <= 0)
@@ -1276,7 +1282,11 @@ public unsafe class UI : IDisposable
 
     public bool Button(string text)
     {
-        var size = MeasureTextLine(text) + new Vector2(5, 5);
+        var size = MeasureTextLine(text);
+
+        size.X += 5f;
+        size.Y = _simpleControlHeight;
+
         size = AdjustSize(size);
 
         if (size.X <= 0 || size.Y <= 0)
@@ -1297,7 +1307,7 @@ public unsafe class UI : IDisposable
         // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _buttonBorderColor, backgroundColor);
-        vertexCount += EmitTextVerts(rect.TopLeft + new Vector2(2, 0), _buttonTextColor, text);
+        vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _buttonTextColor, text);
 
         AddDrawCommand(vertexCount);
 
@@ -1306,7 +1316,7 @@ public unsafe class UI : IDisposable
 
     public bool Input(ref string value)
     {
-        var size = new Vector2(200, 22);
+        var size = new Vector2(100, _simpleControlHeight);
         size = AdjustSize(size);
 
         if (size.X <= 0 || size.Y <= 0)
@@ -1317,13 +1327,12 @@ public unsafe class UI : IDisposable
         // input
         Id id = _idStack.Peek();
 
-        var wasPressed = false;
         Vector4 backgroundColor = _inputBackgroundColor;
 
         if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
         {
             backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
-            wasPressed = _mouseState.WasPressed(MouseButton.Left);
+            var wasPressed = _mouseState.WasPressed(MouseButton.Left);
 
             if (_selectedControl != id && wasPressed)
             {
@@ -1332,6 +1341,7 @@ public unsafe class UI : IDisposable
         }
 
         string valueToShow = value;
+        var valueChanged = false;
 
         if (_selectedControl == id)
         {
@@ -1344,19 +1354,23 @@ public unsafe class UI : IDisposable
                     if (value.Length > 0)
                     {
                         value = value[0..^1];
+                        valueChanged = true;
                     }
                 }
                 else if (c == 9) // tab
                 {
                     _selectedControl = default;
+                    valueChanged = true;
                 }
                 else if (c == 10 || c == 13) // enter
                 {
                     _selectedControl = default;
+                    valueChanged = true;
                 }
                 else if (!char.IsControl(c))
                 {
                     value += c;
+                    valueChanged = true;
                 }
             }
 
@@ -1367,11 +1381,11 @@ public unsafe class UI : IDisposable
         // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
-        vertexCount += EmitTextVerts(rect.TopLeft + new Vector2(2, 0), _inputTextColor, valueToShow);
+        vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _inputTextColor, valueToShow);
 
         AddDrawCommand(vertexCount);
 
-        return false;
+        return valueChanged;
     }
 
     private void EndNullScope()

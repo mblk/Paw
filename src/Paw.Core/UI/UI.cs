@@ -2,6 +2,8 @@
 using Paw.Core.Graphics;
 using Paw.Core.Platforms;
 using Paw.Core.Resources;
+using Paw.Core.Utils;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
@@ -137,38 +139,56 @@ public unsafe class UI : IDisposable
         }
     }
 
-    private readonly record struct Id(int HC)
+    private readonly struct Id : IEquatable<Id>
     {
+        public readonly ulong Value;
+
 #if DEBUG
-        public required string Path { get; init; }
-#endif
+        public readonly string Path;
+
+        private Id(ulong value, string path)
+        {
+            Value = value;
+            Path = path;
+        }
+
+        public override string ToString() => $"Id({Path})";
 
         public static Id Create(string s)
         {
-            int hc = s.GetHashCode();
-
-            return new Id(hc)
-#if DEBUG
-            {
-                Path = s,
-            }
-#endif
-            ;
+            return new Id(HashUtils.HashString64(s), $"/{s}");
         }
 
         public Id Combine(string s)
         {
-            int hc = s.GetHashCode();
-            int hc2 = HashCode.Combine(this.HC, hc);
-
-            return new Id(hc2)
-#if DEBUG
-            {
-                Path = $"{this.Path}/{s}",
-            }
-#endif
-            ;
+            return new Id(HashUtils.Combine64(Value, HashUtils.HashString64(s)), $"{Path}/{s}");
         }
+#else
+        private Id(ulong value)
+        {
+            Value = value;
+        }
+
+        public override string ToString() => $"Id({Value:X16})";
+
+        public static Id Create(string s)
+        {
+            return new Id(HashUtils.HashString64(s));
+        }
+
+        public Id Combine(string s)
+        {
+            return new Id(HashUtils.Combine64(Value, HashUtils.HashString64(s)));
+        }
+#endif
+
+        public override int GetHashCode() => Value.GetHashCode();
+
+        public bool Equals(Id other) => other.Value == this.Value;
+        public override bool Equals([NotNullWhen(true)] object? obj) => obj is Id other && other.Value == this.Value;
+
+        public static bool operator ==(Id left, Id right) => left.Value == right.Value;
+        public static bool operator !=(Id left, Id right) => left.Value != right.Value;
     }
 
     private class WindowState
@@ -498,7 +518,7 @@ public unsafe class UI : IDisposable
         _clipStack.Push(_rootClipEntry);
 
         _idStack.Clear();
-        _idStack.Push(Id.Create("root"));
+        PushId("root");
 
         _activeWindow = null;
         _mouseBlockedByOtherWindow = false;
@@ -680,7 +700,7 @@ public unsafe class UI : IDisposable
 
     private void PopClipEntry()
     {
-        if (_clipStack.Count < 2)
+        if (_clipStack.Count < 2) // prevent popping root
             throw new InvalidOperationException("Unbalanced Begin/End calls to clip stack");
 
         _ = _clipStack.Pop();
@@ -697,7 +717,7 @@ public unsafe class UI : IDisposable
 
     private LayoutItem PopLayoutItem()
     {
-        if (_layoutItems.Count < 2)
+        if (_layoutItems.Count < 2) // prevent popping root
             throw new InvalidOperationException("Unbalanced Push/Pop calls to layout stack");
 
         return _layoutItems.Pop();
@@ -782,14 +802,24 @@ public unsafe class UI : IDisposable
 
     private Id PushId(string s)
     {
-        var id = Id.Create(s);
+        Id id;
+
+        if (_idStack.Count == 0)
+        {
+            id = Id.Create(s);
+        }
+        else
+        {
+            id = _idStack.Peek().Combine(s);
+        }
+
         _idStack.Push(id);
         return id;
     }
 
     private void PopId()
     {
-        if (_idStack.Count < 1)
+        if (_idStack.Count < 2) // prevent popping root
             throw new InvalidOperationException("Unbalanced Begin/End calls to ID stack");
 
         _idStack.Pop();

@@ -18,8 +18,8 @@ public class UiTestScene : Scene
 
     private string _string1 = "Hello";
     private string _string2 = "World";
-    private string _string3 = "";
-    private string _string4 = "";
+    private float _float1 = 0;
+    private float _float2 = 12.34f;
 
     private bool _showWindow3;
     private bool _showWindow4;
@@ -97,8 +97,9 @@ public class UiTestScene : Scene
 
             UI.Input("string1", ref _string1);
             UI.Input("string2", ref _string2);
-            UI.Input("string3", ref _string3);
-            UI.Input("string4", ref _string4);
+            UI.Input("float1", ref _float1);
+            UI.Input("float2", ref _float2);
+            UI.Label($"{_string1} {_string2} {_float1} {_float2}");
 
             using (UI.BeginScrollable(new Vector2(200, 200), "Scrollable1"))
             {

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace Paw.Core.UI;
 
-public unsafe class UI : IDisposable
+public sealed unsafe class UI : IDisposable
 {
     private const float _borderWidth = 1f;
 
@@ -234,6 +234,8 @@ public unsafe class UI : IDisposable
 
     // id
     private readonly Stack<Id> _idStack = [];
+
+    // selection
     private Id _selectedControl = default;
 
     // windows
@@ -356,9 +358,7 @@ public unsafe class UI : IDisposable
 
             MaxCursor = Vector2.Max(MaxCursor, rect.BottomRight);
 
-            //xxx
             rect = rect.Move(-ScrollOffset);
-            //xxx
 
             return rect;
         }
@@ -405,6 +405,15 @@ public unsafe class UI : IDisposable
     private bool _mouseMoved;
     private bool _mouseWheelConsumed;
 
+
+
+    //
+    // live input
+    //
+
+    private string _inputBuffer = "";
+    private string _inputBufferWithCursor = "";
+    private int _inputBufferCursorStart;
 
 
     public UI(AssetManager assetManager)
@@ -854,6 +863,69 @@ public unsafe class UI : IDisposable
 
         _openScopeCount--;
     }
+
+    #region String input
+
+    private void StartStringInput(Id controlId, string initialValue)
+    {
+        if (controlId == default)
+            throw new ArgumentException("Control id not set");
+
+        _selectedControl = controlId;
+
+        _inputBuffer = initialValue;
+        _inputBufferCursorStart = _inputBuffer.Length;
+        _inputBufferWithCursor = _inputBuffer.Insert(_inputBufferCursorStart, "_");
+    }
+
+    private bool HandleStringInput()
+    {
+        var prevInputBuffer = _inputBuffer;
+
+        if (_keyboardState.WasPressed(Key.Right))
+        {
+            if (_inputBufferCursorStart < _inputBuffer.Length)
+                _inputBufferCursorStart++;
+        }
+        if (_keyboardState.WasPressed(Key.Left))
+        {
+            if (_inputBufferCursorStart > 0)
+                _inputBufferCursorStart--;
+        }
+
+        for (int i = 0; i < _keyboardState.NumChars; i++)
+        {
+            char c = _keyboardState.Chars[i];
+
+            if (c == 8) // backspace
+            {
+                if (_inputBufferCursorStart > 0 && _inputBuffer.Length > 0)
+                {
+                    _inputBuffer = _inputBuffer.Remove(_inputBufferCursorStart - 1, 1);
+                    _inputBufferCursorStart--;
+                }
+            }
+            else if (c == 9) // tab
+            {
+                _selectedControl = default;
+            }
+            else if (c == 10 || c == 13) // enter
+            {
+                _selectedControl = default;
+            }
+            else if (!char.IsControl(c))
+            {
+                _inputBuffer = _inputBuffer.Insert(_inputBufferCursorStart, c.ToString());
+                _inputBufferCursorStart++;
+            }
+        }
+
+        _inputBufferWithCursor = _inputBuffer.Insert(_inputBufferCursorStart, "_");
+
+        return _inputBuffer != prevInputBuffer;
+    }
+
+    #endregion
 
     #region Controls implementation/API
 
@@ -1484,46 +1556,27 @@ public unsafe class UI : IDisposable
 
             if (_selectedControl != id && wasPressed)
             {
-                _selectedControl = id;
+                StartStringInput(id, value);
             }
         }
 
-        string valueToShow = value;
+        string valueToShow;
         var valueChanged = false;
 
         if (_selectedControl == id)
         {
-            if (_keyboardState.NumChars > 0)
+            if (HandleStringInput())
             {
-                char c = _keyboardState.Chars[0];
-
-                if (c == 8) // backspace
-                {
-                    if (value.Length > 0)
-                    {
-                        value = value[0..^1];
-                        valueChanged = true;
-                    }
-                }
-                else if (c == 9) // tab
-                {
-                    _selectedControl = default;
-                    valueChanged = true;
-                }
-                else if (c == 10 || c == 13) // enter
-                {
-                    _selectedControl = default;
-                    valueChanged = true;
-                }
-                else if (!char.IsControl(c))
-                {
-                    value += c;
-                    valueChanged = true;
-                }
+                value = _inputBuffer;
+                valueChanged = true;
             }
 
             backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
-            valueToShow = value + "_";
+            valueToShow = _inputBufferWithCursor;
+        }
+        else
+        {
+            valueToShow = value;
         }
 
         // geometry
@@ -1536,11 +1589,96 @@ public unsafe class UI : IDisposable
         return valueChanged;
     }
 
+    public bool Input(ref float value) // TODO min/max/format
+    {
+        const string format = "F3";
+
+        var size = new Vector2(100, _simpleControlHeight);
+        size = AdjustSize(size);
+
+        if (size.X <= 0 || size.Y <= 0)
+            return false;
+
+        var rect = Layout(size);
+
+        // input
+        Id id = _idStack.Peek();
+
+        Vector4 backgroundColor = _inputBackgroundColor;
+
+        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
+        {
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            var wasPressed = _mouseState.WasPressed(MouseButton.Left);
+
+            if (_selectedControl != id && wasPressed)
+            {
+                StartStringInput(id, value.ToString(format));
+            }
+        }
+
+        string valueToShow;
+        var valueChanged = false;
+
+        if (_selectedControl == id)
+        {
+            if (HandleStringInput())
+            {
+                if (float.TryParse(_inputBuffer, out var parsedValue))
+                {
+                    value = parsedValue;
+                    valueChanged = true;
+                }
+            }
+
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            valueToShow = _inputBufferWithCursor;
+        }
+        else
+        {
+            valueToShow = value.ToString(format);
+        }
+
+        // geometry
+        int vertexCount = 0;
+        vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
+        vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _inputTextColor, valueToShow);
+
+        AddDrawCommand(vertexCount);
+
+        return valueChanged;
+    }
+
+    // TODO:
+    // - checkbox
+    // - radiobutton
+    // - list
+    // - combobox
+    // - canvas
+    // - drag/drop
+
     #endregion
 
     #region Composite controls
 
     public bool Input(string label, ref string value)
+    {
+        bool r;
+
+        using (BeginTable(0.5f, 0.5f))
+        {
+            Label(label);
+            NextColumn();
+
+            PushId(label);
+            r = Input(ref value);
+            PopId();
+        }
+
+        return r;
+    }
+
+    public bool Input(string label, ref float value)
     {
         bool r;
 

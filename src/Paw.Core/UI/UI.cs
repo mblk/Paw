@@ -1116,16 +1116,14 @@ public unsafe class UI : IDisposable
         // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _scrollableBorderColor, _scrollableBackgroundColor);
-
         AddDrawCommand(vertexCount);
 
         //
         PushClipEntry(new Rect(
             rect.TopLeft + new Vector2(_nestedControlSpacing),
-            rect.BottomRight - new Vector2(_nestedControlSpacing)));
+            rect.BottomRight - new Vector2(_nestedControlSpacing) - new Vector2(15f, 0)));
 
-        var maxContentSize = new Vector2(size.X - _nestedControlSpacing, 10_000); // TODO max value?
-
+        var maxContentSize = new Vector2(size.X - _nestedControlSpacing - 15f, float.MaxValue);
         var contentRect = new Rect(rect.TopLeft + new Vector2(_nestedControlSpacing), rect.TopLeft + maxContentSize);
 
         var layoutItem = PushLayoutItem(LayoutMode.Vertical, contentRect);
@@ -1144,31 +1142,103 @@ public unsafe class UI : IDisposable
         var rect = PopClipEntry();
         var id = PopId();
 
-        // input
-        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow && _mouseState.WheelDelta != 0 && !_mouseWheelConsumed)
+        // ...
+        rect = new Rect(
+            rect.TopLeft - new Vector2(_nestedControlSpacing),
+            rect.BottomRight + new Vector2(_nestedControlSpacing) + new Vector2(15f, 0));
+
+        var contentSize = verticalLayout.MaxCursor - verticalLayout.TotalRect.TopLeft + new Vector2(_nestedControlSpacing * 2);
+
+        var fullVertScrollBarRect = rect.FromBottomRight(new Vector2(10f, rect.Size.Y - 10f)).Move(new Vector2(-5f, -5f));
+        var visibleVertScrollBarRect = fullVertScrollBarRect;
+
+        var prevScrollOffset = _scrollOffsets[id];
+
+        if (contentSize.Y > rect.Size.Y)
         {
-            int dy = _mouseState.WheelDelta;
+            var sizeFactor = rect.Size.Y / contentSize.Y;
+            var newHeight = Math.Max(Math.Min(30f, rect.Size.Y * 0.5f), visibleVertScrollBarRect.Size.Y * sizeFactor);
+            var vertOffsetFactor = (prevScrollOffset.Y / (contentSize.Y - rect.Size.Y)).Clamp(0f, 1f);
+            var vertOffset = vertOffsetFactor * (rect.Size.Y - newHeight - _nestedControlSpacing * 2);
 
-            var prevScrollOffset = _scrollOffsets[id];
-            var newScrollOffset = prevScrollOffset;
+            visibleVertScrollBarRect = new Rect(
+                visibleVertScrollBarRect.TopLeft,
+                visibleVertScrollBarRect.TopLeft + new Vector2(visibleVertScrollBarRect.Size.X, newHeight))
+                .Move(new Vector2(0f, vertOffset));
+        }
 
-            newScrollOffset.Y -= dy * 10;
+        // more geometry
+        int vertexCount = 0;
+        vertexCount += EmitQuad(visibleVertScrollBarRect, new Vector4(0.2f, 0.2f, 0.2f, 1f));
+        AddDrawCommand(vertexCount);
 
-            if (newScrollOffset.Y < 0)
-                newScrollOffset.Y = 0;
-
-            var contentSize = verticalLayout.MaxCursor - verticalLayout.TotalRect.TopLeft;
-
-            if (newScrollOffset.Y > contentSize.Y - rect.Size.Y)
-                newScrollOffset.Y = contentSize.Y - rect.Size.Y;
-
-            if (contentSize.Y < rect.Size.Y)
-                newScrollOffset.Y = 0;
-
-            if (newScrollOffset != prevScrollOffset)
+        // input
+        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
+        {
+            if (_mouseState.WasPressed(MouseButton.Left) && IsMouseWithin(fullVertScrollBarRect))
             {
-                _mouseWheelConsumed = true;
-                _scrollOffsets[id] = newScrollOffset;
+                // TODO need different behaviour when the visible part of the scroll bar is clicked
+
+                _selectedControl = id;
+                _grabType = GrabType.Move;
+                _grabOffset = Vector2.Zero;
+            }
+            else if (_mouseState.WheelDelta != 0 && !_mouseWheelConsumed)
+            {
+                int dy = _mouseState.WheelDelta;
+
+                var newScrollOffset = prevScrollOffset;
+
+                newScrollOffset.Y -= dy * 10;
+
+                if (newScrollOffset.Y < 0)
+                    newScrollOffset.Y = 0;
+
+                if (newScrollOffset.Y > contentSize.Y - rect.Size.Y)
+                    newScrollOffset.Y = contentSize.Y - rect.Size.Y;
+
+                if (contentSize.Y <= rect.Size.Y)
+                    newScrollOffset.Y = 0;
+
+                if (newScrollOffset != prevScrollOffset)
+                {
+                    _mouseWheelConsumed = true;
+                    _scrollOffsets[id] = newScrollOffset;
+                }
+            }
+        }
+
+        if (_selectedControl == id)
+        {
+            if (_mouseState.Get(MouseButton.Left))
+            {
+                Vector2 relMousePos = (_mousePosition - fullVertScrollBarRect.TopLeft) / fullVertScrollBarRect.Size;
+                relMousePos = Vector2.Min(relMousePos, Vector2.One);
+                relMousePos = Vector2.Max(relMousePos, Vector2.Zero);
+
+                var maxScrollOffset = Vector2.Max(contentSize - rect.Size, Vector2.Zero);
+
+                var newScrollOffset = new Vector2(0f, relMousePos.Y * maxScrollOffset.Y);
+
+                if (newScrollOffset.Y < 0)
+                    newScrollOffset.Y = 0;
+
+                if (newScrollOffset.Y > contentSize.Y - rect.Size.Y)
+                    newScrollOffset.Y = contentSize.Y - rect.Size.Y;
+
+                if (contentSize.Y <= rect.Size.Y)
+                    newScrollOffset.Y = 0;
+
+                if (newScrollOffset != prevScrollOffset)
+                {
+                    _scrollOffsets[id] = newScrollOffset;
+                }
+            }
+            else
+            {
+                _selectedControl = default;
+                _grabType = default;
+                _grabOffset = default;
             }
         }
     }

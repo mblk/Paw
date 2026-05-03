@@ -56,7 +56,11 @@ public abstract class App
         // main loop
         int numFrames = 0;
         double totalTime = 0;
+
         double avgFramerate = 0;
+        double avgAllocedBytesPerFrame = 0;
+
+        long gcTotalLast = GC.GetTotalAllocatedBytes();
 
         var lastTime = DateTime.Now;
 
@@ -69,15 +73,6 @@ public abstract class App
             var now = DateTime.Now;
             double dt = (double)(now - lastTime).TotalSeconds;
             lastTime = now;
-
-            totalTime += dt;
-            numFrames++;
-            if (totalTime > 0.25)
-            {
-                avgFramerate = 1.0 / (totalTime / numFrames);
-                totalTime = 0;
-                numFrames = 0;
-            }
 
             //
             // update
@@ -97,8 +92,19 @@ public abstract class App
 
             ui.Update(updateContext);
 
-            ui.Overlay($"FPS: {avgFramerate:F1}");
-            ui.ShowDebuggingOverlay();
+            {
+                ui.Overlay($"FPS: {avgFramerate:F1}");
+                ui.Overlay($"Alloc: {avgAllocedBytesPerFrame:F0} bytes/frame");
+
+                int gen0 = GC.CollectionCount(0);
+                int gen1 = GC.CollectionCount(1);
+                int gen2 = GC.CollectionCount(2);
+                var gcPause = GC.GetTotalPauseDuration();
+
+                ui.Overlay($"GC: {gen0}/{gen1}/{gen2}/{gcPause.TotalMilliseconds:F1}ms");
+
+                ui.ShowDebuggingOverlay();
+            }
 
             //
             // render
@@ -131,6 +137,25 @@ public abstract class App
             }
 
             window.SwapBuffers();
+
+            //
+            // stats
+            //
+
+            totalTime += dt;
+            numFrames++;
+
+            if (totalTime > 0.5)
+            {
+                avgFramerate = numFrames / totalTime;
+
+                long gcTotal = GC.GetTotalAllocatedBytes();
+                avgAllocedBytesPerFrame = (double)(gcTotal - gcTotalLast) / numFrames;
+
+                gcTotalLast = gcTotal;
+                totalTime = 0;
+                numFrames = 0;
+            }
         }
 
         // cleanup

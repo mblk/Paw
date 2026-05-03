@@ -148,7 +148,7 @@ public sealed unsafe class UI : IDisposable
     {
         public readonly ulong Value;
 
-#if DEBUG
+#if DEBUGfoo
         public readonly string Path;
 
         private Id(ulong value, string path)

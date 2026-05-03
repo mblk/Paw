@@ -28,7 +28,7 @@ public class Program : App
 
         sceneManager.RegisterScene("uitest1", c => new UiTestScene(c));
 
-        sceneManager.SetCurrentScene("uitest1");
-        //sceneManager.SetCurrentScene("menu");
+        //sceneManager.SetCurrentScene("uitest1");
+        sceneManager.SetCurrentScene("menu");
     }
 }

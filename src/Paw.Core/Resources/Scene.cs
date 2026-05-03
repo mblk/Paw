@@ -5,10 +5,12 @@ namespace Paw.Core.Resources;
 public abstract class Scene
 {
     protected AssetManager AssetManager { get; }
+    protected UI.UI UI { get; }
 
     public Scene(SceneContext context)
     {
         AssetManager = context.AssetManager;
+        UI = context.UI;
     }
 
     public abstract void Load();
@@ -21,6 +23,7 @@ public abstract class Scene
 public class SceneContext
 {
     public required AssetManager AssetManager { get; init; }
+    public required UI.UI UI { get; init; }
 }
 
 public class UpdateContext
@@ -39,6 +42,8 @@ public class RenderContext
 
 public interface ISceneController
 {
+    IEnumerable<string> GetAllSceneIds();
+
     void RequestSceneChange(string newSceneId);
 
     void RequestExit();
@@ -89,6 +94,11 @@ public class SceneManager : IDisposable, ISceneController
     {
         Console.WriteLine($"RegisterScene: '{id}'");
         _sceneFactories.Add(id, sceneFactory);
+    }
+
+    public IEnumerable<string> GetAllSceneIds()
+    {
+        return _sceneFactories.Keys;
     }
 
     public void RequestSceneChange(string newSceneId)

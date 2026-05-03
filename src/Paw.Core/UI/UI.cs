@@ -408,7 +408,7 @@ public sealed unsafe class UI : IDisposable
 
 
     //
-    // live input
+    // text input
     //
 
     private string _inputBuffer = "";

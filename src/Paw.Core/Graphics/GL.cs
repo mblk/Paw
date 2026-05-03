@@ -135,6 +135,47 @@ public sealed unsafe partial class GL
     // Handwritten mappings for strings, etc
     //
 
+    //[Conditional("DEBUG")]
+    public DebugGroupHelper PushDebugGroup(string message) // TODO disable in release mode
+    {
+        if (String.IsNullOrWhiteSpace(message))
+        {
+            throw new ArgumentNullException(nameof(message), "Missing message");
+        }
+
+        int length = Encoding.UTF8.GetByteCount(message);
+
+        Span<byte> buffer = length <= 256
+            ? stackalloc byte[length]
+            : new byte[length];
+
+        Encoding.UTF8.GetBytes(message, buffer);
+
+        fixed (byte* p = buffer)
+        {
+            _pushDebugGroup(DebugSource.DEBUG_SOURCE_APPLICATION, 100, length, p); // Providing explicit length, so null-termination is not required
+        }
+        CheckError();
+
+        return new DebugGroupHelper(this);
+    }
+
+    public readonly ref struct DebugGroupHelper : IDisposable
+    {
+        private readonly GL _gl;
+
+        internal DebugGroupHelper(GL gl)
+        {
+            _gl = gl;
+        }
+
+        public void Dispose()
+        {
+            _gl.PopDebugGroup();
+            _gl.CheckError();
+        }
+    }
+
     [Conditional("DEBUG")]
     public void Label(ObjectIdentifier identifier, uint objectId, string label)
     {

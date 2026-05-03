@@ -8,12 +8,6 @@ public class UiTestScene : Scene
     private int _mouseX;
     private int _mouseY;
 
-    private int _numFrames;
-    private double _totalTime;
-    private double _avgFramerate;
-
-
-    private UI UI { get; set; } = null!;
 
 
     private string _string1 = "Hello";
@@ -33,47 +27,31 @@ public class UiTestScene : Scene
 
     public override void Load()
     {
-        UI = new UI(AssetManager);
     }
 
     public override void Unload()
     {
-        UI.Dispose();
     }
 
     public override void Update(UpdateContext context)
     {
         if (context.Input.Keyboard.WasPressed(Platforms.Key.Escape))
         {
-            context.SceneController.RequestExit();
+            context.SceneController.RequestSceneChange("menu");
         }
 
         // TODO add Input to RenderContext?
         _mouseX = context.Input.Mouse.X;
         _mouseY = context.Input.Mouse.Y;
-
-        UI.Update(context);
     }
 
     public override void Render(RenderContext context)
     {
-        _totalTime += context.DeltaTime;
-        _numFrames++;
-        if (_totalTime > 0.25)
-        {
-            _avgFramerate = 1.0 / (_totalTime / _numFrames);
-            _totalTime = 0;
-            _numFrames = 0;
-        }
-
         //
         // overlays
         //
         UI.Overlay($"Hello");
         UI.Overlay($"World");
-        UI.Overlay($"FPS: {_avgFramerate:F1}");
-
-        UI.ShowDebuggingOverlay();
 
         //
         // window 1
@@ -146,13 +124,10 @@ public class UiTestScene : Scene
         // window 2
         //
 
-#if true
         UI.SetNextWindowPositionMode(UI.WindowPositionMode.Right);
 
         using (var window = UI.BeginWindow(new Vector2(300, 200), "window 2"))
         {
-            //UI.Horizontal();
-
             if (UI.Button("button 10"))
             {
                 Console.WriteLine($"button 10");
@@ -182,7 +157,6 @@ public class UiTestScene : Scene
                 Console.WriteLine($"button 11");
             }
         }
-#endif
 
         //
         // Window 3
@@ -239,15 +213,7 @@ public class UiTestScene : Scene
 
                 UI.Button("button 4");
                 UI.Label("label 4");
-
             }
-
         }
-
-
-        //
-        //
-        //
-        UI.Render(context);
     }
 }

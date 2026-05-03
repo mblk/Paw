@@ -63,30 +63,30 @@ internal class RenderTest1Scene : Scene
         var textured1Writer = _renderer.GetWriter("textured1");
         var textured2Writer = _renderer.GetWriter("textured2");
 
-        //defaultWriter.AddRectangle(new Vector2(300, 300), new Vector2(200, 100), new Vector3(1, 0, 0));
+        defaultWriter.AddRectangle(new Vector2(300, 300), new Vector2(200, 100), new Vector4(1, 0, 0, 1));
 
-        //defaultWriter.AddTriangle(
-        //    _playerPos + new Vector2(0, 0), new Vector3(1.0f, 0.0f, 0.0f),
-        //    _playerPos + new Vector2(50, 0), new Vector3(0.0f, 1.0f, 0.0f),
-        //    _playerPos + new Vector2(50, 50), new Vector3(0.0f, 0.0f, 1.0f)
-        //);
+        defaultWriter.AddTriangle(
+            _playerPos + new Vector2(0, 0), new Vector4(1.0f, 0.0f, 0.0f, 1),
+            _playerPos + new Vector2(50, 0), new Vector4(0.0f, 1.0f, 0.0f, 1),
+            _playerPos + new Vector2(50, 50), new Vector4(0.0f, 0.0f, 1.0f, 1)
+        );
 
-        //defaultWriter.AddTriangle(
-        //    _playerPos + new Vector2(100, 0), new Vector3(1.0f, 0.0f, 0.0f),
-        //    _playerPos + new Vector2(150, 0), new Vector3(0.0f, 1.0f, 0.0f),
-        //    _playerPos + new Vector2(150, 50), new Vector3(0.0f, 0.0f, 1.0f)
-        //);
+        defaultWriter.AddTriangle(
+            _playerPos + new Vector2(100, 0), new Vector4(1.0f, 0.0f, 0.0f, 1),
+            _playerPos + new Vector2(150, 0), new Vector4(0.0f, 1.0f, 0.0f, 1),
+            _playerPos + new Vector2(150, 50), new Vector4(0.0f, 0.0f, 1.0f, 1)
+        );
 
-        //textured1Writer.AddRectangle(new Vector2(800, 500), new Vector2(800, 800), new Vector3(1, 1, 1));
-        //textured2Writer.AddRectangle(new Vector2(1400, 200), new Vector2(100, 100), new Vector3(1, 1, 1));
-        //textured2Writer.AddRectangle(new Vector2(1400, 300), new Vector2(100, 100), new Vector3(1, 1, 1));
-        //textured2Writer.AddRectangle(new Vector2(1400, 400), new Vector2(100, 100), new Vector3(1, 1, 1));
+        textured1Writer.AddRectangle(new Vector2(800, 500), new Vector2(800, 800), new Vector4(1, 1, 1, 1));
+        textured2Writer.AddRectangle(new Vector2(1400, 200), new Vector2(100, 100), new Vector4(1, 1, 1, 1));
+        textured2Writer.AddRectangle(new Vector2(1400, 300), new Vector2(100, 100), new Vector4(1, 1, 1, 1));
+        textured2Writer.AddRectangle(new Vector2(1400, 400), new Vector2(100, 100), new Vector4(1, 1, 1, 1));
 
-        //textured2Writer.AddRotatedRectangle(new Vector2(1400, 500), new Vector2(100, 100), _time, new Vector3(1, 1, 1));
+        textured2Writer.AddRotatedRectangle(new Vector2(1400, 500), new Vector2(100, 100), _time, new Vector4(1, 1, 1, 1));
 
-        //float fontScale = 1.0f + MathF.Max(0.0f, MathF.Sin(_time)) * 5.0f;
+        float fontScale = 1.0f + MathF.Max(0.0f, MathF.Sin(_time)) * 5.0f;
 
-        //fontWriter.AddText(font, new Vector2(100, 200), fontScale, "Hello World! 123 (4) [5] {6} .,/-+_");
+        fontWriter.AddText(font, new Vector2(100, 200), new Vector4(1), fontScale, "Hello World! 123 (4) [5] {6} .,/-+_");
 
         _renderer.Render(mvp);
     }

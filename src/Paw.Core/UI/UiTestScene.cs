@@ -105,6 +105,11 @@ public class UiTestScene : Scene
                         UI.Label($"Foo {i}");
                     }
                 }
+
+                if (UI.Button("button 1.8"))
+                {
+                    Console.WriteLine($"button 1.8");
+                }
             }
 
             UI.Label("label 5");

@@ -1261,7 +1261,7 @@ public sealed unsafe class UI : IDisposable
 
                 var newScrollOffset = prevScrollOffset;
 
-                newScrollOffset.Y -= dy * 10;
+                newScrollOffset.Y -= dy * 20;
 
                 if (newScrollOffset.Y < 0)
                     newScrollOffset.Y = 0;
@@ -1337,6 +1337,11 @@ public sealed unsafe class UI : IDisposable
         // consume space in parent layout
         var vertical = PopLayoutItem();
         var consumedSize = vertical.MaxCursor - vertical.TotalRect.TopLeft;
+
+        // remove last spacing
+        if (consumedSize != default)
+            consumedSize.Y -= _simpleLayoutSpacing;
+
         _ = Layout(consumedSize);
     }
 
@@ -1362,6 +1367,11 @@ public sealed unsafe class UI : IDisposable
         // consume space in parent layout
         var horizontal = PopLayoutItem();
         var consumedSize = horizontal.MaxCursor - horizontal.TotalRect.TopLeft;
+
+        // remove last spacing
+        if (consumedSize != default)
+            consumedSize.X -= _simpleLayoutSpacing;
+
         _ = Layout(consumedSize);
     }
 
@@ -1707,6 +1717,11 @@ public sealed unsafe class UI : IDisposable
         Overlay($"Mouse: {_mouseState.X} {_mouseState.Y}");
 
         Overlay($"Selected: {_selectedControl}");
+
+        foreach (var (id, offset) in _scrollOffsets)
+        {
+            Overlay($"ScrollOffset {id} {offset}");
+        }
     }
 
     #endregion

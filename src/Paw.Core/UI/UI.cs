@@ -279,6 +279,8 @@ public sealed unsafe class UI : IDisposable
         None,
         Move,
         Resize,
+        ScrollVert,
+        ScrollHori,
     }
     private GrabType _grabType;
     private Vector2 _grabOffset;
@@ -297,6 +299,9 @@ public sealed unsafe class UI : IDisposable
         public Vector2 Cursor;
         public Vector2 MaxCursor;
         public Vector2 ScrollOffset;
+
+        // scrollable
+        public ScrollFlags ScrollFlags;
 
         // table
         public float[]? ColumnWidths;
@@ -324,10 +329,12 @@ public sealed unsafe class UI : IDisposable
             switch (Mode)
             {
                 case LayoutMode.Vertical:
-                    return new Vector2(TotalRect.Size.X, Math.Min(remainingSpace.Y, requestedSize.Y));
+                    return new Vector2(Math.Min(TotalRect.Size.X, 2000f), // XXX temp fix for infinite width
+                                       Math.Min(remainingSpace.Y, requestedSize.Y));
 
                 case LayoutMode.Horizontal:
-                    return new Vector2(Math.Min(remainingSpace.X, requestedSize.X), TotalRect.Size.Y);
+                    return new Vector2(Math.Min(remainingSpace.X, requestedSize.X),
+                                       Math.Min(TotalRect.Size.Y, 2000f)); // XXX temp fix for infinite height
 
                 case LayoutMode.Table:
                     return new Vector2(GetCurrentColumnWidth(), requestedSize.Y);
@@ -685,6 +692,9 @@ public sealed unsafe class UI : IDisposable
 
     private void AddDrawCommand(int vertexCount)
     {
+        if (vertexCount <= 0)
+            return;
+
         var clipEntry = _clipStack.Peek();
 
         List<DrawCommand> drawCommands = _activeWindow is not null
@@ -1174,7 +1184,16 @@ public sealed unsafe class UI : IDisposable
         PopId();
     }
 
-    public Scope BeginScrollable(Vector2 size, string idText) // TODO enable/disable scroll-axis x/y
+    [Flags]
+    public enum ScrollFlags
+    {
+        None = 0,
+        Vertical = 1,
+        Horizontal = 2,
+        Both = Vertical | Horizontal,
+    }
+
+    public Scope BeginScrollable(Vector2 size, string idText, ScrollFlags flags = ScrollFlags.Vertical)
     {
         // layout
         size = AdjustSize(size);
@@ -1186,6 +1205,9 @@ public sealed unsafe class UI : IDisposable
 
         var rect = Layout(size);
 
+        var scrollHorizontally = flags.HasFlag(ScrollFlags.Horizontal);
+        var scrollVertically = flags.HasFlag(ScrollFlags.Vertical);
+
         // id
         var id = PushId(idText);
 
@@ -1195,19 +1217,28 @@ public sealed unsafe class UI : IDisposable
         AddDrawCommand(vertexCount);
 
         //
-        PushClipEntry(new Rect(
-            rect.TopLeft + new Vector2(_nestedControlSpacing),
-            rect.BottomRight - new Vector2(_nestedControlSpacing) - new Vector2(15f, 0)));
+        var scrollBarsSize = new Vector2(0, 0);
+        if (scrollHorizontally) scrollBarsSize.Y += 15f; // 10 (bar) + 5 (spacing)
+        if (scrollVertically) scrollBarsSize.X += 15f;
 
-        var maxContentSize = new Vector2(size.X - _nestedControlSpacing - 15f, float.MaxValue);
-        var contentRect = new Rect(rect.TopLeft + new Vector2(_nestedControlSpacing), rect.TopLeft + maxContentSize);
+        PushClipEntry(new Rect(rect.TopLeft + new Vector2(_nestedControlSpacing),
+                               rect.BottomRight - new Vector2(_nestedControlSpacing) - scrollBarsSize));
 
+        var maxContentSize = size - new Vector2(_nestedControlSpacing) - scrollBarsSize;
+        if (scrollHorizontally) maxContentSize.X = float.MaxValue;
+        if (scrollVertically) maxContentSize.Y = float.MaxValue;
+
+        var contentRect = new Rect(rect.TopLeft + new Vector2(_nestedControlSpacing),
+                                   rect.TopLeft + maxContentSize);
+
+        // implicit vertical layout
         var layoutItem = PushLayoutItem(LayoutMode.Vertical, contentRect);
 
         if (!_scrollOffsets.TryGetValue(id, out var scrollOffset))
             _scrollOffsets.Add(id, scrollOffset = new Vector2());
 
-        layoutItem.ScrollOffset += scrollOffset;
+        layoutItem.ScrollOffset = scrollOffset;
+        layoutItem.ScrollFlags = flags;
 
         return new Scope(this, Scope.ScopeType.Scrollable, true);
     }
@@ -1215,54 +1246,131 @@ public sealed unsafe class UI : IDisposable
     private void EndScrollable()
     {
         var verticalLayout = PopLayoutItem();
-        var rect = PopClipEntry();
+        var clipRect = PopClipEntry();
         var id = PopId();
 
-        // calculate rects
-        rect = new Rect(
-            rect.TopLeft - new Vector2(_nestedControlSpacing),
-            rect.BottomRight + new Vector2(_nestedControlSpacing) + new Vector2(15f, 0));
+        var contentSize = verticalLayout.MaxCursor - verticalLayout.TotalRect.TopLeft;
 
-        var contentSize = verticalLayout.MaxCursor - verticalLayout.TotalRect.TopLeft + new Vector2(_nestedControlSpacing * 2);
-        var fullVertScrollBarRect = rect.FromBottomRight(new Vector2(10f, rect.Size.Y - 10f)).Move(new Vector2(-5f, -5f));
-        var visibleVertScrollBarRect = fullVertScrollBarRect;
+        var flags = verticalLayout.ScrollFlags;
+        var horiScrollEnabled = flags.HasFlag(ScrollFlags.Horizontal);
+        var vertScrollEnabled = flags.HasFlag(ScrollFlags.Vertical);
+        var canScrollHori = contentSize.X > clipRect.Size.X;
+        var canScrollVert = contentSize.Y > clipRect.Size.Y;
+
+        // calculate rects
+        var fullRect = new Rect(
+            clipRect.TopLeft - new Vector2(_nestedControlSpacing),
+            clipRect.BottomRight + new Vector2(_nestedControlSpacing) + new Vector2(vertScrollEnabled ? 15f : 0f, horiScrollEnabled ? 15f : 0f));
+
+        Rect fullVertScrollBarRect;
+        Rect fullHoriScrollBarRect;
+        if (horiScrollEnabled && vertScrollEnabled)
+        {
+            fullVertScrollBarRect = fullRect.FromBottomRight(new Vector2(10f, fullRect.Size.Y - 20f)).Move(new Vector2(-5f, -15f));
+            fullHoriScrollBarRect = fullRect.FromBottomRight(new Vector2(fullRect.Size.X - 20f, 10f)).Move(new Vector2(-15f, -5f));
+        }
+        else
+        {
+            fullVertScrollBarRect = fullRect.FromBottomRight(new Vector2(10f, fullRect.Size.Y - 10f)).Move(new Vector2(-5f, -5f));
+            fullHoriScrollBarRect = fullRect.FromBottomRight(new Vector2(fullRect.Size.X - 10f, 10f)).Move(new Vector2(-5f, -5f));
+        }
+
+        Rect visibleVertScrollBarRect = default;
+        Rect visibleHoriScrollBarRect = default;
+
         var prevScrollOffset = _scrollOffsets[id];
 
-        // can scroll?
-        if (contentSize.Y > rect.Size.Y)
+        if (vertScrollEnabled)
         {
-            var sizeFactor = rect.Size.Y / contentSize.Y;
-            var newHeight = Math.Max(Math.Min(30f, rect.Size.Y * 0.5f), visibleVertScrollBarRect.Size.Y * sizeFactor);
-            var vertOffsetFactor = (prevScrollOffset.Y / (contentSize.Y - rect.Size.Y)).Clamp(0f, 1f);
-            var vertOffset = vertOffsetFactor * (rect.Size.Y - newHeight - _nestedControlSpacing * 2);
+            if (canScrollVert)
+            {
+                var sizeFactor = clipRect.Size.Y / contentSize.Y;
+                var newHeight = Math.Max(clipRect.Size.Y * 0.5f, fullVertScrollBarRect.Size.Y * sizeFactor);
+                var vertOffsetFactor = (prevScrollOffset.Y / (contentSize.Y - clipRect.Size.Y)).Clamp(0f, 1f);
+                var freeVertSpace = fullVertScrollBarRect.Size.Y - newHeight;
+                var vertOffset = vertOffsetFactor * freeVertSpace;
 
-            visibleVertScrollBarRect = new Rect(
-                visibleVertScrollBarRect.TopLeft,
-                visibleVertScrollBarRect.TopLeft + new Vector2(visibleVertScrollBarRect.Size.X, newHeight))
-                .Move(new Vector2(0f, vertOffset));
+                visibleVertScrollBarRect = new Rect(fullVertScrollBarRect.TopLeft,
+                                                    fullVertScrollBarRect.TopLeft + new Vector2(fullVertScrollBarRect.Size.X, newHeight))
+                    .Move(new Vector2(0f, vertOffset));
+            }
+            else
+            {
+                visibleVertScrollBarRect = fullVertScrollBarRect;
+            }
+        }
+
+        if (horiScrollEnabled)
+        {
+            if (canScrollHori)
+            {
+                var sizeFactor = clipRect.Size.X / contentSize.X;
+                var newWidth = Math.Max(clipRect.Size.X * 0.5f, fullHoriScrollBarRect.Size.X * sizeFactor);
+                var horiOffsetFactor = (prevScrollOffset.X / (contentSize.X - clipRect.Size.X)).Clamp(0f, 1f);
+                var freeHoriSpace = fullHoriScrollBarRect.Size.X - newWidth;
+                var horiOffset = horiOffsetFactor * freeHoriSpace;
+
+                visibleHoriScrollBarRect = new Rect(fullHoriScrollBarRect.TopLeft,
+                                                    fullHoriScrollBarRect.TopLeft + new Vector2(newWidth, fullHoriScrollBarRect.Size.Y))
+                    .Move(new Vector2(horiOffset, 0f));
+            }
+            else
+            {
+                visibleHoriScrollBarRect = fullHoriScrollBarRect;
+            }
         }
 
         // more geometry
         int vertexCount = 0;
-        vertexCount += EmitQuad(visibleVertScrollBarRect, new Vector4(0.2f, 0.2f, 0.2f, 1f));
-        AddDrawCommand(vertexCount);
+
+        if (vertScrollEnabled)
+        {
+            var vertScrollBarColor = new Vector4(0.2f, 0.2f, 0.2f, 1f);
+            if (IsMouseWithin(visibleVertScrollBarRect))
+                vertScrollBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0f);
+
+            vertexCount += EmitQuad(visibleVertScrollBarRect, vertScrollBarColor);
+        }
+        if (horiScrollEnabled)
+        {
+            var horiScrollBarColor = new Vector4(0.2f, 0.2f, 0.2f, 1f);
+            if (IsMouseWithin(visibleHoriScrollBarRect))
+                horiScrollBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0f);
+
+            vertexCount += EmitQuad(visibleHoriScrollBarRect, horiScrollBarColor);
+        }
+
+        if (vertexCount > 0)
+            AddDrawCommand(vertexCount);
 
         // input
-        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
+        if (IsMouseWithin(fullRect) && !_mouseBlockedByOtherWindow)
         {
-            if (_mouseState.WasPressed(MouseButton.Left) && IsMouseWithin(fullVertScrollBarRect))
+            if (_mouseState.WasPressed(MouseButton.Left))
             {
-                if (IsMouseWithin(visibleVertScrollBarRect))
+                if (vertScrollEnabled && IsMouseWithin(visibleVertScrollBarRect))
                 {
                     _selectedControl = id;
-                    _grabType = GrabType.Move;
+                    _grabType = GrabType.ScrollVert;
                     _grabOffset = _mousePosition - visibleVertScrollBarRect.TopLeft;
                 }
-                else if (IsMouseWithin(fullVertScrollBarRect))
+                else if (vertScrollEnabled && IsMouseWithin(fullVertScrollBarRect))
                 {
                     _selectedControl = id;
-                    _grabType = GrabType.Move;
+                    _grabType = GrabType.ScrollVert;
                     _grabOffset = visibleVertScrollBarRect.Center - visibleVertScrollBarRect.TopLeft;
+                }
+                else if (horiScrollEnabled && IsMouseWithin(visibleHoriScrollBarRect))
+                {
+                    _selectedControl = id;
+                    _grabType = GrabType.ScrollHori;
+                    _grabOffset = _mousePosition - visibleHoriScrollBarRect.TopLeft;
+                }
+                else if (horiScrollEnabled && IsMouseWithin(fullHoriScrollBarRect))
+                {
+                    _selectedControl = id;
+                    _grabType = GrabType.ScrollHori;
+                    _grabOffset = visibleHoriScrollBarRect.Center - visibleHoriScrollBarRect.TopLeft;
                 }
             }
             else if (_mouseState.WheelDelta != 0 && !_mouseWheelConsumed)
@@ -1273,13 +1381,10 @@ public sealed unsafe class UI : IDisposable
 
                 newScrollOffset.Y -= dy * 20;
 
-                if (newScrollOffset.Y < 0)
-                    newScrollOffset.Y = 0;
+                newScrollOffset.Y = MathF.Max(newScrollOffset.Y, 0f); // at least 0
+                newScrollOffset.Y = MathF.Min(newScrollOffset.Y, contentSize.Y - clipRect.Size.Y); // no more than
 
-                if (newScrollOffset.Y > contentSize.Y - rect.Size.Y)
-                    newScrollOffset.Y = contentSize.Y - rect.Size.Y;
-
-                if (contentSize.Y <= rect.Size.Y)
+                if (!canScrollVert)
                     newScrollOffset.Y = 0;
 
                 if (newScrollOffset != prevScrollOffset)
@@ -1294,26 +1399,45 @@ public sealed unsafe class UI : IDisposable
         {
             if (_mouseState.Get(MouseButton.Left))
             {
-                Vector2 relMousePos = (_mousePosition - fullVertScrollBarRect.TopLeft - _grabOffset) / (fullVertScrollBarRect.Size - new Vector2(0, visibleVertScrollBarRect.Size.Y));
-                relMousePos = Vector2.Min(relMousePos, Vector2.One);
-                relMousePos = Vector2.Max(relMousePos, Vector2.Zero);
-
-                var maxScrollOffset = Vector2.Max(contentSize - rect.Size, Vector2.Zero);
-
-                var newScrollOffset = new Vector2(0f, relMousePos.Y * maxScrollOffset.Y);
-
-                if (newScrollOffset.Y < 0)
-                    newScrollOffset.Y = 0;
-
-                if (newScrollOffset.Y > contentSize.Y - rect.Size.Y)
-                    newScrollOffset.Y = contentSize.Y - rect.Size.Y;
-
-                if (contentSize.Y <= rect.Size.Y)
-                    newScrollOffset.Y = 0;
-
-                if (newScrollOffset != prevScrollOffset)
+                if (_grabType == GrabType.ScrollVert)
                 {
-                    _scrollOffsets[id] = newScrollOffset;
+                    Vector2 relMousePos = (_mousePosition - fullVertScrollBarRect.TopLeft - _grabOffset) /
+                                          (fullVertScrollBarRect.Size - new Vector2(0f, visibleVertScrollBarRect.Size.Y));
+                    relMousePos = Vector2.Min(relMousePos, Vector2.One);
+                    relMousePos = Vector2.Max(relMousePos, Vector2.Zero);
+
+                    var maxScrollOffset = Vector2.Max(contentSize - clipRect.Size, Vector2.Zero);
+
+                    var newScrollOffset = prevScrollOffset;
+                    newScrollOffset.Y = relMousePos.Y * maxScrollOffset.Y;
+                    newScrollOffset.Y = MathF.Max(newScrollOffset.Y, 0f); // at least 0
+                    newScrollOffset.Y = MathF.Min(newScrollOffset.Y, contentSize.Y - clipRect.Size.Y); // no more than
+
+                    if (!canScrollVert)
+                        newScrollOffset.Y = 0;
+
+                    if (newScrollOffset != prevScrollOffset)
+                        _scrollOffsets[id] = newScrollOffset;
+                }
+                else if (_grabType == GrabType.ScrollHori)
+                {
+                    Vector2 relMousePos = (_mousePosition - fullHoriScrollBarRect.TopLeft - _grabOffset) /
+                                          (fullHoriScrollBarRect.Size - new Vector2(visibleHoriScrollBarRect.Size.X, 0f));
+                    relMousePos = Vector2.Min(relMousePos, Vector2.One);
+                    relMousePos = Vector2.Max(relMousePos, Vector2.Zero);
+
+                    var maxScrollOffset = Vector2.Max(contentSize - clipRect.Size, Vector2.Zero);
+
+                    var newScrollOffset = prevScrollOffset;
+                    newScrollOffset.X = relMousePos.X * maxScrollOffset.X;
+                    newScrollOffset.X = MathF.Max(newScrollOffset.X, 0f); // at least 0
+                    newScrollOffset.X = MathF.Min(newScrollOffset.X, contentSize.X - clipRect.Size.X); // no more than
+
+                    if (!canScrollHori)
+                        newScrollOffset.X = 0;
+
+                    if (newScrollOffset != prevScrollOffset)
+                        _scrollOffsets[id] = newScrollOffset;
                 }
             }
             else
@@ -1327,14 +1451,17 @@ public sealed unsafe class UI : IDisposable
 
     public Scope BeginVertical(float? maxWidth = null)
     {
-        Rect rect = _layoutItems.Peek().GetRemainingSpace();
+        var parentLayoutItem = _layoutItems.Peek();
+
+        Rect rect = parentLayoutItem.GetRemainingSpace();
 
         if (maxWidth is not null && rect.Size.X > maxWidth.Value)
         {
             rect = new Rect(rect.TopLeft, rect.BottomLeft + new Vector2(maxWidth.Value, 0));
         }
 
-        _ = PushLayoutItem(LayoutMode.Vertical, rect);
+        var layoutItem = PushLayoutItem(LayoutMode.Vertical, rect);
+        layoutItem.ScrollOffset = parentLayoutItem.ScrollOffset;
 
         return new Scope(this, Scope.ScopeType.Vertical, true);
     }
@@ -1357,14 +1484,17 @@ public sealed unsafe class UI : IDisposable
 
     public Scope BeginHorizontal(float? maxHeight = null)
     {
-        Rect rect = _layoutItems.Peek().GetRemainingSpace();
+        var parentLayoutItem = _layoutItems.Peek();
+
+        Rect rect = parentLayoutItem.GetRemainingSpace();
 
         if (maxHeight is not null && rect.Size.Y > maxHeight.Value)
         {
             rect = new Rect(rect.TopLeft, rect.TopRight + new Vector2(0, maxHeight.Value));
         }
 
-        _ = PushLayoutItem(LayoutMode.Horizontal, rect);
+        var layoutItem = PushLayoutItem(LayoutMode.Horizontal, rect);
+        layoutItem.ScrollOffset = parentLayoutItem.ScrollOffset;
 
         return new Scope(this, Scope.ScopeType.Horizontal, true);
     }
@@ -1416,7 +1546,8 @@ public sealed unsafe class UI : IDisposable
                 throw new ArgumentOutOfRangeException(nameof(columnWidths), "Sum of column fractions must not be greater than one");
         }
 
-        Rect rect = _layoutItems.Peek().GetRemainingSpace();
+        var parentLayoutItem = _layoutItems.Peek();
+        Rect rect = parentLayoutItem.GetRemainingSpace();
 
         // calculate column widths in pixels
         var actualColumnWidths = new float[columnWidths.Length];
@@ -1442,6 +1573,7 @@ public sealed unsafe class UI : IDisposable
         item.Row = 0;
         item.Column = 0;
         item.MaxRowHeight = 0;
+        item.ScrollOffset = parentLayoutItem.ScrollOffset;
 
         return new Scope(this, Scope.ScopeType.Table, true);
 
@@ -1483,7 +1615,9 @@ public sealed unsafe class UI : IDisposable
 
         table.Row++;
         table.Column = 0;
-        table.Cursor = new Vector2(table.TotalRect.TopLeft.X, table.Cursor.Y + table.MaxRowHeight + _tableSpacing);
+        //table.Cursor = new Vector2(table.TotalRect.TopLeft.X, table.Cursor.Y + table.MaxRowHeight + _tableSpacing);
+        table.Cursor.X = table.TotalRect.TopLeft.X;
+        table.Cursor.Y += table.MaxRowHeight + _tableSpacing;
         table.MaxRowHeight = 0;
     }
 

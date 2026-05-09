@@ -131,7 +131,7 @@ public class UiTestScene : Scene
 
         UI.SetNextWindowPositionMode(UI.WindowPositionMode.Right);
 
-        using (var window = UI.BeginWindow(new Vector2(300, 200), "window 2"))
+        using (var window = UI.BeginWindow(new Vector2(300, 300), "window 2"))
         {
             if (UI.Button("button 10"))
             {
@@ -142,20 +142,45 @@ public class UiTestScene : Scene
                 Console.WriteLine($"button 11");
             }
 
-            using (UI.BeginTable(0.333f, 0.666f))
+            // TODO int for Input row/col count
+
+            using (UI.BeginScrollable(new Vector2(0, 200), "Scroll1", UI.ScrollFlags.Both))
             {
-                UI.Label("1");
-                UI.NextColumn();
+                UI.Label("a111");
 
-                UI.Label("2");
-                UI.NextRow();
+                //using (UI.BeginVertical())
+                //{
+                //    UI.Label("a222");
+                //    UI.Label("a333");
+                //}
 
-                UI.Label("3");
-                UI.NextColumn();
+                var colWidths = Enumerable.Range(0, 10).Select(_ => 100f).ToArray();
 
-                UI.Label("4");
-                UI.NextRow();
+                using (UI.BeginTable(colWidths))
+                {
+                    for (int row = 0; row < 10; row++)
+                    {
+                        for (int col = 0; col < 10; col++)
+                        {
+                            UI.Button($"{row}.{col}");
+
+                            if (col < 9) // XXX
+                                UI.NextColumn();
+                        }
+                        UI.NextRow();
+                    }
+                }
+
+                UI.Label("bbb");
             }
+
+            using (UI.BeginScrollable(new Vector2(0, 100), "Scroll2"))
+            {
+                UI.Label("bbb1");
+
+            }
+
+            UI.Label("ccc");
 
             if (UI.Button("button 12"))
             {

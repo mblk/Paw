@@ -72,12 +72,16 @@ public sealed unsafe class UI : IDisposable
 
     private readonly record struct Rect(Vector2 Min, Vector2 Max)
     {
+        // TODO add validation (min < max)
+
         public Vector2 TopLeft => Min;
         public Vector2 BottomRight => Max;
         public Vector2 TopRight => new(Max.X, Min.Y);
         public Vector2 BottomLeft => new(Min.X, Max.Y);
 
         public Vector2 Size => Max - Min;
+
+        public Vector2 Center => new((Min.X + Max.X) * 0.5f, (Min.Y + Max.Y) * 0.5f);
 
         public bool Contains(Vector2 p)
         {
@@ -1214,18 +1218,17 @@ public sealed unsafe class UI : IDisposable
         var rect = PopClipEntry();
         var id = PopId();
 
-        // ...
+        // calculate rects
         rect = new Rect(
             rect.TopLeft - new Vector2(_nestedControlSpacing),
             rect.BottomRight + new Vector2(_nestedControlSpacing) + new Vector2(15f, 0));
 
         var contentSize = verticalLayout.MaxCursor - verticalLayout.TotalRect.TopLeft + new Vector2(_nestedControlSpacing * 2);
-
         var fullVertScrollBarRect = rect.FromBottomRight(new Vector2(10f, rect.Size.Y - 10f)).Move(new Vector2(-5f, -5f));
         var visibleVertScrollBarRect = fullVertScrollBarRect;
-
         var prevScrollOffset = _scrollOffsets[id];
 
+        // can scroll?
         if (contentSize.Y > rect.Size.Y)
         {
             var sizeFactor = rect.Size.Y / contentSize.Y;
@@ -1249,11 +1252,18 @@ public sealed unsafe class UI : IDisposable
         {
             if (_mouseState.WasPressed(MouseButton.Left) && IsMouseWithin(fullVertScrollBarRect))
             {
-                // TODO need different behaviour when the visible part of the scroll bar is clicked
-
-                _selectedControl = id;
-                _grabType = GrabType.Move;
-                _grabOffset = Vector2.Zero;
+                if (IsMouseWithin(visibleVertScrollBarRect))
+                {
+                    _selectedControl = id;
+                    _grabType = GrabType.Move;
+                    _grabOffset = _mousePosition - visibleVertScrollBarRect.TopLeft;
+                }
+                else if (IsMouseWithin(fullVertScrollBarRect))
+                {
+                    _selectedControl = id;
+                    _grabType = GrabType.Move;
+                    _grabOffset = visibleVertScrollBarRect.Center - visibleVertScrollBarRect.TopLeft;
+                }
             }
             else if (_mouseState.WheelDelta != 0 && !_mouseWheelConsumed)
             {
@@ -1284,7 +1294,7 @@ public sealed unsafe class UI : IDisposable
         {
             if (_mouseState.Get(MouseButton.Left))
             {
-                Vector2 relMousePos = (_mousePosition - fullVertScrollBarRect.TopLeft) / fullVertScrollBarRect.Size;
+                Vector2 relMousePos = (_mousePosition - fullVertScrollBarRect.TopLeft - _grabOffset) / (fullVertScrollBarRect.Size - new Vector2(0, visibleVertScrollBarRect.Size.Y));
                 relMousePos = Vector2.Min(relMousePos, Vector2.One);
                 relMousePos = Vector2.Max(relMousePos, Vector2.Zero);
 
@@ -1718,10 +1728,10 @@ public sealed unsafe class UI : IDisposable
 
         Overlay($"Selected: {_selectedControl}");
 
+        Overlay($"Grab: {_grabType} {_grabOffset}");
+
         foreach (var (id, offset) in _scrollOffsets)
-        {
             Overlay($"ScrollOffset {id} {offset}");
-        }
     }
 
     #endregion

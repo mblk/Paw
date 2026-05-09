@@ -115,6 +115,7 @@ public sealed unsafe class UI : IDisposable
             Vertical,
             Horizontal,
             Table,
+            Canvas,
         }
 
         private readonly UI _ui;
@@ -143,6 +144,7 @@ public sealed unsafe class UI : IDisposable
                 case ScopeType.Vertical: _ui.EndVertical(); break;
                 case ScopeType.Horizontal: _ui.EndHorizontal(); break;
                 case ScopeType.Table: _ui.EndTable(); break;
+                case ScopeType.Canvas: _ui.EndCanvas(); break;
                 default: throw new NotImplementedException();
             }
         }
@@ -291,6 +293,7 @@ public sealed unsafe class UI : IDisposable
         Vertical,
         Horizontal,
         Table,
+        Canvas,
     }
     private class LayoutItem
     {
@@ -339,6 +342,9 @@ public sealed unsafe class UI : IDisposable
                 case LayoutMode.Table:
                     return new Vector2(GetCurrentColumnWidth(), requestedSize.Y);
 
+                case LayoutMode.Canvas:
+                    return requestedSize;
+
                 default:
                     throw new NotImplementedException();
             }
@@ -361,6 +367,9 @@ public sealed unsafe class UI : IDisposable
 
                 case LayoutMode.Table:
                     MaxRowHeight = Math.Max(MaxRowHeight, size.Y);
+                    break;
+
+                case LayoutMode.Canvas:
                     break;
 
                 default:
@@ -1587,6 +1596,44 @@ public sealed unsafe class UI : IDisposable
 
         var table = PopLayoutItem();
         var consumedSize = table.MaxCursor - table.TotalRect.TopLeft;
+        _ = Layout(consumedSize);
+    }
+
+    public Scope BeginCanvas()
+    {
+        var parentLayoutItem = _layoutItems.Peek();
+
+        Rect rect = parentLayoutItem.GetRemainingSpace();
+
+        //if (maxHeight is not null && rect.Size.Y > maxHeight.Value)
+        //{
+        //    rect = new Rect(rect.TopLeft, rect.TopRight + new Vector2(0, maxHeight.Value));
+        //}
+
+        var layoutItem = PushLayoutItem(LayoutMode.Canvas, rect);
+        layoutItem.ScrollOffset = parentLayoutItem.ScrollOffset;
+
+        return new Scope(this, Scope.ScopeType.Canvas, true);
+    }
+
+    public void SetCanvasPosition(Vector2 relativePosition)
+    {
+        var canvas = _layoutItems.Peek();
+        if (canvas.Mode != LayoutMode.Canvas)
+            throw new InvalidOperationException("No active canvas");
+
+        canvas.Cursor = canvas.TotalRect.TopLeft + relativePosition;
+    }
+
+    private void EndCanvas()
+    {
+        if (_layoutItems.Peek().Mode != LayoutMode.Canvas)
+            throw new InvalidOperationException("Unbalanced BeginCanvas/EndCanvas");
+
+        // consume space in parent layout
+        var canvas = PopLayoutItem();
+        var consumedSize = canvas.MaxCursor - canvas.TotalRect.TopLeft;
+
         _ = Layout(consumedSize);
     }
 

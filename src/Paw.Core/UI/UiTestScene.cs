@@ -21,6 +21,7 @@ public class UiTestScene : Scene
     private bool _showWindow3;
     private bool _showWindow4;
 
+    private float _time;
 
 
     public UiTestScene(SceneContext context)
@@ -50,6 +51,8 @@ public class UiTestScene : Scene
 
     public override void Render(RenderContext context)
     {
+        _time += context.DeltaTime;
+
         //
         // overlays
         //
@@ -183,6 +186,26 @@ public class UiTestScene : Scene
             using (UI.BeginScrollable(new Vector2(0, 100), "Scroll2"))
             {
                 UI.Label("bbb1");
+
+                using (UI.BeginCanvas())
+                {
+                    UI.SetCanvasPosition(new Vector2(0, 0));
+                    UI.Button("c1");
+
+                    UI.SetCanvasPosition(new Vector2(100, 0));
+                    UI.Button("c2");
+
+                    UI.SetCanvasPosition(new Vector2(100, 100));
+                    UI.Button("c3");
+
+                    float x = 100f + 100f * MathF.Sin(_time);
+                    float y = 100f + 100f * MathF.Cos(_time);
+
+                    UI.SetCanvasPosition(new Vector2(x, y));
+                    UI.Button("c4");
+                }
+
+                UI.Label("bbb2");
 
             }
 

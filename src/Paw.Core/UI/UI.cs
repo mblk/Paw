@@ -1743,6 +1743,64 @@ public sealed unsafe class UI : IDisposable
         return valueChanged;
     }
 
+    public bool Input(ref int value) // TODO min/max
+    {
+        var size = new Vector2(100, _simpleControlHeight);
+        size = AdjustSize(size);
+
+        if (size.X <= 0 || size.Y <= 0)
+            return false;
+
+        var rect = Layout(size);
+
+        // input
+        Id id = _idStack.Peek();
+
+        Vector4 backgroundColor = _inputBackgroundColor;
+
+        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
+        {
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            var wasPressed = _mouseState.WasPressed(MouseButton.Left);
+
+            if (_selectedControl != id && wasPressed)
+            {
+                StartStringInput(id, value.ToString());
+            }
+        }
+
+        string valueToShow;
+        var valueChanged = false;
+
+        if (_selectedControl == id)
+        {
+            if (HandleStringInput())
+            {
+                if (int.TryParse(_inputBuffer, out var parsedValue))
+                {
+                    value = parsedValue;
+                    valueChanged = true;
+                }
+            }
+
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            valueToShow = _inputBufferWithCursor;
+        }
+        else
+        {
+            valueToShow = value.ToString();
+        }
+
+        // geometry
+        int vertexCount = 0;
+        vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
+        vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _inputTextColor, valueToShow);
+
+        AddDrawCommand(vertexCount);
+
+        return valueChanged;
+    }
+
     public bool Input(ref float value) // TODO min/max/format
     {
         const string format = "F3";
@@ -1833,6 +1891,23 @@ public sealed unsafe class UI : IDisposable
     }
 
     public bool Input(string label, ref float value)
+    {
+        bool r;
+
+        using (BeginTable(0.5f, 0.5f))
+        {
+            Label(label);
+            NextColumn();
+
+            PushId(label);
+            r = Input(ref value);
+            PopId();
+        }
+
+        return r;
+    }
+
+    public bool Input(string label, ref int value)
     {
         bool r;
 

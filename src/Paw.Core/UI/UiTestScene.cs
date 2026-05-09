@@ -15,6 +15,9 @@ public class UiTestScene : Scene
     private float _float1 = 0;
     private float _float2 = 12.34f;
 
+    private int _rowCount = 10;
+    private int _colCount = 10;
+
     private bool _showWindow3;
     private bool _showWindow4;
 
@@ -142,29 +145,32 @@ public class UiTestScene : Scene
                 Console.WriteLine($"button 11");
             }
 
-            // TODO int for Input row/col count
+            UI.Input("Rows", ref _rowCount);
+            UI.Input("Cols", ref _colCount);
+
+            UI.Label($"Rows={_rowCount} Cols={_colCount}");
+
+            int rows = _rowCount;
+            if (rows < 1) rows = 1;
+
+            int cols = _colCount;
+            if (cols < 1) cols = 1;
 
             using (UI.BeginScrollable(new Vector2(0, 200), "Scroll1", UI.ScrollFlags.Both))
             {
                 UI.Label("a111");
 
-                //using (UI.BeginVertical())
-                //{
-                //    UI.Label("a222");
-                //    UI.Label("a333");
-                //}
-
-                var colWidths = Enumerable.Range(0, 10).Select(_ => 100f).ToArray();
+                var colWidths = Enumerable.Range(0, cols).Select(_ => 100f).ToArray();
 
                 using (UI.BeginTable(colWidths))
                 {
-                    for (int row = 0; row < 10; row++)
+                    for (int row = 0; row < rows; row++)
                     {
-                        for (int col = 0; col < 10; col++)
+                        for (int col = 0; col < cols; col++)
                         {
                             UI.Button($"{row}.{col}");
 
-                            if (col < 9) // XXX
+                            if (col < cols - 1) // XXX
                                 UI.NextColumn();
                         }
                         UI.NextRow();

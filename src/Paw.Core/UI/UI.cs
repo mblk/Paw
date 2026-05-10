@@ -3,6 +3,7 @@ using Paw.Core.Graphics;
 using Paw.Core.Platforms;
 using Paw.Core.Resources;
 using Paw.Core.Utils;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -492,6 +493,14 @@ public sealed unsafe class UI : IDisposable
     private int _inputBufferCursorStart;
 
 
+    //
+    // object pools
+    //
+
+    private ArrayPool<float> _tableColsPool = ArrayPool<float>.Create();
+    private int _tableColsPoolCount;
+
+
     public UI(AssetManager assetManager)
     {
         _gl = assetManager.GL;
@@ -608,6 +617,8 @@ public sealed unsafe class UI : IDisposable
             throw new InvalidOperationException($"EndWindow was not called");
         if (_layoutItems.Count > 1)
             throw new InvalidOperationException($"Layout stack was not cleaned up on end of frame. Items left: {_layoutItems.Count}");
+        if (_tableColsPoolCount != 0)
+            throw new InvalidOperationException($"Table column array pool not cleaned up. Items left: {_tableColsPoolCount}");
 
         _vertices.Clear();
         _globalDrawCommands.Clear();
@@ -1275,8 +1286,8 @@ public sealed unsafe class UI : IDisposable
 
         var rect = Layout(size);
 
-        var scrollHorizontally = flags.HasFlag(ScrollFlags.Horizontal);
-        var scrollVertically = flags.HasFlag(ScrollFlags.Vertical);
+        var scrollHorizontally = (flags & ScrollFlags.Horizontal) != 0; // prevent boxing
+        var scrollVertically = (flags & ScrollFlags.Vertical) != 0;
 
         // id
         var id = PushId(idText);
@@ -1322,8 +1333,8 @@ public sealed unsafe class UI : IDisposable
         var contentSize = verticalLayout.MaxCursor - verticalLayout.TotalRect.TopLeft;
 
         var flags = verticalLayout.ScrollFlags;
-        var horiScrollEnabled = flags.HasFlag(ScrollFlags.Horizontal);
-        var vertScrollEnabled = flags.HasFlag(ScrollFlags.Vertical);
+        var horiScrollEnabled = (flags & ScrollFlags.Horizontal) != 0; // prevent boxing
+        var vertScrollEnabled = (flags & ScrollFlags.Vertical) != 0;
         var canScrollHori = contentSize.X > clipRect.Size.X;
         var canScrollVert = contentSize.Y > clipRect.Size.Y;
 
@@ -1620,7 +1631,10 @@ public sealed unsafe class UI : IDisposable
         Rect rect = parentLayoutItem.GetRemainingSpace();
 
         // calculate column widths in pixels
-        var actualColumnWidths = new float[columnWidths.Length];
+        var actualColumnWidths = _tableColsPool.Rent(columnWidths.Length);
+        _tableColsPoolCount++;
+
+        //var actualColumnWidths = new float[columnWidths.Length]; // XXX TODO allocation happening here :)
         var alreadyConsumedWidth = _tableSpacing * (columnWidths.Length - 1);
         for (var i = 0; i < columnWidths.Length; i++)
         {
@@ -1656,6 +1670,10 @@ public sealed unsafe class UI : IDisposable
             throw new InvalidOperationException("Unbalanced BeginTable/EndTable");
 
         var table = PopLayoutItem();
+
+        _tableColsPool.Return(table.ColumnWidths!);
+        _tableColsPoolCount--;
+
         var consumedSize = table.MaxCursor - table.TotalRect.TopLeft;
         _ = Layout(consumedSize);
     }
@@ -1981,11 +1999,13 @@ public sealed unsafe class UI : IDisposable
 
     #region Composite controls
 
+    private static readonly float[] _inputTableCols = [0.5f, 0.5f];
+
     public bool Input(ReadOnlySpan<char> label, ref string value) // TODO span?
     {
         bool r;
 
-        using (BeginTable(0.5f, 0.5f))
+        using (BeginTable(_inputTableCols))
         {
             Label(label);
             NextColumn();
@@ -2002,7 +2022,7 @@ public sealed unsafe class UI : IDisposable
     {
         bool r;
 
-        using (BeginTable(0.5f, 0.5f))
+        using (BeginTable(_inputTableCols))
         {
             Label(label);
             NextColumn();
@@ -2019,7 +2039,7 @@ public sealed unsafe class UI : IDisposable
     {
         bool r;
 
-        using (BeginTable(0.5f, 0.5f))
+        using (BeginTable(_inputTableCols))
         {
             Label(label);
             NextColumn();

@@ -52,11 +52,18 @@ public sealed unsafe class UI : IDisposable
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct Vertex
+    public readonly struct Vertex
     {
-        public Vector2 Position;
-        public Vector4 Color;
-        public Vector2 UV;
+        public readonly Vector2 Position;
+        public readonly Vector4 Color;
+        public readonly Vector2 UV;
+
+        public Vertex(Vector2 position, Vector4 color, Vector2 uv)
+        {
+            Position = position;
+            Color = color;
+            UV = uv;
+        }
     }
 
     private class DrawCommand
@@ -586,13 +593,13 @@ public sealed unsafe class UI : IDisposable
 
         Vector2 uv = new(2f, 2f); // magic uv coord: always white
 
-        _vertices.Add(new Vertex() { Position = tl, Color = color, UV = uv });
-        _vertices.Add(new Vertex() { Position = tr, Color = color, UV = uv });
-        _vertices.Add(new Vertex() { Position = bl, Color = color, UV = uv });
+        _vertices.Add(new Vertex(tl, color, uv));
+        _vertices.Add(new Vertex(tr, color, uv));
+        _vertices.Add(new Vertex(bl, color, uv));
 
-        _vertices.Add(new Vertex() { Position = bl, Color = color, UV = uv });
-        _vertices.Add(new Vertex() { Position = tr, Color = color, UV = uv });
-        _vertices.Add(new Vertex() { Position = br, Color = color, UV = uv });
+        _vertices.Add(new Vertex(bl, color, uv));
+        _vertices.Add(new Vertex(tr, color, uv));
+        _vertices.Add(new Vertex(br, color, uv));
 
         return 6;
     }
@@ -605,9 +612,9 @@ public sealed unsafe class UI : IDisposable
 
         Vector2 uv = new(2f, 2f); // magic uv coord: always white
 
-        _vertices.Add(new Vertex() { Position = bl, Color = color, UV = uv });
-        _vertices.Add(new Vertex() { Position = tr, Color = color, UV = uv });
-        _vertices.Add(new Vertex() { Position = br, Color = color, UV = uv });
+        _vertices.Add(new Vertex(bl, color, uv));
+        _vertices.Add(new Vertex(tr, color, uv));
+        _vertices.Add(new Vertex(br, color, uv));
 
         return 3;
     }
@@ -655,12 +662,12 @@ public sealed unsafe class UI : IDisposable
             Vector2 br = new(xr, yb);
             Vector2 bl = new(xl, yb);
 
-            _vertices.Add(new Vertex { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-            _vertices.Add(new Vertex { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
-            _vertices.Add(new Vertex { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-            _vertices.Add(new Vertex { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-            _vertices.Add(new Vertex { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-            _vertices.Add(new Vertex { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
+            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y)));
+            _vertices.Add(new Vertex(br, color, new(uvMax.X, uvMax.Y)));
+            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y)));
+            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y)));
+            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y)));
+            _vertices.Add(new Vertex(tl, color, new(uvMin.X, uvMin.Y)));
             vertexCount += 6;
 
             currentPosition.X += charData.XAdvance * _textScale;

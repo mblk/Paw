@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Paw.Core.Utils;
 
-public ref struct SpanStringBuilder
+public ref struct SpanStringBuilder // TODO remove or cleanup
 {
     private readonly Span<char> _buffer;
     private int _numChars;
@@ -13,14 +14,14 @@ public ref struct SpanStringBuilder
         _numChars = 0;
     }
 
-    public static implicit operator ReadOnlySpan<char>(SpanStringBuilder sb) => sb.GetSpan();
+    public static implicit operator ReadOnlySpan<char>(SpanStringBuilder sb) => sb.GetFilledSpan();
 
     public void Clear()
     {
         _numChars = 0;
     }
 
-    public ReadOnlySpan<char> GetSpan()
+    public readonly ReadOnlySpan<char> GetFilledSpan()
     {
         return _buffer[0.._numChars];
     }
@@ -30,58 +31,81 @@ public ref struct SpanStringBuilder
         Span<char> target = _buffer[_numChars..];
 
         if (text.TryCopyTo(target))
-        {
             _numChars += text.Length;
-        }
         else
-        {
             Debugger.Break();
-        }
     }
 
-    public void Append(int value, ReadOnlySpan<char> format = default, IFormatProvider? formatProvider = null)
+    public void Append(char value)
+    {
+        if (_numChars < _buffer.Length)
+            _buffer[_numChars++] = value;
+        else
+            Debugger.Break();
+    }
+
+    public void Append<T>(T value, ReadOnlySpan<char> format = default, IFormatProvider? formatProvider = null)
+        where T : ISpanFormattable
     {
         Span<char> target = _buffer[_numChars..];
 
-        if (value.TryFormat(target, out int charWritten, format, formatProvider))
-        {
-            _numChars += charWritten;
-        }
+        if (value.TryFormat(target, out int charsWritten, format, formatProvider))
+            _numChars += charsWritten;
         else
-        {
             Debugger.Break();
-        }
     }
 
-    public void Append(float value, ReadOnlySpan<char> format = default, IFormatProvider? formatProvider = null)
+    public void Append([InterpolatedStringHandlerArgument("")] AppendInterpolatedStringHandler handler)
     {
-        Span<char> target = _buffer[_numChars..];
-
-        if (value.TryFormat(target, out int charWritten, format, formatProvider))
-        {
-            _numChars += charWritten;
-        }
-        else
-        {
-            Debugger.Break();
-        }
+        _numChars = handler.NumChars;
     }
 
-    public void Append(double value, ReadOnlySpan<char> format = default, IFormatProvider? formatProvider = null)
+    [InterpolatedStringHandler]
+    public ref struct AppendInterpolatedStringHandler
     {
-        Span<char> target = _buffer[_numChars..];
+        private readonly Span<char> _buffer;
+        private int _numChars;
 
-        if (value.TryFormat(target, out int charWritten, format, formatProvider))
+        internal readonly int NumChars => _numChars;
+
+        public AppendInterpolatedStringHandler(int literalLength, int formattedCount, SpanStringBuilder builder)
         {
-            _numChars += charWritten;
+            _buffer = builder._buffer;
+            _numChars = builder._numChars;
         }
-        else
+
+        public void AppendLiteral(string value)
         {
-            Debugger.Break();
+            AppendFormatted(value);
+        }
+
+        public void AppendFormatted(ReadOnlySpan<char> value)
+        {
+            Span<char> target = _buffer[_numChars..];
+
+            if (value.TryCopyTo(target))
+                _numChars += value.Length;
+            else
+                Debugger.Break();
+        }
+
+        public void AppendFormatted(char value)
+        {
+            if (_numChars < _buffer.Length)
+                _buffer[_numChars++] = value;
+            else
+                Debugger.Break();
+        }
+
+        public void AppendFormatted<T>(T value, string? format = null, IFormatProvider? formatProvider = null)
+            where T : ISpanFormattable
+        {
+            Span<char> target = _buffer[_numChars..];
+
+            if (value.TryFormat(target, out int charsWritten, format, formatProvider))
+                _numChars += charsWritten;
+            else
+                Debugger.Break();
         }
     }
-
-
-
-
 }

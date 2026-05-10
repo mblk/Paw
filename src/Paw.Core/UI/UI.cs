@@ -2031,34 +2031,16 @@ public sealed unsafe class UI : IDisposable
 
     public void ShowDebuggingOverlay()
     {
-        var sb = new SpanStringBuilder(stackalloc char[128]);
+        Overlay(Format($"UI vertices: {_stats.VertexCount}"));
+        Overlay(Format($"UI draw calls: {_stats.DrawCalls}"));
+        Overlay(Format($"Mouse: {_mouseState.X} {_mouseState.Y}"));
 
-        sb.Clear();
-        sb.Append("UI vertices: ");
-        sb.Append(_stats.VertexCount);
-        Overlay(sb);
-        //Overlay($"UI vertices: {_stats.VertexCount}");
+        //Overlay(Format($"Selected: {_selectedControl}"));
 
-        sb.Clear();
-        sb.Append("UI draw calls: ");
-        sb.Append(_stats.DrawCalls);
-        Overlay(sb);
-        //Overlay($"UI draw calls: {_stats.DrawCalls}");
-
-        sb.Clear();
-        sb.Append("UI mouse: ");
-        sb.Append(_mouseState.X);
-        sb.Append(" ");
-        sb.Append(_mouseState.Y);
-        Overlay(sb);
-        //Overlay($"Mouse: {_mouseState.X} {_mouseState.Y}");
-
-        //Overlay($"Selected: {_selectedControl}");
-
-        //Overlay($"Grab: {_grabType} {_grabOffset}");
+        //Overlay(Format($"Grab: {_grabType} {_grabOffset}"));
 
         //foreach (var (id, offset) in _scrollOffsets)
-        //    Overlay($"ScrollOffset {id} {offset}");
+        //    Overlay(Format($"ScrollOffset {id} {offset}"));
     }
 
     #endregion

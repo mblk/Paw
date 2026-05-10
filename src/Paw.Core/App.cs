@@ -62,8 +62,6 @@ public abstract class App
         var lastTime = DateTime.Now;
 
         // prepare reusable buffers
-        var sb = new SpanStringBuilder(stackalloc char[128]);
-
         var updateContext = new UpdateContext()
         {
             DeltaTime = 0f,
@@ -104,35 +102,14 @@ public abstract class App
 
             if (true)
             {
-                sb.Clear();
-                sb.Append("FPS: ");
-                sb.Append(avgFramerate, "F1");
-                ui.Overlay(sb);
-                //ui.Overlay($"FPS: {avgFramerate:F1}");
-
-                sb.Clear();
-                sb.Append("Alloc: ");
-                sb.Append(avgAllocedBytesPerFrame, "F0");
-                sb.Append(" bytes/frame");
-                ui.Overlay(sb);
-                //ui.Overlay($"Alloc: {avgAllocedBytesPerFrame:F0} bytes/frame");
+                ui.Overlay(Format($"FPS: {avgFramerate:F1}"));
+                ui.Overlay(Format($"Alloc: {avgAllocedBytesPerFrame:F0} bytes/frame"));
 
                 int gen0 = GC.CollectionCount(0);
                 int gen1 = GC.CollectionCount(1);
                 int gen2 = GC.CollectionCount(2);
                 var gcPause = GC.GetTotalPauseDuration();
-
-                sb.Clear();
-                sb.Append("GC: ");
-                sb.Append(gen0);
-                sb.Append("/");
-                sb.Append(gen1);
-                sb.Append("/");
-                sb.Append(gen2);
-                sb.Append("/");
-                // TODO gcPause
-                ui.Overlay(sb);
-                //ui.Overlay($"GC: {gen0}/{gen1}/{gen2}/{gcPause.TotalMilliseconds:F1}ms");
+                ui.Overlay(Format($"GC: {gen0}/{gen1}/{gen2}/{gcPause.TotalMilliseconds:F1}ms"));
 
                 ui.ShowDebuggingOverlay();
             }

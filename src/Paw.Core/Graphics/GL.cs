@@ -136,12 +136,10 @@ public sealed unsafe partial class GL
     //
 
     //[Conditional("DEBUG")]
-    public DebugGroupHelper PushDebugGroup(string message) // TODO disable in release mode
+    public DebugGroupHelper PushDebugGroup(ReadOnlySpan<char> message) // TODO disable in release mode
     {
-        if (String.IsNullOrWhiteSpace(message))
-        {
+        if (message.Length == 0)
             throw new ArgumentNullException(nameof(message), "Missing message");
-        }
 
         int length = Encoding.UTF8.GetByteCount(message);
 
@@ -233,10 +231,10 @@ public sealed unsafe partial class GL
         }
     }
 
-    public int GetUniformLocation(ProgramId program, string name)
+    public int GetUniformLocation(ProgramId program, ReadOnlySpan<char> name)
     {
 #if DEBUG
-        if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name must not be empty", nameof(name));
+        if (name.Length == 0) throw new ArgumentException("Name must not be empty", nameof(name));
 #endif
 
         int len = Encoding.UTF8.GetByteCount(name);

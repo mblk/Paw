@@ -53,20 +53,32 @@ public abstract class App
 
         RegisterScenes(sceneManager);
 
-        // main loop
+        // timing
         int numFrames = 0;
         double totalTime = 0;
-
         double avgFramerate = 0;
         double avgAllocedBytesPerFrame = 0;
-
         long gcTotalLast = GC.GetTotalAllocatedBytes();
-
         var lastTime = DateTime.Now;
 
-        //
+        // prepare reusable buffers
         var sb = new SpanStringBuilder(stackalloc char[128]);
 
+        var updateContext = new UpdateContext()
+        {
+            DeltaTime = 0f,
+            WindowSize = window.Size,
+            Input = window.Input,
+            SceneController = sceneManager,
+        };
+
+        var renderContext = new RenderContext()
+        {
+            DeltaTime = 0f,
+            WindowSize = window.Size,
+        };
+
+        // main loop
         while (window.ProcessEvents() && !sceneManager.ExitRequested)
         {
             //
@@ -83,18 +95,14 @@ public abstract class App
 
             (assetManager as AssetManagerWithHotReload)?.ProcessChanges();
 
-            var updateContext = new UpdateContext()
-            {
-                DeltaTime = (float)dt,
-                WindowSize = window.Size,
-                Input = window.Input,
-                SceneController = sceneManager,
-            };
+            updateContext.DeltaTime = (float)dt;
+            updateContext.WindowSize = window.Size;
 
             sceneManager.Update(updateContext);
 
             ui.Update(updateContext);
 
+            if (true)
             {
                 sb.Clear();
                 sb.Append("FPS: ");
@@ -135,11 +143,8 @@ public abstract class App
 
             var (windowWidth, windowHeight) = window.Size;
 
-            var renderContext = new RenderContext()
-            {
-                DeltaTime = (float)dt,
-                WindowSize = window.Size,
-            };
+            renderContext.DeltaTime = (float)dt;
+            renderContext.WindowSize = window.Size;
 
             using (gl.PushDebugGroup("Frame"))
             {
@@ -174,6 +179,8 @@ public abstract class App
 
                 long gcTotal = GC.GetTotalAllocatedBytes();
                 avgAllocedBytesPerFrame = (double)(gcTotal - gcTotalLast) / numFrames;
+
+                //Console.WriteLine($"avgAllocedBytesPerFrame: {avgAllocedBytesPerFrame}");
 
                 gcTotalLast = gcTotal;
                 totalTime = 0;

@@ -26,18 +26,18 @@ public class SceneContext
     public required UI.UI UI { get; init; }
 }
 
-public class UpdateContext
+public class UpdateContext // TODO maybe make struct and pass as "in UpdateContext" to prevent accidental changes?
 {
-    public required float DeltaTime { get; init; }
-    public required (int, int) WindowSize { get; init; }
-    public required IInput Input { get; init; }
-    public required ISceneController SceneController { get; init; }
+    public float DeltaTime;
+    public (int, int) WindowSize;
+    public required IInput Input;
+    public required ISceneController SceneController;
 }
 
 public class RenderContext
 {
-    public required float DeltaTime { get; init; }
-    public required (int, int) WindowSize { get; init; }
+    public float DeltaTime;
+    public (int, int) WindowSize;
 }
 
 public interface ISceneController

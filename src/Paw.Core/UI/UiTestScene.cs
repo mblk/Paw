@@ -16,6 +16,7 @@ public class UiTestScene : Scene
 
     private int _rowCount = 10;
     private int _colCount = 10;
+    private float[] _columns = [];
 
     private bool _showWindow3;
     private bool _showWindow4;
@@ -183,9 +184,14 @@ public class UiTestScene : Scene
             {
                 UI.Label("a111");
 
-                var colWidths = Enumerable.Range(0, cols).Select(_ => 100f).ToArray();
 
-                using (UI.BeginTable(colWidths))
+                if (_columns.Length != _colCount)
+                {
+                    Console.WriteLine("rebulid columns");
+                    _columns = Enumerable.Range(0, cols).Select(_ => 100f).ToArray();
+                }
+
+                using (UI.BeginTable(_columns))
                 {
                     for (int row = 0; row < rows; row++)
                     {

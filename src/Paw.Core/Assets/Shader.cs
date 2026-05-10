@@ -105,7 +105,7 @@ public sealed class Shader : Asset, IDisposable
         _gl.UseProgram(default);
     }
 
-    public void SetUniform(string name, int value)
+    public void SetUniform(ReadOnlySpan<char> name, int value)
     {
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
@@ -114,7 +114,7 @@ public sealed class Shader : Asset, IDisposable
         }
     }
 
-    public void SetUniform(string name, float value)
+    public void SetUniform(ReadOnlySpan<char> name, float value)
     {
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
@@ -123,7 +123,7 @@ public sealed class Shader : Asset, IDisposable
         }
     }
 
-    public void SetUniform(string name, Vector2 value)
+    public void SetUniform(ReadOnlySpan<char> name, Vector2 value)
     {
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
@@ -132,7 +132,7 @@ public sealed class Shader : Asset, IDisposable
         }
     }
 
-    public void SetUniform(string name, Vector3 value)
+    public void SetUniform(ReadOnlySpan<char> name, Vector3 value)
     {
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)
@@ -141,7 +141,7 @@ public sealed class Shader : Asset, IDisposable
         }
     }
 
-    public unsafe void SetUniform(string name, Matrix4x4 value, bool transpose = false)
+    public unsafe void SetUniform(ReadOnlySpan<char> name, Matrix4x4 value, bool transpose = false)
     {
         int location = _gl.GetUniformLocation(_program, name);
         if (location != -1)

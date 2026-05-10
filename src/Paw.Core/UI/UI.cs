@@ -66,11 +66,23 @@ public sealed unsafe class UI : IDisposable
         }
     }
 
-    private class DrawCommand
+    private readonly struct DrawCommand
     {
-        public required Rect Clip;
-        public required int VertexOffset;
-        public required int VertexCount;
+        public readonly Rect Clip;
+        public readonly int VertexOffset;
+        public readonly int VertexCount;
+
+        public DrawCommand(Rect clip, int vertexOffset, int vertexCount)
+        {
+            Clip = clip;
+            VertexOffset = vertexOffset;
+            VertexCount = vertexCount;
+        }
+
+        public DrawCommand AddCount(int count)
+        {
+            return new DrawCommand(Clip, VertexOffset, VertexCount + count);
+        }
     }
 
     private readonly record struct ClipEntry(Rect Rect)
@@ -304,8 +316,8 @@ public sealed unsafe class UI : IDisposable
     }
     private class LayoutItem
     {
-        public readonly LayoutMode Mode;
-        public readonly Rect TotalRect;
+        public LayoutMode Mode;
+        public Rect TotalRect;
         public Vector2 Cursor;
         public Vector2 MaxCursor;
         public Vector2 ScrollOffset;
@@ -319,12 +331,30 @@ public sealed unsafe class UI : IDisposable
         public int Column;
         public float MaxRowHeight;
 
-        public LayoutItem(LayoutMode mode, Rect totalRect)
+        //public LayoutItem(LayoutMode mode, Rect totalRect)
+        //{
+        //    Mode = mode;
+        //    TotalRect = totalRect;
+        //    Cursor = totalRect.TopLeft;
+        //    MaxCursor = totalRect.TopLeft;
+        //}
+
+        public LayoutItem()
+        {
+        }
+
+        public void Reset(LayoutMode mode, Rect totalRect)
         {
             Mode = mode;
             TotalRect = totalRect;
             Cursor = totalRect.TopLeft;
             MaxCursor = totalRect.TopLeft;
+            ScrollOffset = default;
+            ScrollFlags = default;
+            ColumnWidths = default;
+            Row = default;
+            Column = default;
+            MaxRowHeight = default;
         }
 
         public Rect GetRemainingSpace()
@@ -402,6 +432,25 @@ public sealed unsafe class UI : IDisposable
     }
 
     private readonly Stack<LayoutItem> _layoutItems = [];
+
+    // TODO make helper class for object pools?
+    private readonly LayoutItem[] _layoutItemPool = Enumerable.Range(0, 100).Select(_ => new LayoutItem()).ToArray();
+    private int _usedLayoutItems = 0;
+
+    private void ResetLayoutItemPool()
+    {
+        _usedLayoutItems = 0;
+    }
+
+    private LayoutItem GetLayoutItemFromPool()
+    {
+        if (_usedLayoutItems >= _layoutItemPool.Length)
+            throw new InvalidOperationException("Layout item pool empty");
+
+        return _layoutItemPool[_usedLayoutItems++];
+    }
+
+
 
     //
     // rendering
@@ -513,7 +562,7 @@ public sealed unsafe class UI : IDisposable
             ProcessDrawCommand(_globalDrawCommands[i]);
         }
 
-        void ProcessDrawCommand(DrawCommand drawCommand)
+        void ProcessDrawCommand(in DrawCommand drawCommand)
         {
             int x = (int)drawCommand.Clip.Min.X;
             int y = (int)drawCommand.Clip.Min.Y;
@@ -579,6 +628,7 @@ public sealed unsafe class UI : IDisposable
         _nextWindowExplicitPosition = null;
 
         _layoutItems.Clear();
+        ResetLayoutItemPool();
         PushLayoutItem(LayoutMode.Vertical, new Rect(new Vector2(0, 0), new Vector2(windowWidth, windowHeight)));
     }
 
@@ -721,21 +771,18 @@ public sealed unsafe class UI : IDisposable
         if (drawCommands.Count > 0)
         {
             DrawCommand mostRecent = drawCommands[^1];
-
             if (mostRecent.Clip == clipEntry.Rect)
             {
-                mostRecent.VertexCount += vertexCount;
+                drawCommands[^1] = mostRecent.AddCount(vertexCount); // replace value type in list
                 return;
             }
         }
 
         // new command
-        drawCommands.Add(new DrawCommand()
-        {
-            Clip = clipEntry.Rect,
-            VertexOffset = _vertices.Count - vertexCount,
-            VertexCount = vertexCount,
-        });
+        drawCommands.Add(new DrawCommand(
+            clip: clipEntry.Rect,
+            vertexOffset: _vertices.Count - vertexCount,
+            vertexCount: vertexCount));
     }
 
     private void PushClipEntry(Rect clipRect)
@@ -764,8 +811,8 @@ public sealed unsafe class UI : IDisposable
 
     private LayoutItem PushLayoutItem(LayoutMode mode, Rect totalRect)
     {
-        var item = new LayoutItem(mode, totalRect);
-
+        var item = GetLayoutItemFromPool();
+        item.Reset(mode, totalRect);
         _layoutItems.Push(item);
 
         return item;

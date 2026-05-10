@@ -64,7 +64,6 @@ public class Material : Asset
         for (int i = 0; i < _textures.Count; i++)
         {
             _textures[i].Bind(i);
-
         }
 
         if (_textures.Count == 1)
@@ -75,7 +74,18 @@ public class Material : Asset
         {
             for (int i = 0; i < _textures.Count; i++)
             {
-                _shader.SetUniform($"uTex{i + 1}", i); // TODO maybe use glsl array instead?
+                //_shader.SetUniform($"uTex{i + 1}", i); // TODO maybe use glsl array instead?
+
+                switch (i)
+                {
+                    case 0: _shader.SetUniform("uTex1", i); break; // TODO dirty fix, clean up
+                    case 1: _shader.SetUniform("uTex2", i); break;
+                    case 2: _shader.SetUniform("uTex3", i); break;
+                    case 3: _shader.SetUniform("uTex4", i); break;
+                    case 4: _shader.SetUniform("uTex5", i); break;
+                    default: throw new NotImplementedException();
+                }
+
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Paw.Core.Resources;
+using Paw.Core.Utils;
 using System.Numerics;
 
 namespace Paw.Core.UI;
@@ -7,8 +8,6 @@ public class UiTestScene : Scene
 {
     private int _mouseX;
     private int _mouseY;
-
-
 
     private string _string1 = "Hello";
     private string _string2 = "World";
@@ -53,6 +52,8 @@ public class UiTestScene : Scene
     {
         _time += context.DeltaTime;
 
+        var sb = new SpanStringBuilder(stackalloc char[128]);
+
         //
         // overlays
         //
@@ -83,7 +84,17 @@ public class UiTestScene : Scene
             UI.Input("string2", ref _string2);
             UI.Input("float1", ref _float1);
             UI.Input("float2", ref _float2);
-            UI.Label($"{_string1} {_string2} {_float1} {_float2}");
+
+            sb.Clear();
+            sb.Append("inputs: ");
+            sb.Append(_string1.AsSpan());
+            sb.Append(" ");
+            sb.Append(_string2.AsSpan());
+            sb.Append(" ");
+            sb.Append(_float1);
+            sb.Append(" ");
+            sb.Append(_float2);
+            UI.Label(sb);
 
             using (UI.BeginScrollable(new Vector2(200, 200), "Scrollable1"))
             {
@@ -108,7 +119,10 @@ public class UiTestScene : Scene
                 {
                     for (int i = 0; i < 100; i++)
                     {
-                        UI.Label($"Foo {i}");
+                        sb.Clear();
+                        sb.Append("Foo ");
+                        sb.Append(i);
+                        UI.Label(sb);
                     }
                 }
 
@@ -151,7 +165,13 @@ public class UiTestScene : Scene
             UI.Input("Rows", ref _rowCount);
             UI.Input("Cols", ref _colCount);
 
-            UI.Label($"Rows={_rowCount} Cols={_colCount}");
+            sb.Clear();
+            sb.Append("Rows=");
+            sb.Append(_rowCount);
+            sb.Append(" Cols=");
+            sb.Append(_colCount);
+            UI.Label(sb);
+            //UI.Label($"Rows={_rowCount} Cols={_colCount}");
 
             int rows = _rowCount;
             if (rows < 1) rows = 1;
@@ -171,7 +191,13 @@ public class UiTestScene : Scene
                     {
                         for (int col = 0; col < cols; col++)
                         {
-                            UI.Button($"{row}.{col}");
+                            sb.Clear();
+                            sb.Append(row);
+                            sb.Append(".");
+                            sb.Append(col);
+                            UI.Button(sb);
+
+                            //UI.Button($"{row}.{col}");
 
                             if (col < cols - 1) // XXX
                                 UI.NextColumn();

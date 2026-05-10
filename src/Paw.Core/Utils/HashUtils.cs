@@ -4,7 +4,7 @@ namespace Paw.Core.Utils;
 
 public static class HashUtils
 {
-    public static ulong HashString64(string s) // FNV-1a
+    public static ulong HashString64(ReadOnlySpan<char> s) // FNV-1a
     {
         unchecked
         {

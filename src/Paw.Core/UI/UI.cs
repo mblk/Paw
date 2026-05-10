@@ -182,12 +182,12 @@ public sealed unsafe class UI : IDisposable
 
         public override string ToString() => $"Id({Value:X16})";
 
-        public static Id Create(string s)
+        public static Id Create(ReadOnlySpan<char> s)
         {
             return new Id(HashUtils.HashString64(s));
         }
 
-        public Id Combine(string s)
+        public Id Combine(ReadOnlySpan<char> s)
         {
             return new Id(HashUtils.Combine64(Value, HashUtils.HashString64(s)));
         }
@@ -620,7 +620,7 @@ public sealed unsafe class UI : IDisposable
         return vertexCount;
     }
 
-    private int EmitTextVerts(Vector2 position, Vector4 color, string text)
+    private int EmitTextVerts(Vector2 position, Vector4 color, ReadOnlySpan<char> text)
     {
         int vertexCount = 0;
 
@@ -669,7 +669,7 @@ public sealed unsafe class UI : IDisposable
         return vertexCount;
     }
 
-    private Vector2 MeasureTextLine(string text)
+    private Vector2 MeasureTextLine(ReadOnlySpan<char> text)
     {
         Vector2 currentPosition = _textMargin * 2;
         float maxHeight = 0;
@@ -849,7 +849,7 @@ public sealed unsafe class UI : IDisposable
         return new Rect(pos, pos + size);
     }
 
-    private Id PushId(string s)
+    private Id PushId(ReadOnlySpan<char> s)
     {
         Id id;
 
@@ -889,7 +889,7 @@ public sealed unsafe class UI : IDisposable
 
     #region String input
 
-    private void StartStringInput(Id controlId, string initialValue)
+    private void StartStringInput(Id controlId, string initialValue) // TODO span
     {
         if (controlId == default)
             throw new ArgumentException("Control id not set");
@@ -1033,7 +1033,7 @@ public sealed unsafe class UI : IDisposable
         }
     }
 
-    public Scope BeginWindow(Vector2 initialSize, string title)
+    public Scope BeginWindow(Vector2 initialSize, ReadOnlySpan<char> title)
     {
         if (_activeWindow is not null)
             throw new InvalidOperationException("BeginWindow called while a window is active");
@@ -1202,7 +1202,7 @@ public sealed unsafe class UI : IDisposable
         Both = Vertical | Horizontal,
     }
 
-    public Scope BeginScrollable(Vector2 size, string idText, ScrollFlags flags = ScrollFlags.Vertical)
+    public Scope BeginScrollable(Vector2 size, ReadOnlySpan<char> idText, ScrollFlags flags = ScrollFlags.Vertical)
     {
         // layout
         size = AdjustSize(size);
@@ -1668,7 +1668,7 @@ public sealed unsafe class UI : IDisposable
         table.MaxRowHeight = 0;
     }
 
-    public void Overlay(string text)
+    public void Overlay(ReadOnlySpan<char> text)
     {
         var size = MeasureTextLine(text);
         var rect = Layout(size);
@@ -1680,7 +1680,7 @@ public sealed unsafe class UI : IDisposable
         AddDrawCommand(vertexCount);
     }
 
-    public void Label(string text)
+    public void Label(ReadOnlySpan<char> text)
     {
         var size = MeasureTextLine(text);
 
@@ -1701,7 +1701,7 @@ public sealed unsafe class UI : IDisposable
         AddDrawCommand(vertexCount);
     }
 
-    public bool Button(string text)
+    public bool Button(ReadOnlySpan<char> text)
     {
         var size = MeasureTextLine(text);
 
@@ -1735,7 +1735,7 @@ public sealed unsafe class UI : IDisposable
         return wasPressed;
     }
 
-    public bool Input(ref string value)
+    public bool Input(ref string value) // TODO span?
     {
         var size = new Vector2(100, _simpleControlHeight);
         size = AdjustSize(size);
@@ -1920,7 +1920,7 @@ public sealed unsafe class UI : IDisposable
 
     #region Composite controls
 
-    public bool Input(string label, ref string value)
+    public bool Input(ReadOnlySpan<char> label, ref string value) // TODO span?
     {
         bool r;
 
@@ -1937,7 +1937,7 @@ public sealed unsafe class UI : IDisposable
         return r;
     }
 
-    public bool Input(string label, ref float value)
+    public bool Input(ReadOnlySpan<char> label, ref float value)
     {
         bool r;
 
@@ -1954,7 +1954,7 @@ public sealed unsafe class UI : IDisposable
         return r;
     }
 
-    public bool Input(string label, ref int value)
+    public bool Input(ReadOnlySpan<char> label, ref int value)
     {
         bool r;
 
@@ -1977,17 +1977,34 @@ public sealed unsafe class UI : IDisposable
 
     public void ShowDebuggingOverlay()
     {
-        Overlay($"UI vertices: {_stats.VertexCount}");
-        Overlay($"UI draw calls: {_stats.DrawCalls}");
+        var sb = new SpanStringBuilder(stackalloc char[128]);
 
-        Overlay($"Mouse: {_mouseState.X} {_mouseState.Y}");
+        sb.Clear();
+        sb.Append("UI vertices: ");
+        sb.Append(_stats.VertexCount);
+        Overlay(sb);
+        //Overlay($"UI vertices: {_stats.VertexCount}");
 
-        Overlay($"Selected: {_selectedControl}");
+        sb.Clear();
+        sb.Append("UI draw calls: ");
+        sb.Append(_stats.DrawCalls);
+        Overlay(sb);
+        //Overlay($"UI draw calls: {_stats.DrawCalls}");
 
-        Overlay($"Grab: {_grabType} {_grabOffset}");
+        sb.Clear();
+        sb.Append("UI mouse: ");
+        sb.Append(_mouseState.X);
+        sb.Append(" ");
+        sb.Append(_mouseState.Y);
+        Overlay(sb);
+        //Overlay($"Mouse: {_mouseState.X} {_mouseState.Y}");
 
-        foreach (var (id, offset) in _scrollOffsets)
-            Overlay($"ScrollOffset {id} {offset}");
+        //Overlay($"Selected: {_selectedControl}");
+
+        //Overlay($"Grab: {_grabType} {_grabOffset}");
+
+        //foreach (var (id, offset) in _scrollOffsets)
+        //    Overlay($"ScrollOffset {id} {offset}");
     }
 
     #endregion

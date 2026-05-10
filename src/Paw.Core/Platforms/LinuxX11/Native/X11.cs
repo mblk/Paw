@@ -4,6 +4,8 @@ namespace Paw.Core.Platforms.LinuxX11.Native;
 
 internal unsafe static class X11
 {
+    public const int LookupBufferSize = 32;
+
     public enum CreateWindowValueMask : ulong
     {
         EventMask = 1L << 11,
@@ -190,4 +192,5 @@ internal unsafe static class X11
 
     [DllImport("libX11.so.6")] public static extern int XPending(nint display);
     [DllImport("libX11.so.6")] public static extern void XNextEvent(nint display, void* data);
+    [DllImport("libX11.so.6")] public static extern int XLookupString(XKeyEvent* event_struct, byte* buffer_return, int bytes_buffer, nint* keysym_return, nint status_in_out);
 }

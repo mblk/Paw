@@ -163,6 +163,9 @@ public unsafe class LinuxX11Platform : IPlatform
         private readonly bool[] _currStates = new bool[(int)Key.MaxValue];
         private readonly bool[] _prevStates = new bool[(int)Key.MaxValue];
 
+        private readonly char[] _charInput = new char[8];
+        private int _numChars = 0;
+
         public Keyboard()
         {
             Activate();
@@ -194,6 +197,9 @@ public unsafe class LinuxX11Platform : IPlatform
         {
             new Span<bool>(_currStates).CopyTo(new Span<bool>(state.CurrStates));
             new Span<bool>(_prevStates).CopyTo(new Span<bool>(state.PrevStates));
+
+            new Span<char>(_charInput).CopyTo(new Span<char>(state.Chars));
+            state.NumChars = _numChars;
         }
 
         public void NextFrame()
@@ -202,6 +208,11 @@ public unsafe class LinuxX11Platform : IPlatform
             {
                 _prevStates[i] = _currStates[i];
             }
+            for (int i = 0; i < _charInput.Length; i++)
+            {
+                _charInput[i] = (char)0;
+            }
+            _numChars = 0;
         }
 
         public void Deactivate()
@@ -211,6 +222,11 @@ public unsafe class LinuxX11Platform : IPlatform
                 _currStates[i] = false;
                 _prevStates[i] = false;
             }
+            for (int i = 0; i < _charInput.Length; i++)
+            {
+                _charInput[i] = (char)0;
+            }
+            _numChars = 0;
         }
 
         public void Activate()
@@ -220,6 +236,11 @@ public unsafe class LinuxX11Platform : IPlatform
                 _currStates[i] = false; // TODO: maybe query actual keyboard state?
                 _prevStates[i] = false;
             }
+            for (int i = 0; i < _charInput.Length; i++)
+            {
+                _charInput[i] = (char)0;
+            }
+            _numChars = 0;
         }
 
         public void HandleInput(in X11.XKeyEvent keyEvent) // in = struct is passed by reference
@@ -234,6 +255,23 @@ public unsafe class LinuxX11Platform : IPlatform
             if (key is null) return;
 
             SetState(key.Value, isPress);
+        }
+
+        public void HandleCharacterInput(in X11.XKeyEvent keyEvent)
+        {
+            byte* buffer = stackalloc byte[X11.LookupBufferSize];
+            nint keysym = 0;
+
+            fixed (X11.XKeyEvent* keyEventPtr = &keyEvent)
+            {
+                // TODO might need Xutf8LookupString in the future, this will only work for ascii / latin-1
+                int numBytes = X11.XLookupString(keyEventPtr, buffer, X11.LookupBufferSize, &keysym, nint.Zero);
+
+                for (int i = 0; i < numBytes && _numChars < _charInput.Length; i++)
+                {
+                    _charInput[_numChars++] = (char)buffer[i];
+                }
+            }
         }
 
         private void SetState(Key key, bool isPress)
@@ -569,6 +607,7 @@ public unsafe class LinuxX11Platform : IPlatform
                     case X11.EventType.KeyPress:
                     {
                         _keyboard.HandleInput(@event->key);
+                        _keyboard.HandleCharacterInput(@event->key);
                         break;
                     }
 

@@ -126,5 +126,7 @@ public class SceneManager : IDisposable, ISceneController
         CurrentScene?.Unload();
         CurrentScene = sceneFactory(_context);
         CurrentScene.Load();
+
+        _context.UI.ResetPersistedStates();
     }
 }

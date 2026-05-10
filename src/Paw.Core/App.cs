@@ -58,7 +58,8 @@ public abstract class App
         double totalTime = 0;
         double avgFramerate = 0;
         double avgAllocedBytesPerFrame = 0;
-        long gcTotalLast = GC.GetTotalAllocatedBytes();
+        //long gcTotalLast = GC.GetTotalAllocatedBytes(); // ignore other .net threads
+        long gcTotalLast = GC.GetAllocatedBytesForCurrentThread();
         var lastTime = DateTime.Now;
 
         // prepare reusable buffers
@@ -154,10 +155,9 @@ public abstract class App
             {
                 avgFramerate = numFrames / totalTime;
 
-                long gcTotal = GC.GetTotalAllocatedBytes();
+                //long gcTotal = GC.GetTotalAllocatedBytes(); // ignore other .net threads
+                long gcTotal = GC.GetAllocatedBytesForCurrentThread();
                 avgAllocedBytesPerFrame = (double)(gcTotal - gcTotalLast) / numFrames;
-
-                //Console.WriteLine($"avgAllocedBytesPerFrame: {avgAllocedBytesPerFrame}");
 
                 gcTotalLast = gcTotal;
                 totalTime = 0;

@@ -511,6 +511,13 @@ public sealed unsafe class UI : IDisposable
         _vertexBuffer.Dispose();
     }
 
+    public void ResetPersistedStates()
+    {
+        _windowStates.Clear();
+        _windowZOrder.Clear();
+        _scrollOffsets.Clear();
+    }
+
     public void Update(UpdateContext context)
     {
         context.Input.Keyboard.GetSnapshot(_keyboardState);

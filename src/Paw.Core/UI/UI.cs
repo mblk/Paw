@@ -1814,8 +1814,9 @@ public sealed unsafe class UI : IDisposable
         return wasPressed;
     }
 
-    public bool Input(ref string value) // TODO span?
+    public bool Input(ref string value)
     {
+        // layout
         var size = new Vector2(100, _simpleControlHeight);
         size = AdjustSize(size);
 
@@ -1824,9 +1825,10 @@ public sealed unsafe class UI : IDisposable
 
         var rect = Layout(size);
 
-        // input
+        // id
         Id id = _idStack.Peek();
 
+        // input
         Vector4 backgroundColor = _inputBackgroundColor;
 
         if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
@@ -1863,14 +1865,15 @@ public sealed unsafe class UI : IDisposable
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
         vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _inputTextColor, valueToShow);
-
         AddDrawCommand(vertexCount);
 
         return valueChanged;
     }
 
-    public bool Input(ref int value) // TODO min/max
+    public bool Input<T>(ref T value, ReadOnlySpan<char> format = default) // TODO min / max ?
+        where T : ISpanFormattable, ISpanParsable<T>
     {
+        // layout
         var size = new Vector2(100, _simpleControlHeight);
         size = AdjustSize(size);
 
@@ -1879,9 +1882,10 @@ public sealed unsafe class UI : IDisposable
 
         var rect = Layout(size);
 
-        // input
+        // id
         Id id = _idStack.Peek();
 
+        // input
         Vector4 backgroundColor = _inputBackgroundColor;
 
         if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
@@ -1891,21 +1895,26 @@ public sealed unsafe class UI : IDisposable
 
             if (_selectedControl != id && wasPressed)
             {
-                StartStringInput(id, value.ToString());
+                StartStringInput(id, value.ToString() ?? "");
             }
         }
 
-        string valueToShow;
+        Span<char> buffer = stackalloc char[128];
+        scoped ReadOnlySpan<char> valueToShow;
         var valueChanged = false;
 
         if (_selectedControl == id)
         {
             if (HandleStringInput())
             {
-                if (int.TryParse(_inputBuffer, out var parsedValue))
+                if (T.TryParse(_inputBuffer, null, out T? parsedValue))
                 {
                     value = parsedValue;
                     valueChanged = true;
+                }
+                else
+                {
+                    // ...
                 }
             }
 
@@ -1914,74 +1923,15 @@ public sealed unsafe class UI : IDisposable
         }
         else
         {
-            valueToShow = value.ToString();
+            valueToShow = value.TryFormat(buffer, out _, format, null)
+                ? buffer
+                : "Error";
         }
 
         // geometry
         int vertexCount = 0;
         vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
         vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _inputTextColor, valueToShow);
-
-        AddDrawCommand(vertexCount);
-
-        return valueChanged;
-    }
-
-    public bool Input(ref float value) // TODO min/max/format
-    {
-        const string format = "F3";
-
-        var size = new Vector2(100, _simpleControlHeight);
-        size = AdjustSize(size);
-
-        if (size.X <= 0 || size.Y <= 0)
-            return false;
-
-        var rect = Layout(size);
-
-        // input
-        Id id = _idStack.Peek();
-
-        Vector4 backgroundColor = _inputBackgroundColor;
-
-        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
-        {
-            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
-            var wasPressed = _mouseState.WasPressed(MouseButton.Left);
-
-            if (_selectedControl != id && wasPressed)
-            {
-                StartStringInput(id, value.ToString(format));
-            }
-        }
-
-        string valueToShow;
-        var valueChanged = false;
-
-        if (_selectedControl == id)
-        {
-            if (HandleStringInput())
-            {
-                if (float.TryParse(_inputBuffer, out var parsedValue))
-                {
-                    value = parsedValue;
-                    valueChanged = true;
-                }
-            }
-
-            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
-            valueToShow = _inputBufferWithCursor;
-        }
-        else
-        {
-            valueToShow = value.ToString(format);
-        }
-
-        // geometry
-        int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
-        vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _inputTextColor, valueToShow);
-
         AddDrawCommand(vertexCount);
 
         return valueChanged;
@@ -2001,7 +1951,7 @@ public sealed unsafe class UI : IDisposable
 
     private static readonly float[] _inputTableCols = [0.5f, 0.5f];
 
-    public bool Input(ReadOnlySpan<char> label, ref string value) // TODO span?
+    public bool Input(ReadOnlySpan<char> label, ref string value)
     {
         bool r;
 
@@ -2018,7 +1968,8 @@ public sealed unsafe class UI : IDisposable
         return r;
     }
 
-    public bool Input(ReadOnlySpan<char> label, ref float value)
+    public bool Input<T>(ReadOnlySpan<char> label, ref T value, ReadOnlySpan<char> format = default)
+        where T : ISpanFormattable, ISpanParsable<T>
     {
         bool r;
 
@@ -2028,24 +1979,7 @@ public sealed unsafe class UI : IDisposable
             NextColumn();
 
             PushId(label);
-            r = Input(ref value);
-            PopId();
-        }
-
-        return r;
-    }
-
-    public bool Input(ReadOnlySpan<char> label, ref int value)
-    {
-        bool r;
-
-        using (BeginTable(_inputTableCols))
-        {
-            Label(label);
-            NextColumn();
-
-            PushId(label);
-            r = Input(ref value);
+            r = Input<T>(ref value, format);
             PopId();
         }
 

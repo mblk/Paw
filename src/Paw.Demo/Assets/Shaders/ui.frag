@@ -32,13 +32,34 @@ float sdRoundRect(vec2 p, vec2 halfSize, float radius)
 
 void main()
 {
+    float borderThickness = 1.0;
+    vec4 borderColor = vec4(0,0,0,1);
+
+    vec2 outerHalfSize = fHalfSize;
+    vec2 innerHalfSize = fHalfSize - vec2(borderThickness, borderThickness);
+
+    float radius = min(fCornerRadius, min(fHalfSize.x, fHalfSize.y));
+
+    float outerRadius = radius;
+    float innerRadius = max(radius - borderThickness, 0.0);
+
     // step(edge, x) function: return 0.0 if x < edge, else 1.0
     // fwidth function: return the sum of the absolute value of derivatives in x and y
     // smoothstep(float edge0, float edge1, genType x): Hermite interpolation between 0 and 1 when edge0 < x < edge1.
 
-    float radius = min(fCornerRadius, min(fHalfSize.x, fHalfSize.y));
+    float dOuter = sdRoundRect(fLocalPos, outerHalfSize, outerRadius);
+    float dInner = sdRoundRect(fLocalPos, innerHalfSize, innerRadius);
 
-    float d = sdRoundRect(fLocalPos, fHalfSize, radius);
+    float outerEdge = max(fwidth(dOuter) * 0.5, 0.0001);
+    float innerEdge = max(fwidth(dInner) * 0.5, 0.0001);
+
+    float outerMask = 1.0 - smoothstep(-outerEdge, outerEdge, dOuter);
+    float innerMask = 1.0 - smoothstep(-innerEdge, innerEdge, dInner);
+
+    float borderAlpha = max(outerMask - innerMask, 0.0);
+    float fillAlpha = innerMask;
+
+    //float d = sdRoundRect(fLocalPos, fHalfSize, radius);
     // d < 0 → fragment is inside the rounded rectangle
     // d == 0 → exactly on the border
     // d > 0 → outside the rounded rectangle
@@ -46,10 +67,10 @@ void main()
     //float edge = fwidth(d);
     //float edge = fwidth(d) * 0.75;
     //float edge = fwidth(d) * 0.5;
-    float edge = max(fwidth(d) * 0.5, 0.0001);
+    //float edge = max(fwidth(d) * 0.5, 0.0001);
 
     //float shapeAlpha = 1.0 - smoothstep(0.0, edge, d);
-    float shapeAlpha = 1.0 - smoothstep(-edge, edge, d);
+    //float shapeAlpha = 1.0 - smoothstep(-edge, edge, d);
     // inside > ~1
     // outside > ~0
 
@@ -57,7 +78,10 @@ void main()
     float use_tex = 1.0 - no_tex;
 
     float t = texture(uTex, fUV).r;
-    float a = use_tex * t + no_tex * shapeAlpha;
+    float a = use_tex * t + no_tex * fillAlpha;
 
-    FragColor = fColor * vec4(1,1,1,a);
+    FragColor = fColor * vec4(1,1,1,t) * use_tex
+              + fColor * vec4(1,1,1,1) * fillAlpha * no_tex
+              + borderColor * vec4(1,1,1,1) * borderAlpha * no_tex
+              ;
 }

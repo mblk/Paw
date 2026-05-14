@@ -13,6 +13,22 @@ public class UiTestScene : Scene
     private float _float1 = 0;
     private float _float2 = 12.34f;
 
+    private bool _bool1;
+    private bool _bool2 = true;
+
+
+    private enum Enum1
+    {
+        Foo,
+        Bar,
+        Bubu,
+    }
+
+    private Enum1 _enum1;
+    private Enum1 _enum2;
+
+    private readonly Enum1[] _allEnum1Values = Enum.GetValues<Enum1>();
+
     private int _rowCount = 10;
     private int _colCount = 10;
     private float[] _columns = [];
@@ -63,7 +79,7 @@ public class UiTestScene : Scene
         // window 1
         //
 
-        using (var window = UI.BeginWindow(new Vector2(500, 500), "window 1"))
+        using (var window = UI.BeginWindow(new Vector2(500, 800), "window 1"))
         {
             UI.Label("label 1");
             UI.Label("label 2");
@@ -83,6 +99,12 @@ public class UiTestScene : Scene
             UI.Input("string2", ref _string2);
             UI.Input("float1", ref _float1);
             UI.Input("float2", ref _float2);
+
+            UI.Checkbox("bool1", ref _bool1);
+            UI.Checkbox("bool2", ref _bool2);
+
+            UI.Radiobuttons("Enum1", ref _enum1, _allEnum1Values);
+            UI.Radiobuttons("Enum2", ref _enum2, _allEnum1Values);
 
             UI.Label(Format($"inputs: {_string1} {_string2} {_float1} {_float2}"));
 

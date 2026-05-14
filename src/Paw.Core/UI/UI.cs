@@ -14,7 +14,8 @@ public sealed unsafe class UI : IDisposable
 {
     private const float _borderWidth = 1f;
 
-    private const float _titleBarHeight = 24f;
+    //private const float _titleBarHeight = 24f;
+    private const float _titleBarHeight = 30f;
 
     private const float _simpleControlHeight = 24f;
 
@@ -52,6 +53,8 @@ public sealed unsafe class UI : IDisposable
 
 
 
+    private readonly Vector2 _whiteUV = new(2f, 2f); // magic uv coord: always white
+
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct Vertex
     {
@@ -59,11 +62,18 @@ public sealed unsafe class UI : IDisposable
         public readonly Vector4 Color;
         public readonly Vector2 UV;
 
-        public Vertex(Vector2 position, Vector4 color, Vector2 uv)
+        public readonly Vector2 LocalPos;
+        public readonly Vector2 HalfSize;
+        public readonly float CornerRadius;
+
+        public Vertex(Vector2 position, Vector4 color, Vector2 uv, Vector2 localPos, Vector2 halfSize, float cornerRadius)
         {
             Position = position;
             Color = color;
             UV = uv;
+            LocalPos = localPos; // position on local space. Center is (0,0)
+            HalfSize = halfSize;
+            CornerRadius = cornerRadius;
         }
     }
 
@@ -122,6 +132,13 @@ public sealed unsafe class UI : IDisposable
         public Rect Move(Vector2 delta)
         {
             return new Rect(Min + delta, Max + delta);
+        }
+
+        public Rect Margin(Vector2 marginSize)
+        {
+            var halfMargin = marginSize * 0.5f;
+
+            return new Rect(TopLeft + halfMargin, BottomRight - halfMargin);
         }
     }
 
@@ -642,47 +659,125 @@ public sealed unsafe class UI : IDisposable
 
     #region Geometry emission
 
-    private int EmitQuad(Rect rect, Vector4 color)
+    private int EmitQuad(Rect rect, Vector4 color, float cornerRadius = 0f)
     {
+        Vector2 size = rect.Size;
+        Vector2 halfSize = size * 0.5f;
+
         Vector2 tl = rect.TopLeft;
         Vector2 tr = rect.TopRight;
         Vector2 bl = rect.BottomLeft;
         Vector2 br = rect.BottomRight;
 
-        Vector2 uv = new(2f, 2f); // magic uv coord: always white
+        Vector2 localTL = new Vector2(-halfSize.X, -halfSize.Y);
+        Vector2 localTR = new Vector2(+halfSize.X, -halfSize.Y);
+        Vector2 localBL = new Vector2(-halfSize.X, +halfSize.Y);
+        Vector2 localBR = new Vector2(+halfSize.X, +halfSize.Y);
 
-        _vertices.Add(new Vertex(tl, color, uv));
-        _vertices.Add(new Vertex(tr, color, uv));
-        _vertices.Add(new Vertex(bl, color, uv));
+        Vector2 uv = _whiteUV;
 
-        _vertices.Add(new Vertex(bl, color, uv));
-        _vertices.Add(new Vertex(tr, color, uv));
-        _vertices.Add(new Vertex(br, color, uv));
+        _vertices.Add(new Vertex(tl, color, uv, localTL, halfSize, cornerRadius)); // cw
+        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, cornerRadius));
+        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, cornerRadius));
+
+        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, cornerRadius)); // cw
+        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, cornerRadius));
+        _vertices.Add(new Vertex(br, color, uv, localBR, halfSize, cornerRadius));
 
         return 6;
     }
 
     private int EmitTriangleBottomRight(Rect rect, Vector4 color)
     {
+        Vector2 size = rect.Size;
+        Vector2 halfSize = size * 0.5f;
+
         Vector2 tr = rect.TopRight;
         Vector2 bl = rect.BottomLeft;
         Vector2 br = rect.BottomRight;
 
-        Vector2 uv = new(2f, 2f); // magic uv coord: always white
+        Vector2 localTR = new Vector2(+halfSize.X, -halfSize.Y);
+        Vector2 localBL = new Vector2(-halfSize.X, +halfSize.Y);
+        Vector2 localBR = new Vector2(+halfSize.X, +halfSize.Y);
 
-        _vertices.Add(new Vertex(bl, color, uv));
-        _vertices.Add(new Vertex(tr, color, uv));
-        _vertices.Add(new Vertex(br, color, uv));
+        Vector2 uv = _whiteUV;
+
+        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, 0f)); // cw
+        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, 0f));
+        _vertices.Add(new Vertex(br, color, uv, localBR, halfSize, 0f));
 
         return 3;
     }
 
-    private int EmitBoxWithBorder(Rect rect, Vector4 borderColor, Vector4 fillColor)
+    private int EmitBoxWithBorder(Rect rect, Vector4 borderColor, Vector4 fillColor, float cornerRadius = 0f)
     {
         int vertexCount = 0;
-        vertexCount += EmitQuad(rect, borderColor);
-        vertexCount += EmitQuad(new Rect(rect.Min + new Vector2(_borderWidth), rect.Max - new Vector2(_borderWidth)), fillColor);
+        //vertexCount += EmitQuad(rect, borderColor, cornerRadius);
+        //vertexCount += EmitQuad(new Rect(rect.Min + new Vector2(_borderWidth), rect.Max - new Vector2(_borderWidth)), fillColor, cornerRadius);
+
+        vertexCount += EmitQuad(rect, fillColor, cornerRadius);
+
         return vertexCount;
+    }
+
+    private int EmitCheck(Rect rect, Vector4 color)
+    {
+        const float outerMargin = 5f;
+        const float innerMargin = 2f;
+
+        Vector2 size = rect.Size;
+        Vector2 halfSize = size * 0.5f;
+
+        Vector2 tl = rect.TopLeft + new Vector2(outerMargin, outerMargin); // TODO top/bottom flipped?
+        Vector2 tr = rect.TopRight + new Vector2(-outerMargin, outerMargin);
+        Vector2 bl = rect.BottomLeft + new Vector2(outerMargin, -outerMargin);
+        Vector2 br = rect.BottomRight + new Vector2(-outerMargin, -outerMargin);
+
+        Vector2 localTL = new Vector2(-halfSize.X, -halfSize.Y); // TODO probably not needed here?
+        Vector2 localTR = new Vector2(+halfSize.X, -halfSize.Y);
+        Vector2 localBL = new Vector2(-halfSize.X, +halfSize.Y);
+        Vector2 localBR = new Vector2(+halfSize.X, +halfSize.Y);
+
+        Vector2 tl1 = tl + new Vector2(0, innerMargin);
+        Vector2 tl2 = tl + new Vector2(innerMargin, 0);
+
+        Vector2 tr1 = tr + new Vector2(-innerMargin, 0);
+        Vector2 tr2 = tr + new Vector2(0, innerMargin);
+
+        Vector2 bl1 = bl + new Vector2(innerMargin, 0);
+        Vector2 bl2 = bl + new Vector2(0, -innerMargin);
+
+        Vector2 br1 = br + new Vector2(0, -innerMargin);
+        Vector2 br2 = br + new Vector2(-innerMargin, 0);
+
+        Vector2 uv = _whiteUV;
+
+        _vertices.Add(new Vertex(tl1, color, uv, localTL, halfSize, 0f)); // cw
+        _vertices.Add(new Vertex(tl2, color, uv, localTL, halfSize, 0f));
+        _vertices.Add(new Vertex(br1, color, uv, localBR, halfSize, 0f));
+
+        _vertices.Add(new Vertex(tl1, color, uv, localTL, halfSize, 0f)); // cw
+        _vertices.Add(new Vertex(br1, color, uv, localBR, halfSize, 0f));
+        _vertices.Add(new Vertex(br2, color, uv, localBR, halfSize, 0f));
+
+        _vertices.Add(new Vertex(bl1, color, uv, localBL, halfSize, 0f)); // cw
+        _vertices.Add(new Vertex(bl2, color, uv, localBL, halfSize, 0f));
+        _vertices.Add(new Vertex(tr1, color, uv, localTR, halfSize, 0f));
+
+        _vertices.Add(new Vertex(bl1, color, uv, localBL, halfSize, 0f)); // cw
+        _vertices.Add(new Vertex(tr1, color, uv, localTR, halfSize, 0f));
+        _vertices.Add(new Vertex(tr2, color, uv, localTR, halfSize, 0f));
+
+        return 12;
+    }
+
+    private int EmitCircle(Rect rect, Vector4 color)
+    {
+        // TODO
+
+        var corner = MathF.Min(rect.Size.X, rect.Size.Y) * 0.5f;
+
+        return EmitQuad(rect, color, corner);
     }
 
     private int EmitTextVerts(Vector2 position, Vector4 color, ReadOnlySpan<char> text)
@@ -720,12 +815,12 @@ public sealed unsafe class UI : IDisposable
             Vector2 br = new(xr, yb);
             Vector2 bl = new(xl, yb);
 
-            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y)));
-            _vertices.Add(new Vertex(br, color, new(uvMax.X, uvMax.Y)));
-            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y)));
-            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y)));
-            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y)));
-            _vertices.Add(new Vertex(tl, color, new(uvMin.X, uvMin.Y)));
+            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y), default, default, 0f));
+            _vertices.Add(new Vertex(br, color, new(uvMax.X, uvMax.Y), default, default, 0f));
+            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y), default, default, 0f));
+            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y), default, default, 0f));
+            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y), default, default, 0f));
+            _vertices.Add(new Vertex(tl, color, new(uvMin.X, uvMin.Y), default, default, 0f));
             vertexCount += 6;
 
             currentPosition.X += charData.XAdvance * _textScale;
@@ -1209,6 +1304,10 @@ public sealed unsafe class UI : IDisposable
         titleRect = new Rect(windowRect.Min, windowRect.Min + new Vector2(windowRect.Size.X, _titleBarHeight));
         resizeRect = windowRect.FromBottomRight(new Vector2(15));
 
+        // xxx
+        titleRect = new Rect(titleRect.TopLeft + new Vector2(-8, 0), titleRect.BottomRight + new Vector2(8, 0));
+        // xxx
+
         // color highlights
         var titleBarColor = _windowTitleBarColor;
         if (IsMouseWithin(titleRect) && !_mouseBlockedByOtherWindow)
@@ -1224,9 +1323,9 @@ public sealed unsafe class UI : IDisposable
 
         // Emit geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor);
-        vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, titleBarColor);
-        vertexCount += EmitTextVerts(titleRect.TopLeft, _windowTitleTextColor, title);
+        vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor, 10f);
+        vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, titleBarColor, 10f);
+        vertexCount += EmitTextVerts(titleRect.TopLeft + new Vector2(5f, 3f), _windowTitleTextColor, title);
         vertexCount += EmitTriangleBottomRight(resizeRect, resizeRectColor);
 
         AddDrawCommand(vertexCount);
@@ -1284,7 +1383,7 @@ public sealed unsafe class UI : IDisposable
 
         // geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(rect, _scrollableBorderColor, _scrollableBackgroundColor);
+        vertexCount += EmitBoxWithBorder(rect, _scrollableBorderColor, _scrollableBackgroundColor, 10f);
         AddDrawCommand(vertexCount);
 
         //
@@ -1400,7 +1499,7 @@ public sealed unsafe class UI : IDisposable
             if (IsMouseWithin(visibleVertScrollBarRect))
                 vertScrollBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0f);
 
-            vertexCount += EmitQuad(visibleVertScrollBarRect, vertScrollBarColor);
+            vertexCount += EmitQuad(visibleVertScrollBarRect, vertScrollBarColor, 5f);
         }
         if (horiScrollEnabled)
         {
@@ -1408,7 +1507,7 @@ public sealed unsafe class UI : IDisposable
             if (IsMouseWithin(visibleHoriScrollBarRect))
                 horiScrollBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0f);
 
-            vertexCount += EmitQuad(visibleHoriScrollBarRect, horiScrollBarColor);
+            vertexCount += EmitQuad(visibleHoriScrollBarRect, horiScrollBarColor, 5f);
         }
 
         if (vertexCount > 0)
@@ -1925,13 +2024,95 @@ public sealed unsafe class UI : IDisposable
         return valueChanged;
     }
 
-    // TODO:
-    // - checkbox
-    // - radiobutton
-    // - list
-    // - combobox
-    // - canvas
+    public bool Checkbox(ref bool value)
+    {
+        var size = new Vector2(_simpleControlHeight);
+
+        if (size.X <= 0 || size.Y <= 0)
+            return false;
+
+        var rect = Layout(size);
+
+        // input
+        var wasPressed = false;
+        var valueChanged = false;
+        Vector4 backgroundColor = _inputBackgroundColor;
+
+        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
+        {
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            wasPressed = _mouseState.WasPressed(MouseButton.Left);
+
+            if (wasPressed)
+            {
+                value = !value;
+                valueChanged = true;
+            }
+        }
+
+        // geometry
+        int vertexCount = 0;
+        vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
+
+        if (value)
+        {
+            vertexCount += EmitCheck(rect, _inputTextColor);
+        }
+
+        AddDrawCommand(vertexCount);
+
+        return valueChanged;
+    }
+
+    public bool Radiobutton(bool isSelected)
+    {
+        var size = new Vector2(_simpleControlHeight);
+
+        if (size.X <= 0 || size.Y <= 0)
+            return false;
+
+        var rect = Layout(size);
+
+        // input
+        var wasPressed = false;
+        Vector4 backgroundColor = _inputBackgroundColor;
+
+        if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
+        {
+            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            wasPressed = _mouseState.WasPressed(MouseButton.Left);
+        }
+
+        // geometry
+        int vertexCount = 0;
+        //vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
+        vertexCount += EmitCircle(rect, backgroundColor);
+
+        if (isSelected)
+        {
+            Rect inner = rect.Margin(new Vector2(8f));
+            vertexCount += EmitCircle(inner, _inputTextColor);
+        }
+
+        AddDrawCommand(vertexCount);
+
+        return wasPressed;
+    }
+
+    public void BeginList()
+    {
+        // TODO
+    }
+
+    public void Combobox()
+    {
+        // TODO
+    }
+
+    // other TODOs:
     // - drag/drop
+    // - tooltips
+    // - focus / keyboard navigation
 
     #endregion
 
@@ -1945,12 +2126,12 @@ public sealed unsafe class UI : IDisposable
 
         using (BeginTable(_inputTableCols))
         {
-            Label(label);
-            NextColumn();
-
             PushId(label);
             r = Input(ref value);
             PopId();
+            NextColumn();
+
+            Label(label);
         }
 
         return r;
@@ -1963,15 +2144,67 @@ public sealed unsafe class UI : IDisposable
 
         using (BeginTable(_inputTableCols))
         {
-            Label(label);
-            NextColumn();
-
             PushId(label);
             r = Input<T>(ref value, format);
             PopId();
+            NextColumn();
+
+            Label(label);
         }
 
         return r;
+    }
+
+    private static readonly float[] _checkRadioTableCols = [_simpleControlHeight, 1f];
+
+    public bool Checkbox(ReadOnlySpan<char> label, ref bool value)
+    {
+        bool r;
+
+        using (BeginTable(_checkRadioTableCols))
+        {
+            PushId(label);
+            r = Checkbox(ref value);
+            PopId();
+            NextColumn();
+
+            Label(label); // TODO clicking on label should also change value
+        }
+
+        return r;
+    }
+
+    public void Radiobuttons<T>(ReadOnlySpan<char> label, ref T value, T[] allValues)
+        where T : struct, Enum
+    {
+        PushId(label);
+
+        Span<char> buffer = stackalloc char[128];
+
+        using (BeginTable(_checkRadioTableCols))
+        {
+            Label(label); // TODO should merge cells
+            NextRow();
+
+            foreach (var potentialValue in allValues)
+            {
+                ReadOnlySpan<char> valueLabel = Enum.GetName(potentialValue);
+
+                var isSelected = EqualityComparer<T>.Default.Equals(value, potentialValue);
+
+                if (Radiobutton(isSelected))
+                {
+                    value = potentialValue;
+                }
+
+                NextColumn();
+
+                Label(valueLabel); // TODO clicking on label should also change value
+                NextRow();
+            }
+        }
+
+        PopId();
     }
 
     #endregion

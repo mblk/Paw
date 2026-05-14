@@ -34,6 +34,7 @@ public class AssetManagerWithHotReload : AssetManager
     // Main thread only
     private readonly Dictionary<string, HashSet<Asset>> _dependencies = [];
     private readonly Dictionary<Asset, (DateTime, int)> _pendingReloads = [];
+    private readonly List<KeyValuePair<Asset, (DateTime, int)>> _toReloadBuffer = [];
 
     public AssetManagerWithHotReload(DirectoryInfo baseDir, GL gl)
         : base(baseDir, gl)
@@ -167,11 +168,17 @@ public class AssetManagerWithHotReload : AssetManager
             }
         }
 
-        var toReload = _pendingReloads
-            .Where(kv => kv.Value.Item1 <= now)
-            .ToArray();
+        _toReloadBuffer.Clear();
 
-        foreach (var (asset, (targetTime, retryCount)) in toReload)
+        foreach (var kv in _pendingReloads)
+        {
+            if (kv.Value.Item1 <= now)
+            {
+                _toReloadBuffer.Add(kv);
+            }
+        }
+
+        foreach (var (asset, (_, retryCount)) in _toReloadBuffer)
         {
             _pendingReloads.Remove(asset);
 

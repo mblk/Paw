@@ -174,14 +174,13 @@ public class AssetManagerWithHotReload : AssetManager
         {
             if (kv.Value.Item1 <= now)
             {
+                _pendingReloads.Remove(kv.Key);
                 _toReloadBuffer.Add(kv);
             }
         }
 
         foreach (var (asset, (_, retryCount)) in _toReloadBuffer)
         {
-            _pendingReloads.Remove(asset);
-
             Console.WriteLine($"Reloading asset {asset} try {retryCount} ...");
 
             if (!base.ReloadAsset(asset))

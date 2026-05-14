@@ -332,17 +332,7 @@ public sealed unsafe class UI : IDisposable
         public int Column;
         public float MaxRowHeight;
 
-        //public LayoutItem(LayoutMode mode, Rect totalRect)
-        //{
-        //    Mode = mode;
-        //    TotalRect = totalRect;
-        //    Cursor = totalRect.TopLeft;
-        //    MaxCursor = totalRect.TopLeft;
-        //}
-
-        public LayoutItem()
-        {
-        }
+        public LayoutItem() { }
 
         public void Reset(LayoutMode mode, Rect totalRect)
         {
@@ -1634,7 +1624,6 @@ public sealed unsafe class UI : IDisposable
         var actualColumnWidths = _tableColsPool.Rent(columnWidths.Length);
         _tableColsPoolCount++;
 
-        //var actualColumnWidths = new float[columnWidths.Length]; // XXX TODO allocation happening here :)
         var alreadyConsumedWidth = _tableSpacing * (columnWidths.Length - 1);
         for (var i = 0; i < columnWidths.Length; i++)
         {
@@ -1741,7 +1730,6 @@ public sealed unsafe class UI : IDisposable
 
         table.Row++;
         table.Column = 0;
-        //table.Cursor = new Vector2(table.TotalRect.TopLeft.X, table.Cursor.Y + table.MaxRowHeight + _tableSpacing);
         table.Cursor.X = table.TotalRect.TopLeft.X;
         table.Cursor.Y += table.MaxRowHeight + _tableSpacing;
         table.MaxRowHeight = 0;

@@ -5,6 +5,7 @@ in vec2 fUV;
 in vec2 fLocalPos;
 in vec2 fHalfSize;
 in float fCornerRadius;
+in float fBorderThickness;
 
 out vec4 FragColor;
 
@@ -32,16 +33,14 @@ float sdRoundRect(vec2 p, vec2 halfSize, float radius)
 
 void main()
 {
-    float borderThickness = 1.0;
-    vec4 borderColor = vec4(0,0,0,1);
+    float borderThickness = fBorderThickness;
+    vec4 borderColor = vec4(0.2,0.2,0.2,1);
 
     vec2 outerHalfSize = fHalfSize;
-    vec2 innerHalfSize = fHalfSize - vec2(borderThickness, borderThickness);
+    vec2 innerHalfSize = max(fHalfSize - vec2(borderThickness), vec2(0.0));
 
-    float radius = min(fCornerRadius, min(fHalfSize.x, fHalfSize.y));
-
-    float outerRadius = radius;
-    float innerRadius = max(radius - borderThickness, 0.0);
+    float outerRadius = min(fCornerRadius, min(fHalfSize.x, fHalfSize.y));
+    float innerRadius = min(max(outerRadius - borderThickness, 0.0), min(innerHalfSize.x, innerHalfSize.y));
 
     // step(edge, x) function: return 0.0 if x < edge, else 1.0
     // fwidth function: return the sum of the absolute value of derivatives in x and y
@@ -54,10 +53,16 @@ void main()
     float innerEdge = max(fwidth(dInner) * 0.5, 0.0001);
 
     float outerMask = 1.0 - smoothstep(-outerEdge, outerEdge, dOuter);
-    float innerMask = 1.0 - smoothstep(-innerEdge, innerEdge, dInner);
+    float fillMask = 1.0 - smoothstep(-innerEdge, innerEdge, dInner);
 
-    float borderAlpha = max(outerMask - innerMask, 0.0);
-    float fillAlpha = innerMask;
+    //float aa = max(fwidth(dOuter) * 0.5, 0.0001);
+    //float aa = 1;
+
+    //float outerMask = 1.0 - smoothstep(-aa, aa, dOuter);
+    //float fillMask = 1.0 - smoothstep(-aa, aa, dOuter + borderThickness);
+
+    float borderAlpha = max(outerMask - fillMask, 0.0);
+    float fillAlpha = fillMask;
 
     //float d = sdRoundRect(fLocalPos, fHalfSize, radius);
     // d < 0 → fragment is inside the rounded rectangle

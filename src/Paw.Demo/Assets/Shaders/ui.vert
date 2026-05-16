@@ -6,6 +6,7 @@ layout (location=2) in vec2 vUV;
 layout (location=3) in vec2 vLocalPos;
 layout (location=4) in vec2 vHalfSize;
 layout (location=5) in float vCornerRadius;
+layout (location=6) in float vBorderThickness;
 
 uniform mat4 uMVP;
 
@@ -14,6 +15,7 @@ out vec2 fUV;
 out vec2 fLocalPos;
 out vec2 fHalfSize;
 out float fCornerRadius;
+out float fBorderThickness;
 
 void main()
 {
@@ -23,4 +25,5 @@ void main()
     fLocalPos = vLocalPos;
     fHalfSize = vHalfSize;
     fCornerRadius = vCornerRadius;
+    fBorderThickness = vBorderThickness;
 }

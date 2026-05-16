@@ -12,9 +12,6 @@ namespace Paw.Core.UI;
 
 public sealed unsafe class UI : IDisposable
 {
-    private const float _borderWidth = 1f;
-
-    //private const float _titleBarHeight = 24f;
     private const float _titleBarHeight = 30f;
 
     private const float _simpleControlHeight = 24f;
@@ -43,7 +40,7 @@ public sealed unsafe class UI : IDisposable
     private readonly Vector4 _buttonBackgroundColor = new(0.5f, 0.2f, 0.2f, 1.0f);
     private readonly Vector4 _buttonTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
-    private readonly Vector4 _inputBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
+    //private readonly Vector4 _inputBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _inputBackgroundColor = new(0.2f, 0.2f, 0.5f, 1.0f);
     private readonly Vector4 _inputTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -66,14 +63,18 @@ public sealed unsafe class UI : IDisposable
         public readonly Vector2 HalfSize;
         public readonly float CornerRadius;
 
-        public Vertex(Vector2 position, Vector4 color, Vector2 uv, Vector2 localPos, Vector2 halfSize, float cornerRadius)
+        //public readonly Vector4 BorderColor;
+        public readonly float BorderThickness;
+
+        public Vertex(Vector2 position, Vector4 color, Vector2 uv, Vector2 localPos, Vector2 halfSize, float cornerRadius, float borderThickness)
         {
             Position = position;
             Color = color;
             UV = uv;
-            LocalPos = localPos; // position on local space. Center is (0,0)
+            LocalPos = localPos; // position in local space. Center is (0,0)
             HalfSize = halfSize;
             CornerRadius = cornerRadius;
+            BorderThickness = borderThickness;
         }
     }
 
@@ -139,6 +140,11 @@ public sealed unsafe class UI : IDisposable
             var halfMargin = marginSize * 0.5f;
 
             return new Rect(TopLeft + halfMargin, BottomRight - halfMargin);
+        }
+
+        public Rect SnapToPixel()
+        {
+            return new Rect(TopLeft.SnapToPixel(), BottomRight.SnapToPixel());
         }
     }
 
@@ -425,6 +431,8 @@ public sealed unsafe class UI : IDisposable
 
             rect = rect.Move(-ScrollOffset);
 
+            rect = rect.SnapToPixel();
+
             return rect;
         }
 
@@ -659,7 +667,7 @@ public sealed unsafe class UI : IDisposable
 
     #region Geometry emission
 
-    private int EmitQuad(Rect rect, Vector4 color, float cornerRadius = 0f)
+    private int EmitQuad(Rect rect, Vector4 color, float cornerRadius = 0f, float borderThickness = 0f)
     {
         Vector2 size = rect.Size;
         Vector2 halfSize = size * 0.5f;
@@ -676,13 +684,13 @@ public sealed unsafe class UI : IDisposable
 
         Vector2 uv = _whiteUV;
 
-        _vertices.Add(new Vertex(tl, color, uv, localTL, halfSize, cornerRadius)); // cw
-        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, cornerRadius));
-        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, cornerRadius));
+        _vertices.Add(new Vertex(tl, color, uv, localTL, halfSize, cornerRadius, borderThickness)); // cw
+        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, cornerRadius, borderThickness));
+        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, cornerRadius, borderThickness));
 
-        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, cornerRadius)); // cw
-        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, cornerRadius));
-        _vertices.Add(new Vertex(br, color, uv, localBR, halfSize, cornerRadius));
+        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, cornerRadius, borderThickness)); // cw
+        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, cornerRadius, borderThickness));
+        _vertices.Add(new Vertex(br, color, uv, localBR, halfSize, cornerRadius, borderThickness));
 
         return 6;
     }
@@ -702,9 +710,9 @@ public sealed unsafe class UI : IDisposable
 
         Vector2 uv = _whiteUV;
 
-        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, 0f)); // cw
-        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, 0f));
-        _vertices.Add(new Vertex(br, color, uv, localBR, halfSize, 0f));
+        _vertices.Add(new Vertex(bl, color, uv, localBL, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(tr, color, uv, localTR, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(br, color, uv, localBR, halfSize, 0f, 0f));
 
         return 3;
     }
@@ -712,11 +720,7 @@ public sealed unsafe class UI : IDisposable
     private int EmitBoxWithBorder(Rect rect, Vector4 borderColor, Vector4 fillColor, float cornerRadius = 0f)
     {
         int vertexCount = 0;
-        //vertexCount += EmitQuad(rect, borderColor, cornerRadius);
-        //vertexCount += EmitQuad(new Rect(rect.Min + new Vector2(_borderWidth), rect.Max - new Vector2(_borderWidth)), fillColor, cornerRadius);
-
-        vertexCount += EmitQuad(rect, fillColor, cornerRadius);
-
+        vertexCount += EmitQuad(rect, fillColor, cornerRadius, 1f);
         return vertexCount;
     }
 
@@ -752,29 +756,27 @@ public sealed unsafe class UI : IDisposable
 
         Vector2 uv = _whiteUV;
 
-        _vertices.Add(new Vertex(tl1, color, uv, localTL, halfSize, 0f)); // cw
-        _vertices.Add(new Vertex(tl2, color, uv, localTL, halfSize, 0f));
-        _vertices.Add(new Vertex(br1, color, uv, localBR, halfSize, 0f));
+        _vertices.Add(new Vertex(tl1, color, uv, localTL, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(tl2, color, uv, localTL, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(br1, color, uv, localBR, halfSize, 0f, 0f));
 
-        _vertices.Add(new Vertex(tl1, color, uv, localTL, halfSize, 0f)); // cw
-        _vertices.Add(new Vertex(br1, color, uv, localBR, halfSize, 0f));
-        _vertices.Add(new Vertex(br2, color, uv, localBR, halfSize, 0f));
+        _vertices.Add(new Vertex(tl1, color, uv, localTL, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(br1, color, uv, localBR, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(br2, color, uv, localBR, halfSize, 0f, 0f));
 
-        _vertices.Add(new Vertex(bl1, color, uv, localBL, halfSize, 0f)); // cw
-        _vertices.Add(new Vertex(bl2, color, uv, localBL, halfSize, 0f));
-        _vertices.Add(new Vertex(tr1, color, uv, localTR, halfSize, 0f));
+        _vertices.Add(new Vertex(bl1, color, uv, localBL, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(bl2, color, uv, localBL, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(tr1, color, uv, localTR, halfSize, 0f, 0f));
 
-        _vertices.Add(new Vertex(bl1, color, uv, localBL, halfSize, 0f)); // cw
-        _vertices.Add(new Vertex(tr1, color, uv, localTR, halfSize, 0f));
-        _vertices.Add(new Vertex(tr2, color, uv, localTR, halfSize, 0f));
+        _vertices.Add(new Vertex(bl1, color, uv, localBL, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(tr1, color, uv, localTR, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(tr2, color, uv, localTR, halfSize, 0f, 0f));
 
         return 12;
     }
 
     private int EmitCircle(Rect rect, Vector4 color)
     {
-        // TODO
-
         var corner = MathF.Min(rect.Size.X, rect.Size.Y) * 0.5f;
 
         return EmitQuad(rect, color, corner);
@@ -815,12 +817,12 @@ public sealed unsafe class UI : IDisposable
             Vector2 br = new(xr, yb);
             Vector2 bl = new(xl, yb);
 
-            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y), default, default, 0f));
-            _vertices.Add(new Vertex(br, color, new(uvMax.X, uvMax.Y), default, default, 0f));
-            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y), default, default, 0f));
-            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y), default, default, 0f));
-            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y), default, default, 0f));
-            _vertices.Add(new Vertex(tl, color, new(uvMin.X, uvMin.Y), default, default, 0f));
+            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y), default, default, 0f, 0f));
+            _vertices.Add(new Vertex(br, color, new(uvMax.X, uvMax.Y), default, default, 0f, 0f));
+            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y), default, default, 0f, 0f));
+            _vertices.Add(new Vertex(bl, color, new(uvMin.X, uvMax.Y), default, default, 0f, 0f));
+            _vertices.Add(new Vertex(tr, color, new(uvMax.X, uvMin.Y), default, default, 0f, 0f));
+            _vertices.Add(new Vertex(tl, color, new(uvMin.X, uvMin.Y), default, default, 0f, 0f));
             vertexCount += 6;
 
             currentPosition.X += charData.XAdvance * _textScale;
@@ -1234,6 +1236,7 @@ public sealed unsafe class UI : IDisposable
         // Handle window movement/resize
         var windowRect = windowState.Rect;
         var titleRect = windowRect.FromTopLeft(new Vector2(windowRect.Size.X, _titleBarHeight));
+        titleRect = new Rect(titleRect.TopLeft + new Vector2(-_titleBarHeight * 0.5f, 0), titleRect.BottomRight + new Vector2(_titleBarHeight * 0.5f, 0));
         var resizeRect = windowRect.FromBottomRight(new Vector2(15));
 
         if (IsMouseWithin(titleRect) && _mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
@@ -1302,11 +1305,8 @@ public sealed unsafe class UI : IDisposable
         // update rects after resize/move
         windowRect = windowState.Rect;
         titleRect = new Rect(windowRect.Min, windowRect.Min + new Vector2(windowRect.Size.X, _titleBarHeight));
+        titleRect = new Rect(titleRect.TopLeft + new Vector2(-_titleBarHeight * 0.5f, 0), titleRect.BottomRight + new Vector2(_titleBarHeight * 0.5f, 0));
         resizeRect = windowRect.FromBottomRight(new Vector2(15));
-
-        // xxx
-        titleRect = new Rect(titleRect.TopLeft + new Vector2(-8, 0), titleRect.BottomRight + new Vector2(8, 0));
-        // xxx
 
         // color highlights
         var titleBarColor = _windowTitleBarColor;
@@ -1323,8 +1323,8 @@ public sealed unsafe class UI : IDisposable
 
         // Emit geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor, 10f);
-        vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, titleBarColor, 10f);
+        vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor, 0f);
+        vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, titleBarColor, _titleBarHeight * 0.5f);
         vertexCount += EmitTextVerts(titleRect.TopLeft + new Vector2(5f, 3f), _windowTitleTextColor, title);
         vertexCount += EmitTriangleBottomRight(resizeRect, resizeRectColor);
 
@@ -1950,7 +1950,7 @@ public sealed unsafe class UI : IDisposable
 
         // geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
+        vertexCount += EmitQuad(rect, backgroundColor);
         vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _inputTextColor, valueToShow);
         AddDrawCommand(vertexCount);
 
@@ -2017,7 +2017,7 @@ public sealed unsafe class UI : IDisposable
 
         // geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
+        vertexCount += EmitQuad(rect, backgroundColor);
         vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _inputTextColor, valueToShow);
         AddDrawCommand(vertexCount);
 
@@ -2052,7 +2052,7 @@ public sealed unsafe class UI : IDisposable
 
         // geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
+        vertexCount += EmitQuad(rect, backgroundColor);
 
         if (value)
         {
@@ -2085,7 +2085,6 @@ public sealed unsafe class UI : IDisposable
 
         // geometry
         int vertexCount = 0;
-        //vertexCount += EmitBoxWithBorder(rect, _inputBorderColor, backgroundColor);
         vertexCount += EmitCircle(rect, backgroundColor);
 
         if (isSelected)

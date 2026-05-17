@@ -1,7 +1,6 @@
 ﻿using Paw.Core.Graphics;
 using Paw.Core.Resources;
 using System.Diagnostics;
-using System.Numerics;
 
 namespace Paw.Core.Assets;
 
@@ -86,13 +85,19 @@ public sealed class Shader : Asset, IDisposable
 
     public void Reload(string vsSource, string fsSource)
     {
+        var newProgram = CompileProgram(vsSource, fsSource);
+        if (newProgram == default)
+        {
+            return; // failed, keep old program
+        }
+
         if (_program != default)
         {
             _gl.DeleteProgram(_program);
             _program = default;
         }
 
-        _program = CompileProgram(vsSource, fsSource);
+        _program = newProgram;
     }
 
     public void Use()

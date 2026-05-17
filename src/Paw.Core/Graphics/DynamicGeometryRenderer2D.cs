@@ -2,7 +2,6 @@
 using Paw.Core.Resources;
 using Paw.Core.Utils;
 using System.Collections.Frozen;
-using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace Paw.Core.Graphics;
@@ -59,6 +58,11 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
         public Writer(List<VertexPCT> vertices)
         {
             _vertices = vertices;
+        }
+
+        public void AddVertex(VertexPCT vertex)
+        {
+            _vertices.Add(vertex);
         }
 
         public void AddTriangle(Vector2 p1, Vector4 c1, Vector2 p2, Vector4 c2, Vector2 p3, Vector4 c3)

@@ -5,7 +5,6 @@ using Paw.Core.Resources;
 using Paw.Core.Utils;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace Paw.Core.UI;
@@ -46,6 +45,9 @@ public sealed unsafe class UI : IDisposable
 
     private readonly Vector4 _scrollableBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _scrollableBackgroundColor = new(0.4f, 0.4f, 0.4f, 1.0f);
+
+    //private readonly Vector4 _listBackgroundColor = new(0.4f, 0.4f, 0.4f, 1.0f);
+    private readonly Vector4 _listSelectionColor = new(0.6f, 0.4f, 0.4f, 1.0f);
 
 
 
@@ -346,6 +348,9 @@ public sealed unsafe class UI : IDisposable
         public Vector2 MaxCursor;
         public Vector2 ScrollOffset;
 
+        // vertical/horizontal
+        public float ContentSpacing = _simpleLayoutSpacing;
+
         // scrollable
         public ScrollFlags ScrollFlags;
 
@@ -409,11 +414,11 @@ public sealed unsafe class UI : IDisposable
             switch (Mode)
             {
                 case LayoutMode.Vertical:
-                    Cursor.Y += size.Y + _simpleLayoutSpacing;
+                    Cursor.Y += size.Y + ContentSpacing;
                     break;
 
                 case LayoutMode.Horizontal:
-                    Cursor.X += size.X + _simpleLayoutSpacing;
+                    Cursor.X += size.X + ContentSpacing;
                     break;
 
                 case LayoutMode.Table:
@@ -431,6 +436,7 @@ public sealed unsafe class UI : IDisposable
 
             rect = rect.Move(-ScrollOffset);
 
+            // central rounding to prevent AA issues
             rect = rect.SnapToPixel();
 
             return rect;
@@ -635,6 +641,8 @@ public sealed unsafe class UI : IDisposable
         if (_tableColsPoolCount != 0)
             throw new InvalidOperationException($"Table column array pool not cleaned up. Items left: {_tableColsPoolCount}");
 
+        var windowRect = new Rect(new Vector2(0, 0), new Vector2(windowWidth, windowHeight));
+
         _vertices.Clear();
         _globalDrawCommands.Clear();
 
@@ -645,7 +653,7 @@ public sealed unsafe class UI : IDisposable
 
         _rootClipEntry = new ClipEntry()
         {
-            Rect = new Rect(new Vector2(0, 0), new Vector2(windowWidth, windowHeight)),
+            Rect = windowRect,
         };
         _clipStack.Clear();
         _clipStack.Push(_rootClipEntry);
@@ -662,7 +670,8 @@ public sealed unsafe class UI : IDisposable
 
         _layoutItems.Clear();
         ResetLayoutItemPool();
-        PushLayoutItem(LayoutMode.Vertical, new Rect(new Vector2(0, 0), new Vector2(windowWidth, windowHeight)));
+        var rootLayout = PushLayoutItem(LayoutMode.Vertical, windowRect);
+        rootLayout.ContentSpacing = 0f;
     }
 
     #region Geometry emission
@@ -1349,6 +1358,8 @@ public sealed unsafe class UI : IDisposable
 
         _activeWindow = null;
 
+        // TODO: mouse click in window which was not consumed -> clear selection?
+
         PopLayoutItem();
         PopClipEntry();
         PopId();
@@ -1363,7 +1374,7 @@ public sealed unsafe class UI : IDisposable
         Both = Vertical | Horizontal,
     }
 
-    public Scope BeginScrollable(Vector2 size, ReadOnlySpan<char> idText, ScrollFlags flags = ScrollFlags.Vertical)
+    public Scope BeginScrollable(Vector2 size, ReadOnlySpan<char> idText, ScrollFlags flags = ScrollFlags.Vertical, float? contentSpacing = null)
     {
         // layout
         size = AdjustSize(size);
@@ -1409,6 +1420,9 @@ public sealed unsafe class UI : IDisposable
 
         layoutItem.ScrollOffset = scrollOffset;
         layoutItem.ScrollFlags = flags;
+
+        if (contentSpacing is not null)
+            layoutItem.ContentSpacing = contentSpacing.Value;
 
         return new Scope(this, Scope.ScopeType.Scrollable, true);
     }
@@ -2098,14 +2112,47 @@ public sealed unsafe class UI : IDisposable
         return wasPressed;
     }
 
-    public void BeginList()
+    public Scope BeginList(Vector2 size, ReadOnlySpan<char> idText)
     {
-        // TODO
+        return BeginScrollable(size, idText, contentSpacing: 0f);
+    }
+
+    public bool ListItem(ReadOnlySpan<char> label, bool isSelected)
+    {
+        var size = MeasureTextLine(label);
+
+        size.Y = _simpleControlHeight;
+
+        size = AdjustSize(size);
+
+        if (size.X <= 0 || size.Y <= 0)
+            return false;
+
+        var rect = Layout(size);
+
+        // input
+        bool wasSelected = false;
+        if (IsMouseWithin(rect) && _mouseState.WasPressed(MouseButton.Left))
+        {
+            wasSelected = true;
+        }
+
+        // geometry
+        int vertexCount = 0;
+        if (isSelected)
+            vertexCount += EmitQuad(rect, _listSelectionColor);
+        vertexCount += EmitTextVerts(rect.TopLeft, _labelTextColor, label);
+
+        AddDrawCommand(vertexCount);
+
+        return wasSelected;
     }
 
     public void Combobox()
     {
         // TODO
+
+        throw new NotImplementedException();
     }
 
     // other TODOs:

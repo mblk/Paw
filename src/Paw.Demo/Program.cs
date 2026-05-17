@@ -1,6 +1,7 @@
 ﻿using Paw.Core;
 using Paw.Core.Platforms;
 using Paw.Core.Resources;
+using Paw.Core.Scenes;
 using Paw.Core.UI;
 using Paw.Demo.Scenes;
 
@@ -25,10 +26,11 @@ public class Program : App
     {
         sceneManager.RegisterScene("menu", c => new MenuScene(c));
         sceneManager.RegisterScene("rendertest1", c => new RenderTest1Scene(c));
-
         sceneManager.RegisterScene("uitest1", c => new UiTestScene(c));
+        sceneManager.RegisterScene("materialbrowser", c => new MaterialBrowser(c));
 
         //sceneManager.SetCurrentScene("uitest1");
-        sceneManager.SetCurrentScene("menu");
+        sceneManager.SetCurrentScene("materialbrowser");
+        //sceneManager.SetCurrentScene("menu");
     }
 }

@@ -14,6 +14,7 @@ public partial class AssetDefJsonContext : JsonSerializerContext
 
 public interface IAssetReader
 {
+    IEnumerable<string> GetAllLoadableAssetsOfType(AssetType assetType);
     string GetAssetPath(AssetType assetType, string assetName);
     string ReadFileAsString(string assetPath);
     string[] ReadFileAsLines(string assetPath);
@@ -50,6 +51,8 @@ public class AssetManager : IDisposable, IAssetManager
     private readonly Dictionary<string, Font> _fonts = [];
     private readonly Dictionary<string, Material> _materials = [];
 
+    public IReadOnlyDictionary<string, Material> Materials => _materials;
+
     public static DirectoryInfo FindBaseDirectory()
     {
         var startDir = new DirectoryInfo(Directory.GetCurrentDirectory());
@@ -79,6 +82,11 @@ public class AssetManager : IDisposable, IAssetManager
         _textureLoader = new TextureLoader(this, _reader, gl);
         _fontLoader = new FontLoader(this, _reader, gl);
         _materialLoader = new MaterialLoader(this, _reader, gl);
+    }
+
+    public IEnumerable<string> GetAllLoadableAssetsOfType(AssetType type)
+    {
+        return _reader.GetAllLoadableAssetsOfType(type);
     }
 
     public Shader LoadShader(string name)
@@ -143,6 +151,8 @@ public class AssetManager : IDisposable, IAssetManager
         var sourceFiles = loadedMaterial.SourceFiles;
 
         RegisterAssetDependencies(material, sourceFiles);
+
+        _materials.Add(name, material);
 
         return material;
     }
@@ -253,6 +263,15 @@ public class AssetManager : IDisposable, IAssetManager
             _baseDir = baseDir;
         }
 
+        public IEnumerable<string> GetAllLoadableAssetsOfType(AssetType assetType)
+        {
+            var assetDir = new DirectoryInfo(Path.Combine(_baseDir.FullName, GetAssetSubDirectoryName(assetType)));
+
+            var assetFiles = assetDir.GetFiles("*.*", SearchOption.TopDirectoryOnly);
+
+            return assetFiles.Select(fi => Path.GetFileNameWithoutExtension(fi.Name));
+        }
+
         public string GetAssetPath(AssetType assetType, string assetName)
         {
             return Path.Combine(_baseDir.FullName, GetAssetSubDirectoryName(assetType), assetName);
@@ -302,6 +321,11 @@ public class AssetManager : IDisposable, IAssetManager
         public ArchiveAssetReader(FileInfo archiveFile)
         {
             //
+        }
+
+        public IEnumerable<string> GetAllLoadableAssetsOfType(AssetType assetType)
+        {
+            throw new NotImplementedException();
         }
 
         public string GetAssetPath(AssetType assetType, string assetName)

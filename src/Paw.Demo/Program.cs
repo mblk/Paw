@@ -30,7 +30,7 @@ public class Program : App
         sceneManager.RegisterScene("materialbrowser", c => new MaterialBrowser(c));
 
         //sceneManager.SetCurrentScene("uitest1");
-        sceneManager.SetCurrentScene("materialbrowser");
-        //sceneManager.SetCurrentScene("menu");
+        //sceneManager.SetCurrentScene("materialbrowser");
+        sceneManager.SetCurrentScene("menu");
     }
 }

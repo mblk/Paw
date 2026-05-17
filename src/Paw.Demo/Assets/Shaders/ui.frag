@@ -31,10 +31,41 @@ float sdRoundRect(vec2 p, vec2 halfSize, float radius)
 // zero: point is on the edge
 // positive: point is outside the shape
 
+// Computes perceived brightness of a color.
+// The weights match human vision: green contributes most, then red, then blue.
+float luminance(vec3 c)
+{
+    return dot(c, vec3(0.299, 0.587, 0.114));
+}
+
+// Derives a border color from the fill color.
+// For bright fills, the border is darkened.
+// For dark fills, the border is lightened.
+// 'strength' controls how strong the border contrast should be.
+vec4 deriveBorderColor(vec4 fill, float strength)
+{
+    // Estimate how bright the fill color appears to the eye.
+    float l = luminance(fill.rgb);
+
+    // Create a darker version by scaling the RGB channels down.
+    vec3 darker = fill.rgb * (1.0 - strength);
+
+    // Create a lighter version by blending toward white.
+    vec3 lighter = mix(fill.rgb, vec3(1.0), strength);
+
+    // If the fill is bright enough, use the darker border.
+    // Otherwise use the lighter border to keep the outline visible.
+    float useDarker = step(0.6, l);
+    vec3 rgb = mix(lighter, darker, useDarker);
+
+    // Keep the original alpha so border opacity follows the fill color setup.
+    return vec4(rgb, fill.a);
+}
+
 void main()
 {
     float borderThickness = fBorderThickness;
-    vec4 borderColor = vec4(0.2,0.2,0.2,1);
+    vec4 borderColor = deriveBorderColor(fColor, 0.25);
 
     vec2 outerHalfSize = fHalfSize;
     vec2 innerHalfSize = max(fHalfSize - vec2(borderThickness), vec2(0.0));

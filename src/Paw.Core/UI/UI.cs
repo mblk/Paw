@@ -11,23 +11,25 @@ namespace Paw.Core.UI;
 
 public sealed unsafe class UI : IDisposable
 {
-    private const float _titleBarHeight = 30f;
+    private const float _windowTitleBarHeight = 30f;
+    private const float _windowTitleBarExtrusion = 10f;
+    private const float _windowTitleBarCornerRadius = 10f;
 
     private const float _simpleControlHeight = 24f;
 
     private const float _textScale = 0.666f;
 
-    private const float _simpleLayoutSpacing = 5f; // horizontal/vertical layouts
-    private const float _nestedControlSpacing = 5f; // window/scrollable
-    private const float _tableSpacing = 5f;
+    private const float _simpleLayoutSpacing = 4f; // horizontal/vertical layouts
+    private const float _nestedControlSpacing = 4f; // window/scrollable
+    private const float _tableSpacing = 4f;
 
     private readonly Vector2 _textMargin = new(4, 4);
     private readonly Vector2 _simpleControlTextOffset = new(2, 0);
 
-    private readonly Vector4 _windowBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _windowTitleBarColor = new(0.2f, 0.2f, 0.2f, 1.0f);
     private readonly Vector4 _windowTitleTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
     private readonly Vector4 _windowBackgroundColor = new(0.3f, 0.3f, 0.3f, 1.0f);
+    private readonly Vector4 _windowResizerColor = new(0.2f, 0.2f, 0.5f, 1.0f);
 
     private readonly Vector4 _overlayBackgroundColor = new(0.0f);
     private readonly Vector4 _overlayTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
@@ -35,18 +37,14 @@ public sealed unsafe class UI : IDisposable
     private readonly Vector4 _labelBackgroundColor = new(0.5f, 0.5f, 0.5f, 0.0f); // a=1 for debugging
     private readonly Vector4 _labelTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
-    private readonly Vector4 _buttonBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _buttonBackgroundColor = new(0.5f, 0.2f, 0.2f, 1.0f);
     private readonly Vector4 _buttonTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
-    //private readonly Vector4 _inputBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _inputBackgroundColor = new(0.2f, 0.2f, 0.5f, 1.0f);
     private readonly Vector4 _inputTextColor = new(1.0f, 1.0f, 1.0f, 1.0f);
 
-    private readonly Vector4 _scrollableBorderColor = new(0.1f, 0.1f, 0.1f, 1.0f);
     private readonly Vector4 _scrollableBackgroundColor = new(0.4f, 0.4f, 0.4f, 1.0f);
 
-    //private readonly Vector4 _listBackgroundColor = new(0.4f, 0.4f, 0.4f, 1.0f);
     private readonly Vector4 _listSelectionColor = new(0.6f, 0.4f, 0.4f, 1.0f);
 
 
@@ -199,25 +197,25 @@ public sealed unsafe class UI : IDisposable
     {
         public readonly ulong Value;
 
-#if DEBUGfoo
+#if DEBUG_IDS
         public readonly string Path;
 
-        private Id(ulong value, string path)
+        private Id(ulong value, ReadOnlySpan<char> path)
         {
             Value = value;
-            Path = path;
+            Path = path.ToString();
         }
 
         public override string ToString() => $"Id({Path})";
 
-        public static Id Create(string s)
+        public static Id Create(ReadOnlySpan<char> s)
         {
-            return new Id(HashUtils.HashString64(s), $"/{s}");
+            return new Id(HashUtils.HashString64(s), Format($"/{s}"));
         }
 
-        public Id Combine(string s)
+        public Id Combine(ReadOnlySpan<char> s)
         {
-            return new Id(HashUtils.Combine64(Value, HashUtils.HashString64(s)), $"{Path}/{s}");
+            return new Id(HashUtils.Combine64(Value, HashUtils.HashString64(s)), Format($"{Path}/{s}"));
         }
 #else
         private Id(ulong value)
@@ -312,9 +310,9 @@ public sealed unsafe class UI : IDisposable
         Bottom,
         Explicit,
     }
-    private static readonly Vector2 _initialCascadingWindowPosition = new Vector2(250, 250);
-    private static readonly Vector2 _maxCascadingWindowPosition = new Vector2(500, 500);
-    private static readonly Vector2 _cascadingWindowOffset = new Vector2(40, 40);
+    private static readonly Vector2 _initialCascadingWindowPosition = new(250, 250);
+    private static readonly Vector2 _maxCascadingWindowPosition = new(500, 500);
+    private static readonly Vector2 _cascadingWindowOffset = new(40, 40);
     private WindowPositionMode _nextWindowPositionMode;
     private Vector2? _nextWindowExplicitOpeningPosition;
     private Vector2 _nextCascadingWindowPosition = _initialCascadingWindowPosition;
@@ -456,7 +454,7 @@ public sealed unsafe class UI : IDisposable
     private readonly Stack<LayoutItem> _layoutItems = [];
 
     // TODO make helper class for object pools?
-    private readonly LayoutItem[] _layoutItemPool = Enumerable.Range(0, 100).Select(_ => new LayoutItem()).ToArray();
+    private readonly LayoutItem[] _layoutItemPool = [.. Enumerable.Range(0, 100).Select(_ => new LayoutItem())];
     private int _usedLayoutItems = 0;
 
     private void ResetLayoutItemPool()
@@ -518,7 +516,7 @@ public sealed unsafe class UI : IDisposable
     // object pools
     //
 
-    private ArrayPool<float> _tableColsPool = ArrayPool<float>.Create();
+    private readonly ArrayPool<float> _tableColsPool = ArrayPool<float>.Create();
     private int _tableColsPoolCount;
 
 
@@ -726,60 +724,45 @@ public sealed unsafe class UI : IDisposable
         return 3;
     }
 
-    private int EmitBoxWithBorder(Rect rect, Vector4 borderColor, Vector4 fillColor, float cornerRadius = 0f)
-    {
-        int vertexCount = 0;
-        vertexCount += EmitQuad(rect, fillColor, cornerRadius, 1f);
-        return vertexCount;
-    }
-
     private int EmitCheck(Rect rect, Vector4 color)
     {
-        const float outerMargin = 5f;
+        const float outerMargin = 4f;
         const float innerMargin = 2f;
 
         Vector2 size = rect.Size;
         Vector2 halfSize = size * 0.5f;
 
-        Vector2 tl = rect.TopLeft + new Vector2(outerMargin, outerMargin); // TODO top/bottom flipped?
+        Vector2 tl = rect.TopLeft + new Vector2(outerMargin, outerMargin);
         Vector2 tr = rect.TopRight + new Vector2(-outerMargin, outerMargin);
         Vector2 bl = rect.BottomLeft + new Vector2(outerMargin, -outerMargin);
         Vector2 br = rect.BottomRight + new Vector2(-outerMargin, -outerMargin);
 
-        Vector2 localTL = new Vector2(-halfSize.X, -halfSize.Y); // TODO probably not needed here?
-        Vector2 localTR = new Vector2(+halfSize.X, -halfSize.Y);
-        Vector2 localBL = new Vector2(-halfSize.X, +halfSize.Y);
-        Vector2 localBR = new Vector2(+halfSize.X, +halfSize.Y);
-
         Vector2 tl1 = tl + new Vector2(0, innerMargin);
         Vector2 tl2 = tl + new Vector2(innerMargin, 0);
-
         Vector2 tr1 = tr + new Vector2(-innerMargin, 0);
         Vector2 tr2 = tr + new Vector2(0, innerMargin);
-
         Vector2 bl1 = bl + new Vector2(innerMargin, 0);
         Vector2 bl2 = bl + new Vector2(0, -innerMargin);
-
         Vector2 br1 = br + new Vector2(0, -innerMargin);
         Vector2 br2 = br + new Vector2(-innerMargin, 0);
 
         Vector2 uv = _whiteUV;
 
-        _vertices.Add(new Vertex(tl1, color, uv, localTL, halfSize, 0f, 0f)); // cw
-        _vertices.Add(new Vertex(tl2, color, uv, localTL, halfSize, 0f, 0f));
-        _vertices.Add(new Vertex(br1, color, uv, localBR, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(tl1, color, uv, default, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(tl2, color, uv, default, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(br1, color, uv, default, halfSize, 0f, 0f));
 
-        _vertices.Add(new Vertex(tl1, color, uv, localTL, halfSize, 0f, 0f)); // cw
-        _vertices.Add(new Vertex(br1, color, uv, localBR, halfSize, 0f, 0f));
-        _vertices.Add(new Vertex(br2, color, uv, localBR, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(tl1, color, uv, default, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(br1, color, uv, default, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(br2, color, uv, default, halfSize, 0f, 0f));
 
-        _vertices.Add(new Vertex(bl1, color, uv, localBL, halfSize, 0f, 0f)); // cw
-        _vertices.Add(new Vertex(bl2, color, uv, localBL, halfSize, 0f, 0f));
-        _vertices.Add(new Vertex(tr1, color, uv, localTR, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(bl1, color, uv, default, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(bl2, color, uv, default, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(tr1, color, uv, default, halfSize, 0f, 0f));
 
-        _vertices.Add(new Vertex(bl1, color, uv, localBL, halfSize, 0f, 0f)); // cw
-        _vertices.Add(new Vertex(tr1, color, uv, localTR, halfSize, 0f, 0f));
-        _vertices.Add(new Vertex(tr2, color, uv, localTR, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(bl1, color, uv, default, halfSize, 0f, 0f)); // cw
+        _vertices.Add(new Vertex(tr1, color, uv, default, halfSize, 0f, 0f));
+        _vertices.Add(new Vertex(tr2, color, uv, default, halfSize, 0f, 0f));
 
         return 12;
     }
@@ -866,6 +849,39 @@ public sealed unsafe class UI : IDisposable
         }
 
         return new Vector2(currentPosition.X, maxHeight);
+    }
+
+    #endregion
+
+    #region Color utils
+
+    // Computes perceived brightness of a color.
+    // Green contributes most, then red, then blue.
+    private static float Luminance(Vector4 color)
+    {
+        return color.X * 0.299f
+             + color.Y * 0.587f
+             + color.Z * 0.114f;
+    }
+
+    // Derives a contrasting color from the fill color.
+    // Bright fills get a darker variant.
+    // Dark fills get a lighter variant.
+    // The alpha channel is preserved.
+    private static Vector4 DeriveHighlightColor(Vector4 fill, float strength = 0.075f)
+    {
+        strength = Math.Clamp(strength, 0f, 1f);
+
+        float l = Luminance(fill);
+
+        var rgb = new Vector3(fill.X, fill.Y, fill.Z);
+        Vector3 darker = rgb * (1f - strength);
+        Vector3 lighter = Vector3.Lerp(rgb, Vector3.One, strength);
+
+        Vector3 highlightRgb = l >= 0.6f ? darker : lighter;
+        highlightRgb = Vector3.Clamp(highlightRgb, Vector3.Zero, Vector3.One);
+
+        return new Vector4(highlightRgb, fill.W);
     }
 
     #endregion
@@ -1211,7 +1227,7 @@ public sealed unsafe class UI : IDisposable
         // Get / create window state
         if (!_windowStates.TryGetValue(id, out WindowState? windowState))
         {
-            Vector2 openingPosition = GetNewWindowPosition(initialSize);
+            Vector2 openingPosition = GetNewWindowPosition(initialSize).SnapToPixel();
 
             _windowStates.Add(id, windowState = new WindowState()
             {
@@ -1244,8 +1260,7 @@ public sealed unsafe class UI : IDisposable
 
         // Handle window movement/resize
         var windowRect = windowState.Rect;
-        var titleRect = windowRect.FromTopLeft(new Vector2(windowRect.Size.X, _titleBarHeight));
-        titleRect = new Rect(titleRect.TopLeft + new Vector2(-_titleBarHeight * 0.5f, 0), titleRect.BottomRight + new Vector2(_titleBarHeight * 0.5f, 0));
+        var titleRect = windowRect.FromTopLeft(new Vector2(windowRect.Size.X + _windowTitleBarExtrusion * 2, _windowTitleBarHeight)).Move(new Vector2(-_windowTitleBarExtrusion, 0f));
         var resizeRect = windowRect.FromBottomRight(new Vector2(15));
 
         if (IsMouseWithin(titleRect) && _mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
@@ -1270,7 +1285,7 @@ public sealed unsafe class UI : IDisposable
                 var currentSize = windowState.Rect.Size;
                 var newPos = _mousePosition - _grabOffset;
 
-                windowState.Rect = new Rect(newPos, newPos + currentSize);
+                windowState.Rect = new Rect(newPos, newPos + currentSize).SnapToPixel();
             }
             else if (_grabType == GrabType.Resize)
             {
@@ -1284,7 +1299,7 @@ public sealed unsafe class UI : IDisposable
 
                 newMax = min + newSize;
 
-                windowState.Rect = EnsureRectIsOnScreenByResizing(new Rect(min, newMax));
+                windowState.Rect = EnsureRectIsOnScreenByResizing(new Rect(min, newMax)).SnapToPixel();
             }
         }
 
@@ -1308,42 +1323,40 @@ public sealed unsafe class UI : IDisposable
 
         if (fixedRect != windowState.Rect)
         {
-            windowState.Rect = fixedRect;
+            windowState.Rect = fixedRect.SnapToPixel();
         }
 
         // update rects after resize/move
         windowRect = windowState.Rect;
-        titleRect = new Rect(windowRect.Min, windowRect.Min + new Vector2(windowRect.Size.X, _titleBarHeight));
-        titleRect = new Rect(titleRect.TopLeft + new Vector2(-_titleBarHeight * 0.5f, 0), titleRect.BottomRight + new Vector2(_titleBarHeight * 0.5f, 0));
+        titleRect = windowRect.FromTopLeft(new Vector2(windowRect.Size.X + _windowTitleBarExtrusion * 2, _windowTitleBarHeight)).Move(new Vector2(-_windowTitleBarExtrusion, 0f));
         resizeRect = windowRect.FromBottomRight(new Vector2(15));
 
         // color highlights
         var titleBarColor = _windowTitleBarColor;
         if (IsMouseWithin(titleRect) && !_mouseBlockedByOtherWindow)
         {
-            titleBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0);
+            titleBarColor = DeriveHighlightColor(titleBarColor);
         }
-        var resizeRectColor = _windowBorderColor;
+        var resizeRectColor = _windowResizerColor;
         if (IsMouseWithin(resizeRect) && !_mouseBlockedByOtherWindow)
         {
-            resizeRectColor = new Vector4(1, 1, 1, 0) - resizeRectColor;
-            resizeRectColor.W = 1;
+            resizeRectColor = DeriveHighlightColor(resizeRectColor);
         }
 
         // Emit geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(windowRect, _windowBorderColor, _windowBackgroundColor, 0f);
-        vertexCount += EmitBoxWithBorder(titleRect, _windowBorderColor, titleBarColor, _titleBarHeight * 0.5f);
-        vertexCount += EmitTextVerts(titleRect.TopLeft + new Vector2(5f, 3f), _windowTitleTextColor, title);
+        vertexCount += EmitQuad(windowRect, _windowBackgroundColor, borderThickness: 1f);
+        vertexCount += EmitQuad(titleRect, titleBarColor, cornerRadius: _windowTitleBarCornerRadius, borderThickness: 1f);
+        vertexCount += EmitTextVerts(titleRect.TopLeft + new Vector2(_windowTitleBarExtrusion + _nestedControlSpacing, 3f), _windowTitleTextColor, title);
         vertexCount += EmitTriangleBottomRight(resizeRect, resizeRectColor);
 
         AddDrawCommand(vertexCount);
 
         PushClipEntry(new Rect(
-            windowRect.TopLeft + new Vector2(_nestedControlSpacing),
+            windowRect.TopLeft + new Vector2(),
             windowRect.BottomRight - new Vector2(_nestedControlSpacing)));
 
-        Rect contentRect = new Rect(windowState.Rect.TopLeft + new Vector2(_nestedControlSpacing, _titleBarHeight + _nestedControlSpacing),
+        Rect contentRect = new Rect(windowState.Rect.TopLeft + new Vector2(_nestedControlSpacing, _windowTitleBarHeight + _nestedControlSpacing),
                                     windowState.Rect.BottomRight - new Vector2(_nestedControlSpacing));
 
         PushLayoutItem(LayoutMode.Vertical, contentRect);
@@ -1394,7 +1407,7 @@ public sealed unsafe class UI : IDisposable
 
         // geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(rect, _scrollableBorderColor, _scrollableBackgroundColor, 10f);
+        vertexCount += EmitQuad(rect, _scrollableBackgroundColor, cornerRadius: 10f, borderThickness: 1f);
         AddDrawCommand(vertexCount);
 
         //
@@ -1511,7 +1524,7 @@ public sealed unsafe class UI : IDisposable
         {
             var vertScrollBarColor = new Vector4(0.2f, 0.2f, 0.2f, 1f);
             if (IsMouseWithin(visibleVertScrollBarRect))
-                vertScrollBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0f);
+                vertScrollBarColor = DeriveHighlightColor(vertScrollBarColor);
 
             vertexCount += EmitQuad(visibleVertScrollBarRect, vertScrollBarColor, 5f);
         }
@@ -1519,7 +1532,7 @@ public sealed unsafe class UI : IDisposable
         {
             var horiScrollBarColor = new Vector4(0.2f, 0.2f, 0.2f, 1f);
             if (IsMouseWithin(visibleHoriScrollBarRect))
-                horiScrollBarColor += new Vector4(0.05f, 0.05f, 0.05f, 0f);
+                horiScrollBarColor = DeriveHighlightColor(horiScrollBarColor);
 
             vertexCount += EmitQuad(visibleHoriScrollBarRect, horiScrollBarColor, 5f);
         }
@@ -1881,6 +1894,36 @@ public sealed unsafe class UI : IDisposable
         AddDrawCommand(vertexCount);
     }
 
+    public bool ClickableLabel(ReadOnlySpan<char> text)
+    {
+        var size = MeasureTextLine(text);
+
+        size.Y = _simpleControlHeight;
+
+        size = AdjustSize(size);
+
+        if (size.X <= 0 || size.Y <= 0)
+            return false;
+
+        var rect = Layout(size);
+
+        // input
+        var wasClicked = false;
+        if (IsMouseWithin(rect) && _mouseState.WasPressed(MouseButton.Left))
+        {
+            wasClicked = true;
+        }
+
+        // geometry
+        int vertexCount = 0;
+        vertexCount += EmitQuad(rect, _labelBackgroundColor);
+        vertexCount += EmitTextVerts(rect.TopLeft, _labelTextColor, text);
+
+        AddDrawCommand(vertexCount);
+
+        return wasClicked;
+    }
+
     public bool Button(ReadOnlySpan<char> text)
     {
         var size = MeasureTextLine(text);
@@ -1901,13 +1944,13 @@ public sealed unsafe class UI : IDisposable
 
         if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
         {
-            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            backgroundColor = DeriveHighlightColor(backgroundColor);
             wasPressed = _mouseState.WasPressed(MouseButton.Left);
         }
 
         // geometry
         int vertexCount = 0;
-        vertexCount += EmitBoxWithBorder(rect, _buttonBorderColor, backgroundColor);
+        vertexCount += EmitQuad(rect, backgroundColor, borderThickness: 1f);
         vertexCount += EmitTextVerts(rect.TopLeft + _simpleControlTextOffset, _buttonTextColor, text);
 
         AddDrawCommand(vertexCount);
@@ -1934,7 +1977,7 @@ public sealed unsafe class UI : IDisposable
 
         if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
         {
-            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            backgroundColor = DeriveHighlightColor(backgroundColor);
             var wasPressed = _mouseState.WasPressed(MouseButton.Left);
 
             if (_selectedControl != id && wasPressed)
@@ -1991,7 +2034,7 @@ public sealed unsafe class UI : IDisposable
 
         if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
         {
-            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            backgroundColor = DeriveHighlightColor(backgroundColor);
             var wasPressed = _mouseState.WasPressed(MouseButton.Left);
 
             if (_selectedControl != id && wasPressed)
@@ -2048,16 +2091,14 @@ public sealed unsafe class UI : IDisposable
         var rect = Layout(size);
 
         // input
-        var wasPressed = false;
         var valueChanged = false;
         Vector4 backgroundColor = _inputBackgroundColor;
 
         if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
         {
-            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
-            wasPressed = _mouseState.WasPressed(MouseButton.Left);
+            backgroundColor = DeriveHighlightColor(backgroundColor);
 
-            if (wasPressed)
+            if (_mouseState.WasPressed(MouseButton.Left))
             {
                 value = !value;
                 valueChanged = true;
@@ -2065,12 +2106,14 @@ public sealed unsafe class UI : IDisposable
         }
 
         // geometry
+        var visualRect = rect.Margin(new Vector2(4f)).SnapToPixel();
+
         int vertexCount = 0;
-        vertexCount += EmitQuad(rect, backgroundColor);
+        vertexCount += EmitQuad(visualRect, backgroundColor);
 
         if (value)
         {
-            vertexCount += EmitCheck(rect, _inputTextColor);
+            vertexCount += EmitCheck(visualRect, _inputTextColor);
         }
 
         AddDrawCommand(vertexCount);
@@ -2093,17 +2136,19 @@ public sealed unsafe class UI : IDisposable
 
         if (IsMouseWithin(rect) && !_mouseBlockedByOtherWindow)
         {
-            backgroundColor += new Vector4(0.1f, 0.1f, 0.1f, 0.0f);
+            backgroundColor = DeriveHighlightColor(backgroundColor);
             wasPressed = _mouseState.WasPressed(MouseButton.Left);
         }
 
         // geometry
+        var visualRect = rect.Margin(new Vector2(4f)).SnapToPixel();
+
         int vertexCount = 0;
-        vertexCount += EmitCircle(rect, backgroundColor);
+        vertexCount += EmitCircle(visualRect, backgroundColor);
 
         if (isSelected)
         {
-            Rect inner = rect.Margin(new Vector2(8f));
+            Rect inner = visualRect.Margin(new Vector2(6f));
             vertexCount += EmitCircle(inner, _inputTextColor);
         }
 
@@ -2214,7 +2259,10 @@ public sealed unsafe class UI : IDisposable
             PopId();
             NextColumn();
 
-            Label(label); // TODO clicking on label should also change value
+            if (ClickableLabel(label))
+            {
+                value = !value;
+            }
         }
 
         return r;
@@ -2245,7 +2293,10 @@ public sealed unsafe class UI : IDisposable
 
                 NextColumn();
 
-                Label(valueLabel); // TODO clicking on label should also change value
+                if (ClickableLabel(valueLabel))
+                {
+                    value = potentialValue;
+                }
                 NextRow();
             }
         }
@@ -2263,7 +2314,7 @@ public sealed unsafe class UI : IDisposable
         Overlay(Format($"UI draw calls: {_stats.DrawCalls}"));
         Overlay(Format($"Mouse: {_mouseState.X} {_mouseState.Y}"));
 
-        //Overlay(Format($"Selected: {_selectedControl}"));
+        //Overlay(Format($"Selected: {_selectedControl.ToSpanString()}"));
 
         //Overlay(Format($"Grab: {_grabType} {_grabOffset}"));
 

@@ -1,4 +1,5 @@
 ﻿using Paw.Core;
+using Paw.Core.Physics;
 using Paw.Core.Platforms;
 using Paw.Core.Resources;
 using Paw.Core.Scenes;
@@ -28,6 +29,7 @@ public class Program : App
         sceneManager.RegisterScene("rendertest1", c => new RenderTest1Scene(c));
         sceneManager.RegisterScene("uitest1", c => new UiTestScene(c));
         sceneManager.RegisterScene("materialbrowser", c => new MaterialBrowser(c));
+        sceneManager.RegisterScene("physicstest", c => new PhysicsTestScene(c));
 
         //sceneManager.SetCurrentScene("uitest1");
         //sceneManager.SetCurrentScene("materialbrowser");

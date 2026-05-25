@@ -30,26 +30,24 @@ internal class MenuScene : Scene
     {
         _allScenes ??= context.SceneController.GetAllSceneIds().ToArray();
 
-        var dt = context.DeltaTime;
         var kb = context.Input.Keyboard;
 
-        if (kb.WasPressed(Key.Escape))
-        {
-            context.SceneController.RequestExit();
-        }
-
         UI.SetNextWindowPositionMode(Core.UI.UI.WindowPositionMode.Center); // TODO should UI calls be in Update or in Render?
-        using (UI.BeginWindow(new Vector2(200, 400), "Menu"))
+        using (UI.BeginWindow(new Vector2(300, 400), "Menu"))
         {
+            Key sceneKey = Key.F1;
+
             foreach (var sceneId in _allScenes)
             {
-                if (UI.Button(Format($"Load Scene: {sceneId}")))
+                if (UI.Button(Format($"Load Scene: {sceneId} ({sceneKey})")) || kb.WasPressed(sceneKey))
                 {
                     context.SceneController.RequestSceneChange(sceneId);
                 }
+
+                sceneKey = (Key)((uint)sceneKey + 1);
             }
 
-            if (UI.Button("Exit"))
+            if (UI.Button("Exit") || kb.WasPressed(Key.Escape))
             {
                 context.SceneController.RequestExit();
             }

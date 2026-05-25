@@ -106,26 +106,26 @@ public class MaterialBrowser : Scene
             {
                 case RenderMode.Quad1:
                 {
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = br, Color = color, UV = new(1.0f, 1.0f) });
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = br, Color = color, UV = new(1.0f, 1.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
 
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
 
                     break;
                 }
 
                 case RenderMode.Quad2:
                 {
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = bl, Color = color, UV = new(0.0f, 2.0f) });
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = br, Color = color, UV = new(2.0f, 2.0f) });
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = tr, Color = color, UV = new(2.0f, 0.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = bl, Color = color, UV = new(0.0f, 2.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = br, Color = color, UV = new(2.0f, 2.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = tr, Color = color, UV = new(2.0f, 0.0f) });
 
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = bl, Color = color, UV = new(0.0f, 2.0f) });
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = tr, Color = color, UV = new(2.0f, 0.0f) });
-                    writer.AddVertex(new DynamicGeometryRenderer2D.VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = bl, Color = color, UV = new(0.0f, 2.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = tr, Color = color, UV = new(2.0f, 0.0f) });
+                    writer.AddVertex(new DynamicGeometryRenderer2D.Vertex { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
 
                     break;
                 }

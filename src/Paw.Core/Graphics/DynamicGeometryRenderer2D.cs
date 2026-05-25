@@ -12,7 +12,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
     // - what about index buffers?
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VertexPCT
+    public struct Vertex
     {
         public Vector2 Position;
         public Vector4 Color;
@@ -27,21 +27,17 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
     private readonly GL _gl;
 
 
-    public class PerMaterialData : IDisposable
+    private sealed class PrimitiveBatch : IDisposable
     {
-        public readonly Material Material;
         public readonly BufferObject VertexBuffer;
-        public readonly VertexArrayObject<VertexPCT> VertexArray;
-        public readonly Writer Writer;
-        public readonly List<VertexPCT> Vertices = new(_initialVertexBufferSize);
+        public readonly VertexArrayObject<Vertex> VertexArray;
+        public readonly List<Vertex> Vertices = new(_initialVertexBufferSize);
 
-        public PerMaterialData(GL gl, Material material)
+        public PrimitiveBatch(GL gl)
         {
-            Material = material;
             VertexBuffer = new BufferObject(gl);
-            VertexBuffer.SetSizeAndUsage(sizeof(VertexPCT) * _initialVertexBufferSize, GL.BufferUsage.STREAM_DRAW);
-            VertexArray = new VertexArrayObject<VertexPCT>(gl, VertexBuffer);
-            Writer = new Writer(Vertices);
+            VertexBuffer.SetSizeAndUsage(sizeof(Vertex) * _initialVertexBufferSize, GL.BufferUsage.STREAM_DRAW);
+            VertexArray = new VertexArrayObject<Vertex>(gl, VertexBuffer);
         }
 
         public void Dispose()
@@ -51,25 +47,54 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
         }
     }
 
-    public class Writer
+    private sealed class PerMaterialData : IDisposable
     {
-        private readonly List<VertexPCT> _vertices;
+        public readonly Material Material;
+        public readonly PrimitiveBatch Triangles;
+        public readonly PrimitiveBatch Lines;
+        public readonly PrimitiveBatch Points;
+        public readonly Writer Writer;
 
-        public Writer(List<VertexPCT> vertices)
+        public PerMaterialData(GL gl, Material material)
         {
-            _vertices = vertices;
+            Material = material;
+            Triangles = new PrimitiveBatch(gl);
+            Lines = new PrimitiveBatch(gl);
+            Points = new PrimitiveBatch(gl);
+            Writer = new Writer(Triangles.Vertices, Lines.Vertices, Points.Vertices);
         }
 
-        public void AddVertex(VertexPCT vertex)
+        public void Dispose()
         {
-            _vertices.Add(vertex);
+            Triangles.Dispose();
+            Lines.Dispose();
+            Points.Dispose();
+        }
+    }
+
+    public class Writer
+    {
+        private readonly List<Vertex> _triangles;
+        private readonly List<Vertex> _lines;
+        private readonly List<Vertex> _points;
+
+        public Writer(List<Vertex> triangles, List<Vertex> lines, List<Vertex> points)
+        {
+            _triangles = triangles;
+            _lines = lines;
+            _points = points;
+        }
+
+        public void AddVertex(Vertex vertex)
+        {
+            _triangles.Add(vertex);
         }
 
         public void AddTriangle(Vector2 p1, Vector4 c1, Vector2 p2, Vector4 c2, Vector2 p3, Vector4 c3)
         {
-            _vertices.Add(new VertexPCT() { Position = p1, Color = c1, UV = new(0.0f, 0.0f) });
-            _vertices.Add(new VertexPCT() { Position = p2, Color = c2, UV = new(1.0f, 0.0f) });
-            _vertices.Add(new VertexPCT() { Position = p3, Color = c3, UV = new(0.5f, 1.0f) });
+            _triangles.Add(new Vertex() { Position = p1, Color = c1, UV = new(0.0f, 0.0f) });
+            _triangles.Add(new Vertex() { Position = p2, Color = c2, UV = new(1.0f, 0.0f) });
+            _triangles.Add(new Vertex() { Position = p3, Color = c3, UV = new(0.5f, 1.0f) });
         }
 
         public void AddRectangle(Vector2 center, Vector2 size, Vector4 color)
@@ -81,13 +106,13 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             Vector2 br = new(center.X + halfSize.X, center.Y + halfSize.Y);
             Vector2 bl = new(center.X - halfSize.X, center.Y + halfSize.Y);
 
-            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(1.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = br, Color = color, UV = new(1.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
 
-            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
-            _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
         }
 
         public void AddRectangleWithPositionSize(Vector2 topLeft, Vector2 size, Vector4 color) // need to find better naming schema
@@ -97,13 +122,13 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             Vector2 br = new(topLeft.X + size.X, topLeft.Y + size.Y);
             Vector2 bl = new(topLeft.X, topLeft.Y + size.Y);
 
-            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(1.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = br, Color = color, UV = new(1.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
 
-            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
-            _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
         }
 
         public void AddRotatedRectangle(Vector2 center, Vector2 size, float angle, Vector4 color)
@@ -115,13 +140,13 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             Vector2 br = center + new Vector2(halfSize.X, halfSize.Y).Rotate(angle);
             Vector2 bl = center + new Vector2(-halfSize.X, halfSize.Y).Rotate(angle);
 
-            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(1.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = br, Color = color, UV = new(1.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
 
-            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
-            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
-            _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(0.0f, 1.0f) });
+            _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(1.0f, 0.0f) });
+            _triangles.Add(new Vertex { Position = tl, Color = color, UV = new(0.0f, 0.0f) });
         }
 
         public void AddRectangleWithUV(Vector2 center, Vector2 size, Vector4 color, Vector2 uvMin, Vector2 uvMax)
@@ -133,12 +158,12 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             Vector2 br = new(center.X + halfSize.X, center.Y + halfSize.Y);
             Vector2 bl = new(center.X - halfSize.X, center.Y + halfSize.Y);
 
-            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-            _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
-            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-            _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-            _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-            _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
+            _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
+            _triangles.Add(new Vertex { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
+            _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
+            _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
+            _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
+            _triangles.Add(new Vertex { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
         }
 
         public void AddText(Font font, Vector2 position, Vector4 color, float scale, string text)
@@ -175,15 +200,31 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
                 Vector2 br = new(xr, yb);
                 Vector2 bl = new(xl, yb);
 
-                _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-                _vertices.Add(new VertexPCT { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
-                _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-                _vertices.Add(new VertexPCT { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
-                _vertices.Add(new VertexPCT { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
-                _vertices.Add(new VertexPCT { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
+                _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
+                _triangles.Add(new Vertex { Position = br, Color = color, UV = new(uvMax.X, uvMax.Y) });
+                _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
+                _triangles.Add(new Vertex { Position = bl, Color = color, UV = new(uvMin.X, uvMax.Y) });
+                _triangles.Add(new Vertex { Position = tr, Color = color, UV = new(uvMax.X, uvMin.Y) });
+                _triangles.Add(new Vertex { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
 
                 currentPosition.X += charData.XAdvance * scale;
             }
+        }
+
+        public void AddPoint(Vector2 position, Vector4 color)
+        {
+            _points.Add(new Vertex { Position = position, Color = color, UV = Vector2.Zero });
+        }
+
+        public void AddLine(Vector2 start, Vector4 startColor, Vector2 end, Vector4 endColor)
+        {
+            _lines.Add(new Vertex { Position = start, Color = startColor, UV = Vector2.Zero });
+            _lines.Add(new Vertex { Position = end, Color = endColor, UV = Vector2.Zero });
+        }
+
+        public void AddLine(Vector2 start, Vector2 end, Vector4 color)
+        {
+            AddLine(start, color, end, color);
         }
     }
 
@@ -229,45 +270,47 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
     {
         foreach (var (_, perMaterialData) in _perMaterialDatas)
         {
-            int vertexCount = perMaterialData.Vertices.Count;
-            if (vertexCount == 0)
-                continue;
-
             var material = perMaterialData.Material;
-            var vertexBuffer = perMaterialData.VertexBuffer;
-            var vertexArray = perMaterialData.VertexArray;
-            var vertices = perMaterialData.Vertices;
 
-            vertexBuffer.SetData(vertices, GL.BufferUsage.STREAM_DRAW);
-            vertices.Clear();
-
-            vertexArray.Bind();
+            if (uniformConfig is not null) // TODO need MaterialInstance type/asset - one material can have multiple users (each with different uniforms, etc)
             {
-                if (uniformConfig is not null) // TODO need MaterialInstance type/asset - one material can have multiple users (each with different uniforms, etc)
-                {
-                    uniformConfig(material);
-                }
+                uniformConfig(material);
+            }
 
-                material.SetUniform("uMVP", mvp);
-                material.Bind();
-
+            material.SetUniform("uMVP", mvp);
+            material.Bind();
+            {
                 _gl.Enable(GL.EnableCap.BLEND);
                 _gl.BlendFunc(GL.BlendingFactor.SRC_ALPHA, GL.BlendingFactor.ONE_MINUS_SRC_ALPHA);
-
                 {
-                    for (int pass = 1; pass <= material.Passes; pass++)
-                    {
-                        material.SetPass(pass);
-                        vertexArray.Draw(GL.PrimitiveType.TRIANGLES, 0, vertexCount);
-                    }
+                    RenderBatch(perMaterialData.Triangles, material, GL.PrimitiveType.TRIANGLES);
+                    RenderBatch(perMaterialData.Lines, material, GL.PrimitiveType.LINES);
+                    RenderBatch(perMaterialData.Points, material, GL.PrimitiveType.POINTS);
                 }
-
                 _gl.Disable(GL.EnableCap.BLEND);
-
-                material.Unbind();
             }
-            vertexArray.Unbind();
+            material.Unbind();
         }
+    }
+
+    private static void RenderBatch(PrimitiveBatch batch, Material material, GL.PrimitiveType primitiveType)
+    {
+        var vertexCount = batch.Vertices.Count;
+        if (vertexCount == 0)
+            return;
+
+        batch.VertexBuffer.SetData(batch.Vertices, GL.BufferUsage.STREAM_DRAW);
+        batch.Vertices.Clear();
+
+        batch.VertexArray.Bind();
+        {
+            for (int pass = 1; pass <= material.Passes; pass++)
+            {
+                material.SetPass(pass);
+                batch.VertexArray.Draw(primitiveType, 0, vertexCount);
+            }
+        }
+        batch.VertexArray.Unbind();
     }
 
     public void Dispose()

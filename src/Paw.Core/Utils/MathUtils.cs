@@ -34,6 +34,16 @@ public static class MathUtils
                 return max;
             return value;
         }
+
+        public float DegToRad()
+        {
+            return value * MathF.PI / 180f;
+        }
+
+        public float RadToDeg()
+        {
+            return value * 180f / MathF.PI;
+        }
     }
 
     extension(Vector2 p)
@@ -60,5 +70,24 @@ public static class MathUtils
             Vector2 vrot = vrel.Rotate(angle);
             return center + vrot;
         }
+    }
+
+    extension(Vector3 v)
+    {
+        public Vector2 XY => new(v.X, v.Y);
+
+        public Vector3 Signs => new(MathF.Sign(v.X),
+                                    MathF.Sign(v.Y),
+                                    MathF.Sign(v.Z));
+
+        public Vector3 Clamp(float min, float max) => new(v.X.Clamp(min, max),
+                                                          v.Y.Clamp(min, max),
+                                                          v.Z.Clamp(min, max));
+    }
+
+    extension(Vector4 v)
+    {
+        public Vector2 XY => new(v.X, v.Y);
+        public Vector3 XYZ => new(v.X, v.Y, v.Z);
     }
 }

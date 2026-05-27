@@ -1178,7 +1178,7 @@ public sealed unsafe class UI : IDisposable
             case WindowPositionMode.Left:
             {
                 Vector2 screenSize = _rootClipEntry.Rect.Size;
-                Vector2 p = new Vector2(0f, screenSize.Y * 0.5f - initialSize.Y * 0.5f);
+                Vector2 p = new Vector2(20f, screenSize.Y * 0.5f - initialSize.Y * 0.5f);
                 return p;
             }
 

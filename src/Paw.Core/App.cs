@@ -75,6 +75,8 @@ public abstract class App
         {
             DeltaTime = 0f,
             WindowSize = window.Size,
+            Input = window.Input,
+            SceneController = sceneManager,
         };
 
         // main loop

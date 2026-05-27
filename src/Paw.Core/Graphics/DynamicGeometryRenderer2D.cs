@@ -166,7 +166,7 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
             _triangles.Add(new Vertex { Position = tl, Color = color, UV = new(uvMin.X, uvMin.Y) });
         }
 
-        public void AddText(Font font, Vector2 position, Vector4 color, float scale, string text)
+        public void AddText(Font font, Vector2 position, Vector4 color, float scale, ReadOnlySpan<char> text, bool flipY = false)
         {
             Vector2 currentPosition = position;
 
@@ -186,6 +186,13 @@ public unsafe class DynamicGeometryRenderer2D : IDisposable
 
                 Vector2 uvMin = charData.UvMin;
                 Vector2 uvMax = charData.UvMax;
+
+                if (flipY)
+                {
+                    uvMin.Y = charData.UvMax.Y;
+                    uvMax.Y = charData.UvMin.Y;
+                }
+
                 Vector2 size = charData.Size * scale;
                 Vector2 offset = charData.Offset * scale;
 

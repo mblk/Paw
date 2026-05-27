@@ -38,6 +38,8 @@ public class RenderContext
 {
     public float DeltaTime;
     public (int, int) WindowSize;
+    public required IInput Input;
+    public required ISceneController SceneController;
 }
 
 public interface ISceneController

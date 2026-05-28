@@ -4,22 +4,42 @@ namespace Paw.Core.Physics;
 
 public abstract class Force
 {
-    public const int MaxRows = 4;
+    public const int MAX_ROWS = 4;
 
     public Body? BodyA;
     public Body? BodyB;
 
-    public vec3[] J = new vec3[MaxRows];
-    public mat3[] H = new mat3[MaxRows];
-    public float[] C = new float[MaxRows];
-    public float[] fMin = new float[MaxRows];
-    public float[] fMax = new float[MaxRows];
-    public float[] Stiffness = new float[MaxRows];
-    public float[] Fracture = new float[MaxRows];
-    public float[] Penalty = new float[MaxRows];
-    public float[] Lambda = new float[MaxRows];
+    public vec3[] J = new vec3[MAX_ROWS];
+    public mat3[] H = new mat3[MAX_ROWS];
+    public float[] C = new float[MAX_ROWS];
+    public float[] fMin = new float[MAX_ROWS];
+    public float[] fMax = new float[MAX_ROWS];
+    public float[] Stiffness = new float[MAX_ROWS];
+    public float[] Fracture = new float[MAX_ROWS];
+    public float[] Penalty = new float[MAX_ROWS];
+    public float[] Lambda = new float[MAX_ROWS];
 
-    protected Force(Body? bodyA, Body? bodyB)
+    public void Reset()
+    {
+        BodyA = default;
+        BodyB = default;
+
+        // Set some reasonable defaults
+        for (int i = 0; i < MAX_ROWS; i++)
+        {
+            J[i] = default;
+            H[i] = default;
+            C[i] = default;
+            Stiffness[i] = float.PositiveInfinity;
+            fMax[i] = float.PositiveInfinity;
+            fMin[i] = float.NegativeInfinity;
+            Fracture[i] = float.PositiveInfinity;
+            Penalty[i] = 0f;
+            Lambda[i] = 0f;
+        }
+    }
+
+    public void AddToBodies(Body? bodyA, Body? bodyB)
     {
         if (bodyA is not null)
         {
@@ -31,20 +51,6 @@ public abstract class Force
         {
             BodyB = bodyB;
             bodyB.Forces.Add(this);
-        }
-
-        // Set some reasonable defaults
-        for (int i = 0; i < MaxRows; i++)
-        {
-            J[i] = default;
-            H[i] = default;
-            C[i] = default;
-            Stiffness[i] = float.PositiveInfinity;
-            fMax[i] = float.PositiveInfinity;
-            fMin[i] = float.NegativeInfinity;
-            Fracture[i] = float.PositiveInfinity;
-            Penalty[i] = 0f;
-            Lambda[i] = 0f;
         }
     }
 
@@ -67,29 +73,4 @@ public abstract class Force
     public abstract bool Initialize();
     public abstract void ComputeConstraint(float alpha);
     public abstract void ComputeDerivatives(Body body);
-}
-
-public class Manifold : Force
-{
-    public Manifold(Body bodyA, Body bodyB)
-        : base(bodyA, bodyB)
-    {
-    }
-
-    public override int Rows => throw new NotImplementedException();
-
-    public override bool Initialize()
-    {
-        return false;
-    }
-
-    public override void ComputeConstraint(float alpha)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void ComputeDerivatives(Body body)
-    {
-        throw new NotImplementedException();
-    }
 }

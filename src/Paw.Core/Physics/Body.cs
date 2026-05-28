@@ -28,8 +28,17 @@ public class Body
         Radius = (size * 0.5f).Length();
     }
 
-    public virtual bool IsConstrainedTo(Body otherBody)
+    public bool IsConstrainedTo(Body otherBody)
     {
+        foreach (var force in Forces)
+        {
+            if (force.BodyA == this && force.BodyB == otherBody ||
+                force.BodyA == otherBody && force.BodyB == this)
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 }

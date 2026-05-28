@@ -117,7 +117,7 @@ public class PhysicsTestScene : Scene
 
             if (context.Input.Mouse.WasPressed(MouseButton.Right))
             {
-                _solver.Bodies.Remove(pickedBody);
+                //_solver.Bodies.Remove(pickedBody);
             }
         }
         else
@@ -179,17 +179,23 @@ public class PhysicsTestScene : Scene
             vec2 p3 = rot * new vec2(+halfSize.X, +halfSize.Y) + pos; // top right
             vec2 p4 = rot * new vec2(-halfSize.X, +halfSize.Y) + pos; // top left
 
-            var color = pickedBody == body ? selectedBodyColor : bodyColor;
+            var fillColor = pickedBody == body ? selectedBodyColor : bodyColor;
+            var borderColor = new vec4(1, 1, 1, 1);
 
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p1, Color = color, UV = default, });
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p2, Color = color, UV = default, });
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p3, Color = color, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p1, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p2, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p3, Color = fillColor, UV = default, });
 
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p1, Color = color, UV = default, });
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p3, Color = color, UV = default, });
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p4, Color = color, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p1, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p3, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p4, Color = fillColor, UV = default, });
 
-            AddText(pos, Format($"{body.Forces.Count} forces"));
+            defaultWriter.AddLine(p1, p2, borderColor);
+            defaultWriter.AddLine(p2, p3, borderColor);
+            defaultWriter.AddLine(p3, p4, borderColor);
+            defaultWriter.AddLine(p4, p1, borderColor);
+
+            //AddText(pos, Format($"{body.Forces.Count} forces"));
         }
 
         foreach (var force in _solver.Forces)

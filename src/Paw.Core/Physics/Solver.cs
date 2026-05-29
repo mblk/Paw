@@ -70,14 +70,6 @@ public class Solver
         Bodies.Clear();
         Forces.Clear();
 
-        //Bodies.Add(new Body(
-        //    size: new vec2(1, 1),
-        //    density: 1.0f,
-        //    friction: 0.5f,
-        //    position: new Vector3(5, 5, 0),
-        //    velocity: vec3.Zero
-        //    ));
-
         Bodies.Add(new Body(
             size: new vec2(2, 1),
             density: 1.0f,
@@ -86,13 +78,66 @@ public class Solver
             velocity: vec3.Zero
             ));
 
+        // Ground
         Bodies.Add(new Body(
-            size: new vec2(20, 1),
+            size: new vec2(30, 1),
             density: 0f,
             friction: 0.5f,
             position: new Vector3(0, -5f, 0),
             velocity: vec3.Zero
             ));
+
+        // Triangle
+        {
+            var bLeft = new Body(
+                size: new vec2(1, 1),
+                density: 1.0f,
+                friction: 0.5f,
+                position: new Vector3(5, 5, 0f),
+                velocity: vec3.Zero
+                );
+
+            var bRight = new Body(
+                size: new vec2(1, 1),
+                density: 1.0f,
+                friction: 0.5f,
+                position: new Vector3(10, 5, 0f),
+                velocity: vec3.Zero
+                );
+
+            var bTop = new Body(
+                size: new vec2(1, 1),
+                density: 1.0f,
+                friction: 0.5f,
+                position: new Vector3(7.5f, 10f, 0f),
+                velocity: vec3.Zero
+                );
+
+
+            void AddJointInMiddle(Body a, Body b)
+            {
+                var jStiffness = new vec3(100f, 100f, 0f);
+                //var jStiffness = new vec3(float.PositiveInfinity, float.PositiveInfinity, 0f);
+                var jFracture = float.PositiveInfinity;
+
+                vec2 vAB = b.Position.XY - a.Position.XY;
+
+                vec2 rA = vAB * 0.5f;
+                vec2 rB = -(vAB * 0.5f);
+
+                var j = new Joint(a, b, rA, rB, jStiffness, jFracture);
+
+                Forces.Add(j);
+            }
+
+            AddJointInMiddle(bLeft, bRight);
+            AddJointInMiddle(bLeft, bTop);
+            AddJointInMiddle(bTop, bRight);
+
+            Bodies.Add(bLeft);
+            Bodies.Add(bRight);
+            Bodies.Add(bTop);
+        }
     }
 
     public bool Pick(vec2 worldPosition, [NotNullWhen(true)] out Body? pickedBody, out vec2 pickedBodyLocalPosition)
@@ -259,6 +304,15 @@ public class Solver
                                                force.H[i].Column3.Length()) * MathF.Abs(f);
 
                         // Accumulate force (Eq. 13) and hessian (Eq. 17)
+                        {
+                            var aa = force.J[i] * f;
+
+                            if (!float.IsFinite(aa.X) || !float.IsFinite(aa.Y) || !float.IsFinite(aa.Z))
+                            {
+                                Console.WriteLine();
+                            }
+                        }
+
                         rhs += force.J[i] * f;
                         lhs += mat3.Outer(force.J[i], force.J[i] * force.Penalty[i]) + G;
                     }

@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Paw.Core.Utils;
+﻿namespace Paw.Core.Utils;
 
 public static class MathUtils
 {
@@ -89,5 +87,24 @@ public static class MathUtils
     {
         public Vector2 XY => new(v.X, v.Y);
         public Vector3 XYZ => new(v.X, v.Y, v.Z);
+    }
+}
+
+public static class Transform2D
+{
+    // q = x,y,angle
+    public static vec2 LocalToWorld(vec3 q, vec2 vLocal)
+    {
+        return mat2.Rotation(q.Z) * vLocal + q.XY;
+    }
+
+    public static vec2 WorldToLocal(vec3 q, vec2 vWorld)
+    {
+        return mat2.Rotation(-q.Z) * (vWorld - q.XY);
+    }
+
+    public static vec2 Rotate(float angle, vec2 v)
+    {
+        return mat2.Rotation(angle) * v;
     }
 }

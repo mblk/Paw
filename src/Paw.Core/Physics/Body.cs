@@ -2,6 +2,10 @@
 
 public class Body
 {
+    private static int _nextId = 1;
+
+    public int Id;
+
     public vec3 Position;       // x,y,angle
     public vec3 Initial;
     public vec3 Inertial;       // Inertial Position
@@ -17,6 +21,8 @@ public class Body
 
     public Body(vec2 size, float density, float friction, vec3 position, vec3 velocity)
     {
+        Id = _nextId++;
+
         Position = position;
         Velocity = velocity;
         PrevVelocity = velocity;

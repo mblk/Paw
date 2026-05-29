@@ -12,6 +12,7 @@ public class PhysicsTestScene : Scene
     private DynamicGeometryRenderer2D _renderer = null!;
 
 
+    private vec2 _mouseScreen;
 
     private int _cameraZoom;
     private vec2 _cameraPos;
@@ -20,9 +21,8 @@ public class PhysicsTestScene : Scene
     private vec2 _cameraGrabPos;
 
     private bool _showAxis = true;
-    private bool _showForces = true;
-
-    private vec2 _mouseScreen;
+    private bool _showManifolds = true;
+    private bool _showJoints = true;
 
 
     public enum NewBodyType
@@ -37,6 +37,7 @@ public class PhysicsTestScene : Scene
 
 
     private Body? _selectedBody;
+    private Joint? _grabJoint;
 
 
     private bool _simulate = true;
@@ -148,7 +149,8 @@ public class PhysicsTestScene : Scene
 
             UI.Label("Render:");
             UI.Checkbox("Show axis", ref _showAxis);
-            UI.Checkbox("Show forces", ref _showForces);
+            UI.Checkbox("Show manifolds", ref _showManifolds);
+            UI.Checkbox("Show joints", ref _showJoints);
 
             //
             UI.Label(Format($"Bodies: {_solver.Bodies.Count}"));
@@ -231,7 +233,6 @@ public class PhysicsTestScene : Scene
         mat4 mModel = mat4.Identity;
         mat4 mView = mat4.CreateTranslation(-_cameraPos.X, -_cameraPos.Y, 0f);
         mat4 mvp = mModel * mView * mProj;
-
         mat4 viewProj = mView * mProj;
 
         if (!mat4.Invert(viewProj, out mat4 mInvViewProj))
@@ -250,29 +251,26 @@ public class PhysicsTestScene : Scene
 
         if (_solver.Pick(mouseWorld, out Body? pickedBody, out vec2 pickedLocalPos))
         {
-            //
-        }
-
-        if (pickedBody is not null)
-        {
             if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
             {
                 _selectedBody = pickedBody;
+
+                if (_grabJoint is null)
+                {
+                    Console.WriteLine($"Create grab joint");
+                    _grabJoint = new Joint(null, pickedBody, mouseWorld, pickedLocalPos, new vec3(1000, 1000, 0));
+                    _solver.Forces.Add(_grabJoint);
+                }
             }
         }
         else
         {
             if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
             {
-                var newSize = GetNewBodySize();
-
-                var newBody = new Body(
-                    size: newSize,
-                    density: 1.0f,
-                    friction: 0.5f,
-                    position: new Vector3(mouseWorld.X, mouseWorld.Y, 0),
-                    velocity: vec3.Zero
-                    );
+                var newBody = new Body(size: GetNewBodySize(),
+                                       density: 1.0f, friction: 0.5f,
+                                       position: new Vector3(mouseWorld, 0),
+                                       velocity: vec3.Zero);
 
                 _solver.Bodies.Add(newBody);
 
@@ -285,12 +283,18 @@ public class PhysicsTestScene : Scene
             _selectedBody = null;
         }
 
-        if (_selectedBody is not null)
+        if (_grabJoint is not null)
         {
-            if (context.Input.Mouse.Get(MouseButton.Middle) && !mouseOverUI)
+            if (context.Input.Mouse.Get(MouseButton.Left) && !mouseOverUI)
             {
-                _selectedBody.Position = new vec3(mouseWorld, _selectedBody.Position.Z);
-                _selectedBody.Velocity = vec3.Zero;
+                _grabJoint.RA = mouseWorld;
+            }
+            else
+            {
+                Console.WriteLine($"Destroy grab joint");
+                _solver.Forces.Remove(_grabJoint);
+                _grabJoint.RemoveFromBodies();
+                _grabJoint = null;
             }
         }
 
@@ -304,6 +308,12 @@ public class PhysicsTestScene : Scene
 
         const f32 fontScale = 0.01f;
 
+        var axisColor = new Vector4(1, 1, 1, 1);
+        var bodyColor = new Vector4(0.6f, 0.3f, 0.3f, 1f);
+        var selectedBodyColor = new Vector4(0.7f, 0.4f, 0.4f, 1f);
+        var borderColor = new vec4(1, 1, 1, 1);
+        var previewColor = new vec4(1, 0, 1, 1);
+
         void AddText(vec2 pos, ReadOnlySpan<char> text)
         {
             fontWriter.AddText(font, pos, vec4.One, fontScale, text, true);
@@ -311,8 +321,6 @@ public class PhysicsTestScene : Scene
 
         if (_showAxis)
         {
-            var axisColor = new Vector4(1, 1, 1, 1);
-
             defaultWriter.AddLine(new Vector2(-10, 0), new Vector2(10, 0), axisColor);
             defaultWriter.AddLine(new Vector2(0, -10), new Vector2(0, 10), axisColor);
 
@@ -321,11 +329,6 @@ public class PhysicsTestScene : Scene
             AddText(new Vector2(0, -10), "-10");
             AddText(new Vector2(0, +10), "+10");
         }
-
-        var bodyColor = new Vector4(0.6f, 0.3f, 0.3f, 1f);
-        var selectedBodyColor = new Vector4(0.7f, 0.4f, 0.4f, 1f);
-        var borderColor = new vec4(1, 1, 1, 1);
-        var previewColor = new vec4(1, 0, 1, 1);
 
         foreach (var body in _solver.Bodies)
         {
@@ -355,25 +358,55 @@ public class PhysicsTestScene : Scene
             defaultWriter.AddLine(p2, p3, borderColor);
             defaultWriter.AddLine(p3, p4, borderColor);
             defaultWriter.AddLine(p4, p1, borderColor);
+
+            AddText(pos, Format($"{body.Id}"));
         }
 
-        if (_showForces)
+        foreach (var force in _solver.Forces)
         {
-            foreach (var force in _solver.Forces)
+            switch (force)
             {
-                switch (force)
+                case Manifold manifold when _showManifolds:
                 {
-                    case Manifold manifold:
+                    for (int i = 0; i < manifold.NumContacts; i++)
                     {
-                        defaultWriter.AddLine(manifold.BodyA!.Position.XY, manifold.BodyB!.Position.XY, new vec4(1, 1, 1, 1));
-                        break;
+                        var contact = manifold.Contacts[i];
+                        vec2 n = contact.Normal;
+                        vec2 pA1 = Transform2D.LocalToWorld(manifold.BodyA!.Position, contact.RA);
+                        vec2 pA2 = pA1 + n * 0.25f;
+                        defaultWriter.AddLine(pA1, pA2, new vec4(1, 0, 0, 1));
                     }
+                    //defaultWriter.AddLine(manifold.BodyA!.Position.XY, manifold.BodyB!.Position.XY, new vec4(1, 0, 0, 1));
+                    break;
+                }
+
+                case Joint joint when _showJoints:
+                {
+                    vec2 centerA = joint.BodyA is not null
+                        ? joint.BodyA.Position.XY
+                        : joint.RA;
+
+                    vec2 centerB = joint.BodyB is not null
+                        ? joint.BodyB.Position.XY
+                        : joint.RB;
+
+                    vec2 posA = joint.BodyA is not null
+                        ? Transform2D.LocalToWorld(joint.BodyA!.Position, joint.RA)
+                        : joint.RA;
+
+                    vec2 posB = joint.BodyB is not null
+                        ? Transform2D.LocalToWorld(joint.BodyB!.Position, joint.RB)
+                        : joint.RB;
+
+                    defaultWriter.AddLine(centerA, posA, new vec4(0, 1, 0, 1));
+                    defaultWriter.AddLine(centerB, posB, new vec4(0, 0, 1, 1));
+                    break;
                 }
             }
         }
 
         // preview
-        if (pickedBody is null)
+        if (pickedBody is null && !context.Input.Mouse.Get(MouseButton.Left) && !mouseOverUI)
         {
             var size = GetNewBodySize();
 

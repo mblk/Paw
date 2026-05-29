@@ -71,6 +71,39 @@ public static class SharedSpanStringFormatter
                 ReportError();
         }
 
+        public void AppendFormatted(vec2 vec, string? format = null)
+        {
+            Append("[");
+            AppendFormatted(vec.X, format);
+            Append(";");
+            AppendFormatted(vec.Y, format);
+            Append("]");
+        }
+
+        public void AppendFormatted(vec3 vec, string? format = null)
+        {
+            Append("[");
+            AppendFormatted(vec.X, format);
+            Append(";");
+            AppendFormatted(vec.Y, format);
+            Append(";");
+            AppendFormatted(vec.Z, format);
+            Append("]");
+        }
+
+        public void AppendFormatted(vec4 vec, string? format = null)
+        {
+            Append("[");
+            AppendFormatted(vec.X, format);
+            Append(";");
+            AppendFormatted(vec.Y, format);
+            Append(";");
+            AppendFormatted(vec.Z, format);
+            Append(";");
+            AppendFormatted(vec.W, format);
+            Append("]");
+        }
+
         private void Append(ReadOnlySpan<char> value)
         {
             if (value.TryCopyTo(_buffer[_numChars..]))

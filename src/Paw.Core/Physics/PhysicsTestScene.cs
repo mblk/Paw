@@ -79,7 +79,7 @@ public class PhysicsTestScene : Scene
         _mouseScreen = new vec2(context.Input.Mouse.X, context.Input.Mouse.Y);
     }
 
-    private readonly float[] _startStopTableCols = [0.33f, 0.33f, 0.33f];
+    private readonly float[] _startStopTableCols = [0.333f, 0.333f, 0.333f];
 
     public override void Render(RenderContext context)
     {
@@ -93,7 +93,12 @@ public class PhysicsTestScene : Scene
         UI.SetNextWindowPositionMode(Core.UI.UI.WindowPositionMode.Left);
         using (UI.BeginWindow(new Vector2(300, 800), "Physics test"))
         {
-            //ReadOnlySpan<float> cols = stackalloc float[] { 0.33f, 0.33f, 0.33f }; // TODO allocs, but why?
+            //ReadOnlySpan<float> cols = stackalloc float[] { 0.333f, 0.333f, 0.333f }; // TODO allocs in debug build, but why?
+
+            //Span<float> cols = stackalloc float[3]; // does not alloc in debug build
+            //cols[0] = 0.333f;
+            //cols[1] = 0.333f;
+            //cols[2] = 0.333f;
 
             using (UI.BeginTable(_startStopTableCols))
             {
@@ -115,40 +120,41 @@ public class PhysicsTestScene : Scene
 
             UI.Label(Format($"Ticks: {_tickCount}"));
 
-            //
-            UI.Label("Camera:");
-
-            UI.Label(Format($"Zoom: {_cameraZoom}"));
-            UI.Label(Format($"Pos: {_cameraPos.X:F2} {_cameraPos.Y:F2}"));
-
-            if (UI.Button("Reset camera"))
-            {
-                _cameraPos = default;
-                _cameraZoom = 0;
-            }
-
-            //
-            UI.Label("Render:");
-            UI.Checkbox("Show axis", ref _showAxis);
-            UI.Checkbox("Show forces", ref _showForces);
-
-            UI.Label(Format($"Bodies: {_solver.Bodies.Count}"));
-            UI.Label(Format($"Forces: {_solver.Forces.Count}"));
-
-            //
-            UI.Label("Params:");
+            // Solver Parameters
             UI.Input("Iterations", ref _solver.Iterations);
             UI.Input("Alpha", ref _solver.Alpha);
             UI.Input("Beta", ref _solver.Beta);
             UI.Input("Gamma", ref _solver.Gamma);
             UI.Checkbox("Post stabilize", ref _solver.PostStabilize);
-            //UI.Checkbox("Gravity", ref _solver.PostStabilize);
+
+            bool hasGravity = _solver.Gravity.Length() > 0.1f;
+            if (UI.Checkbox("Gravity", ref hasGravity))
+            {
+                Console.WriteLine($"Change gravity");
+                _solver.Gravity = hasGravity ? new vec3(0f, -9.81f, 0f) : vec3.Zero;
+            }
 
             if (UI.Button("Reset params"))
             {
                 _solver.SetDefaultConfig();
             }
 
+            // Render settings
+            if (UI.Button("Reset camera"))
+            {
+                _cameraPos = default;
+                _cameraZoom = 0;
+            }
+
+            UI.Label("Render:");
+            UI.Checkbox("Show axis", ref _showAxis);
+            UI.Checkbox("Show forces", ref _showForces);
+
+            //
+            UI.Label(Format($"Bodies: {_solver.Bodies.Count}"));
+            UI.Label(Format($"Forces: {_solver.Forces.Count}"));
+
+            //
             UI.Radiobuttons<NewBodyType>("New body:", ref _newBodyType, _allNewBodyTypes);
         }
 
@@ -157,13 +163,13 @@ public class PhysicsTestScene : Scene
             UI.SetNextWindowPositionMode(Core.UI.UI.WindowPositionMode.Right);
             using (UI.BeginWindow(new Vector2(300, 800), "Selected Body"))
             {
-                UI.Label(Format($"Position: {_selectedBody.Position.X} {_selectedBody.Position.Y} {_selectedBody.Position.Z}"));
-                UI.Label(Format($"Velocity: {_selectedBody.Velocity.X} {_selectedBody.Velocity.Y} {_selectedBody.Velocity.Z}"));
-                UI.Label(Format($"Size: {_selectedBody.Size.X} {_selectedBody.Size.Y}"));
-                UI.Label(Format($"Mass: {_selectedBody.Mass}"));
-                UI.Label(Format($"Moment: {_selectedBody.Moment}"));
-                UI.Label(Format($"Friction: {_selectedBody.Friction}"));
-                UI.Label(Format($"Radius: {_selectedBody.Radius}"));
+                UI.Label(Format($"Position: {_selectedBody.Position:F3}"));
+                UI.Label(Format($"Velocity: {_selectedBody.Velocity:F3}"));
+                UI.Label(Format($"Size: {_selectedBody.Size:0.###}"));
+                UI.Label(Format($"Mass: {_selectedBody.Mass:0.###}"));
+                UI.Label(Format($"Moment: {_selectedBody.Moment:F3}"));
+                UI.Label(Format($"Friction: {_selectedBody.Friction:F3}"));
+                UI.Label(Format($"Radius: {_selectedBody.Radius:F3}"));
 
                 UI.Label(Format($"Forces: {_selectedBody.Forces.Count}"));
 
@@ -173,9 +179,9 @@ public class PhysicsTestScene : Scene
 
                     for (int i = 0; i < force.Rows; i++)
                     {
-                        UI.Label(Format($"C[{i}]: {force.C[i]}"));
-                        UI.Label(Format($"Penalty[{i}]: {force.Penalty[i]}"));
-                        UI.Label(Format($"Lambda[{i}]: {force.Lambda[i]}"));
+                        UI.Label(Format($"C[{i}]: {force.C[i]:F3}"));
+                        UI.Label(Format($"Penalty[{i}]: {force.Penalty[i]:F3}"));
+                        UI.Label(Format($"Lambda[{i}]: {force.Lambda[i]:F3}"));
                     }
                 }
             }
@@ -392,15 +398,12 @@ public class PhysicsTestScene : Scene
         _renderer.Render(mvp);
     }
 
-    private vec2 GetNewBodySize()
+    private vec2 GetNewBodySize() => _newBodyType switch
     {
-        switch (_newBodyType)
-        {
-            case NewBodyType.SquareSmall: return new vec2(1f, 1f);
-            case NewBodyType.SquareBig: return new vec2(2f, 2f);
-            case NewBodyType.RectVert: return new vec2(1f, 3f);
-            case NewBodyType.RectHor: return new vec2(3f, 1f);
-            default: throw new NotImplementedException();
-        }
-    }
+        NewBodyType.SquareSmall => new vec2(1f, 1f),
+        NewBodyType.SquareBig => new vec2(2f, 2f),
+        NewBodyType.RectVert => new vec2(1f, 3f),
+        NewBodyType.RectHor => new vec2(3f, 1f),
+        _ => throw new NotImplementedException(),
+    };
 }

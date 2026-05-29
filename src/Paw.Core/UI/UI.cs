@@ -1869,7 +1869,7 @@ public sealed unsafe class UI : IDisposable
         table.Cursor += new Vector2(colWidth + _tableSpacing, 0);
     }
 
-    public void NextRow()
+    public void NextRow(float spacing = _tableSpacing)
     {
         if (_layoutItems.Peek().Mode != LayoutMode.Table)
             throw new InvalidOperationException("NextRow called without active table");
@@ -1879,7 +1879,7 @@ public sealed unsafe class UI : IDisposable
         table.Row++;
         table.Column = 0;
         table.Cursor.X = table.TotalRect.TopLeft.X;
-        table.Cursor.Y += table.MaxRowHeight + _tableSpacing;
+        table.Cursor.Y += table.MaxRowHeight + spacing;
         table.MaxRowHeight = 0;
     }
 
@@ -1898,8 +1898,6 @@ public sealed unsafe class UI : IDisposable
     public void Label(ReadOnlySpan<char> text)
     {
         var size = MeasureTextLine(text);
-
-        size.Y = _simpleControlHeight;
 
         size = AdjustSize(size);
 
@@ -2128,7 +2126,7 @@ public sealed unsafe class UI : IDisposable
         }
 
         // geometry
-        var visualRect = rect.Margin(new Vector2(4f)).SnapToPixel();
+        var visualRect = rect.Margin(new Vector2(6f)).SnapToPixel();
 
         int vertexCount = 0;
         vertexCount += EmitQuad(visualRect, backgroundColor);
@@ -2163,7 +2161,7 @@ public sealed unsafe class UI : IDisposable
         }
 
         // geometry
-        var visualRect = rect.Margin(new Vector2(4f)).SnapToPixel();
+        var visualRect = rect.Margin(new Vector2(6f)).SnapToPixel();
 
         int vertexCount = 0;
         vertexCount += EmitCircle(visualRect, backgroundColor);
@@ -2270,34 +2268,36 @@ public sealed unsafe class UI : IDisposable
         return r;
     }
 
-    private static readonly float[] _checkRadioTableCols = [_simpleControlHeight, 1f];
+    private static readonly float[] _checkRadioTableCols = [_simpleControlHeight - _tableSpacing, 1f];
 
     public bool Checkbox(ReadOnlySpan<char> label, ref bool value)
     {
-        bool r;
+        bool valueChanged;
 
         using (BeginTable(_checkRadioTableCols))
         {
             PushId(label);
-            r = Checkbox(ref value);
+            valueChanged = Checkbox(ref value);
             PopId();
             NextColumn();
 
             if (ClickableLabel(label))
             {
                 value = !value;
+                valueChanged = true;
             }
         }
 
-        return r;
+        return valueChanged;
     }
 
-    public void Radiobuttons<T>(ReadOnlySpan<char> label, ref T value, T[] allValues)
+    public bool Radiobuttons<T>(ReadOnlySpan<char> label, ref T value, T[] allValues)
         where T : struct, Enum
     {
         PushId(label);
 
         Span<char> buffer = stackalloc char[128];
+        bool valueChanged = false;
 
         using (BeginTable(_checkRadioTableCols))
         {
@@ -2313,6 +2313,7 @@ public sealed unsafe class UI : IDisposable
                 if (Radiobutton(isSelected))
                 {
                     value = potentialValue;
+                    valueChanged = true;
                 }
 
                 NextColumn();
@@ -2320,12 +2321,15 @@ public sealed unsafe class UI : IDisposable
                 if (ClickableLabel(valueLabel))
                 {
                     value = potentialValue;
+                    valueChanged = true;
                 }
                 NextRow();
             }
         }
 
         PopId();
+
+        return valueChanged;
     }
 
     #endregion

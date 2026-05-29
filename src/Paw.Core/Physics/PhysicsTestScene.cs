@@ -25,15 +25,25 @@ public class PhysicsTestScene : Scene
     private bool _showJoints = true;
 
 
-    public enum NewBodyType
+    public enum Mode
+    {
+        GrabAndSelect,
+        CreateBody,
+        CreateJoint,
+    }
+    private Mode _mode;
+    private readonly Mode[] _allModes = Enum.GetValues<Mode>();
+
+
+    public enum BodyType
     {
         SquareSmall,
         SquareBig,
         RectVert,
         RectHor,
     }
-    private NewBodyType _newBodyType;
-    private readonly NewBodyType[] _allNewBodyTypes = Enum.GetValues<NewBodyType>();
+    private BodyType _newBodyType;
+    private readonly BodyType[] _allBodyTypes = Enum.GetValues<BodyType>();
 
 
     private Body? _selectedBody;
@@ -87,9 +97,16 @@ public class PhysicsTestScene : Scene
         float dt = context.DeltaTime;
         (int windowWidth, int windowHeight) = context.WindowSize;
 
+        bool modeChanged;
+        Body? pickedBody = null;
+
         //
         // UI
         //
+
+        UI.Overlay(Format($"Bodies: {_solver.Bodies.Count}"));
+        UI.Overlay(Format($"Forces: {_solver.Forces.Count}"));
+        UI.Overlay(Format($"Ticks: {_tickCount}"));
 
         UI.SetNextWindowPositionMode(Core.UI.UI.WindowPositionMode.Left);
         using (UI.BeginWindow(new Vector2(300, 800), "Physics test"))
@@ -118,8 +135,6 @@ public class PhysicsTestScene : Scene
                     _singleStep = true;
                 }
             }
-
-            UI.Label(Format($"Ticks: {_tickCount}"));
 
             // Solver Parameters
             UI.Input("Iterations", ref _solver.Iterations);
@@ -153,11 +168,13 @@ public class PhysicsTestScene : Scene
             UI.Checkbox("Show joints", ref _showJoints);
 
             //
-            UI.Label(Format($"Bodies: {_solver.Bodies.Count}"));
-            UI.Label(Format($"Forces: {_solver.Forces.Count}"));
+            modeChanged = UI.Radiobuttons("Mouse mode:", ref _mode, _allModes);
 
             //
-            UI.Radiobuttons<NewBodyType>("New body:", ref _newBodyType, _allNewBodyTypes);
+            if (_mode == Mode.CreateBody)
+            {
+                UI.Radiobuttons("New body:", ref _newBodyType, _allBodyTypes);
+            }
         }
 
         if (_selectedBody is not null)
@@ -249,53 +266,124 @@ public class PhysicsTestScene : Scene
         if (context.Input.Keyboard.Get(Key.W)) _cameraPos.Y += 10.0f * dt;
         if (context.Input.Keyboard.Get(Key.S)) _cameraPos.Y -= 10.0f * dt;
 
-        if (_solver.Pick(mouseWorld, out Body? pickedBody, out vec2 pickedLocalPos))
-        {
-            if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
-            {
-                _selectedBody = pickedBody;
-
-                if (_grabJoint is null)
-                {
-                    Console.WriteLine($"Create grab joint");
-                    _grabJoint = new Joint(null, pickedBody, mouseWorld, pickedLocalPos, new vec3(1000, 1000, 0));
-                    _solver.Forces.Add(_grabJoint);
-                }
-            }
-        }
-        else
-        {
-            if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
-            {
-                var newBody = new Body(size: GetNewBodySize(),
-                                       density: 1.0f, friction: 0.5f,
-                                       position: new Vector3(mouseWorld, 0),
-                                       velocity: vec3.Zero);
-
-                _solver.Bodies.Add(newBody);
-
-                _selectedBody = newBody;
-            }
-        }
-
-        if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
+        // cleanup between modes
+        if (modeChanged)
         {
             _selectedBody = null;
-        }
 
-        if (_grabJoint is not null)
-        {
-            if (context.Input.Mouse.Get(MouseButton.Left) && !mouseOverUI)
-            {
-                _grabJoint.RA = mouseWorld;
-            }
-            else
+            if (_grabJoint is not null)
             {
                 Console.WriteLine($"Destroy grab joint");
                 _solver.Forces.Remove(_grabJoint);
                 _grabJoint.RemoveFromBodies();
                 _grabJoint = null;
             }
+        }
+
+        switch (_mode)
+        {
+            case Mode.GrabAndSelect:
+            {
+                if (_solver.Pick(mouseWorld, out pickedBody, out vec2 pickedLocalPos))
+                {
+                    if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
+                    {
+                        _selectedBody = pickedBody;
+
+                        if (_grabJoint is null)
+                        {
+                            Console.WriteLine($"Create grab joint");
+                            _grabJoint = new Joint(null, pickedBody, mouseWorld, pickedLocalPos, new vec3(1000, 1000, 0));
+                            _solver.Forces.Add(_grabJoint);
+                        }
+                    }
+                }
+
+                if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
+                {
+                    _selectedBody = null;
+                }
+
+                if (_grabJoint is not null)
+                {
+                    if (context.Input.Mouse.Get(MouseButton.Left) && !mouseOverUI)
+                    {
+                        _grabJoint.RA = mouseWorld;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Destroy grab joint");
+                        _solver.Forces.Remove(_grabJoint);
+                        _grabJoint.RemoveFromBodies();
+                        _grabJoint = null;
+                    }
+                }
+
+                break;
+            }
+
+            case Mode.CreateBody:
+            {
+                if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
+                {
+                    var newBody = new Body(size: GetNewBodySize(),
+                                           density: 1.0f, friction: 0.5f,
+                                           position: new Vector3(mouseWorld, 0),
+                                           velocity: vec3.Zero);
+
+                    _solver.Bodies.Add(newBody);
+
+                    _selectedBody = newBody;
+                }
+
+                if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
+                {
+                    _selectedBody = null;
+                }
+
+                break;
+            }
+
+            case Mode.CreateJoint:
+            {
+                if (_solver.Pick(mouseWorld, out pickedBody, out vec2 pickedLocalPos))
+                {
+                    if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
+                    {
+                        if (_selectedBody is null)
+                        {
+                            _selectedBody = pickedBody;
+                        }
+                        else if (_selectedBody != pickedBody)
+                        {
+                            Console.WriteLine($"new joint");
+
+                            vec2 pA = _selectedBody.Position.XY;
+                            vec2 pB = pickedBody.Position.XY;
+                            vec2 pAB = pB - pA;
+
+                            vec2 rA = Transform2D.WorldToLocal(_selectedBody.Position, pA + pAB * 0.5f);
+                            vec2 rB = Transform2D.WorldToLocal(pickedBody.Position, pB - pAB * 0.5f);
+
+                            vec3 stiffness = new vec3(1000f, 1000f, 0f);
+
+                            var newJoint = new Joint(_selectedBody, pickedBody, rA, rB, stiffness);
+                            _solver.Forces.Add(newJoint);
+
+                            _selectedBody = null;
+                        }
+                    }
+                }
+
+                if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
+                {
+                    _selectedBody = null;
+                }
+
+                break;
+            }
+
+            default: throw new NotImplementedException();
         }
 
         //
@@ -406,7 +494,7 @@ public class PhysicsTestScene : Scene
         }
 
         // preview
-        if (pickedBody is null && !context.Input.Mouse.Get(MouseButton.Left) && !mouseOverUI)
+        if (_mode == Mode.CreateBody && !context.Input.Mouse.Get(MouseButton.Left) && !mouseOverUI)
         {
             var size = GetNewBodySize();
 
@@ -433,10 +521,10 @@ public class PhysicsTestScene : Scene
 
     private vec2 GetNewBodySize() => _newBodyType switch
     {
-        NewBodyType.SquareSmall => new vec2(1f, 1f),
-        NewBodyType.SquareBig => new vec2(2f, 2f),
-        NewBodyType.RectVert => new vec2(1f, 3f),
-        NewBodyType.RectHor => new vec2(3f, 1f),
+        BodyType.SquareSmall => new vec2(1f, 1f),
+        BodyType.SquareBig => new vec2(2f, 2f),
+        BodyType.RectVert => new vec2(1f, 3f),
+        BodyType.RectHor => new vec2(3f, 1f),
         _ => throw new NotImplementedException(),
     };
 }

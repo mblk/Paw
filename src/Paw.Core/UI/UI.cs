@@ -296,6 +296,7 @@ public sealed unsafe class UI : IDisposable
     private readonly List<DrawCommand> _globalDrawCommands = [];
     private WindowState? _activeWindow;
     private bool _mouseBlockedByOtherWindow;
+    private bool _mouseOverAnyWindow;
 
     private int _openScopeCount;
 
@@ -661,6 +662,7 @@ public sealed unsafe class UI : IDisposable
 
         _activeWindow = null;
         _mouseBlockedByOtherWindow = false;
+        _mouseOverAnyWindow = false;
 
         _nextWindowPositionMode = default;
         _nextWindowExplicitOpeningPosition = null;
@@ -1136,6 +1138,21 @@ public sealed unsafe class UI : IDisposable
 
     #region Controls implementation/API
 
+    public bool IsMouseOverAnyWindow()
+    {
+        return _mouseOverAnyWindow;
+
+        //foreach (var (_, state) in _windowStates)
+        //{
+        //    if (state.Rect.Contains(_mousePosition))
+        //    {
+        //        return true;
+        //    }
+        //}
+
+        //return false;
+    }
+
     public void SetNextWindowPositionMode(WindowPositionMode mode, Vector2? explicitPosition = null)
     {
         if ((mode == WindowPositionMode.Explicit) != (explicitPosition is not null))
@@ -1185,7 +1202,7 @@ public sealed unsafe class UI : IDisposable
             case WindowPositionMode.Right:
             {
                 Vector2 screenSize = _rootClipEntry.Rect.Size;
-                Vector2 p = new Vector2(screenSize.X - initialSize.X, screenSize.Y * 0.5f - initialSize.Y * 0.5f);
+                Vector2 p = new Vector2(screenSize.X - initialSize.X - 20f, screenSize.Y * 0.5f - initialSize.Y * 0.5f);
                 return p;
             }
 
@@ -1253,9 +1270,14 @@ public sealed unsafe class UI : IDisposable
             }
         }
 
-        if (IsMouseWithin(_activeWindow.Rect) && _mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
+        if (IsMouseWithin(_activeWindow.Rect))
         {
-            MoveWindowToFront(_activeWindow.Id);
+            _mouseOverAnyWindow = true;
+
+            if (_mouseState.WasPressed(MouseButton.Left) && !_mouseBlockedByOtherWindow)
+            {
+                MoveWindowToFront(_activeWindow.Id);
+            }
         }
 
         // Handle window movement/resize
@@ -1717,7 +1739,7 @@ public sealed unsafe class UI : IDisposable
     /// width &gt; 1: size in pixels<br />
     /// 0 &lt; width &lt;= 1: fraction of remaining size<br />
     /// </summary>
-    public Scope BeginTable(params float[] columnWidths)
+    public Scope BeginTable(ReadOnlySpan<float> columnWidths)
     {
         if (columnWidths.Length < 1)
             throw new ArgumentException("Column widths not specified", nameof(columnWidths));
@@ -2204,6 +2226,8 @@ public sealed unsafe class UI : IDisposable
     // - drag/drop
     // - tooltips
     // - focus / keyboard navigation
+    // - header / collabsable
+    // - separators
 
     #endregion
 

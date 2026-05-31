@@ -23,6 +23,7 @@ public class PhysicsTestScene : Scene
     private bool _showAxis = true;
     private bool _showManifolds = true;
     private bool _showJoints = true;
+    private bool _showSprings = true;
 
 
     public enum Mode
@@ -170,6 +171,7 @@ public class PhysicsTestScene : Scene
             UI.Checkbox("Show axis", ref _showAxis);
             UI.Checkbox("Show manifolds", ref _showManifolds);
             UI.Checkbox("Show joints", ref _showJoints);
+            UI.Checkbox("Show springs", ref _showSprings);
 
             //
             modeChanged = UI.Radiobuttons("Mouse mode:", ref _mode, _allModes);
@@ -279,9 +281,10 @@ public class PhysicsTestScene : Scene
 
         if (context.Input.Keyboard.WasPressed(Key.Delete))
         {
-            if (_selectedBody is { } b)
+            if (_selectedBody is { })
             {
-                _solver.RemoveBody(b);
+                _solver.RemoveBody(_selectedBody);
+                _selectedBody = null;
             }
         }
 
@@ -290,11 +293,9 @@ public class PhysicsTestScene : Scene
         {
             _selectedBody = null;
 
-            if (_grabJoint is not null)
+            if (_grabJoint is { })
             {
-                Console.WriteLine($"Destroy grab joint");
-                _solver.Forces.Remove(_grabJoint);
-                _grabJoint.RemoveFromBodies();
+                _solver.RemoveForce(_grabJoint);
                 _grabJoint = null;
             }
         }
@@ -309,12 +310,8 @@ public class PhysicsTestScene : Scene
                     {
                         _selectedBody = pickedBody;
 
-                        if (_grabJoint is null)
-                        {
-                            Console.WriteLine($"Create grab joint");
-                            _grabJoint = _solver.AddJoint(null, pickedBody, mouseWorld, pickedLocalPos,
-                                                          new vec3(_grabStiffness, _grabStiffness, _grabLockAngle ? _grabStiffness : 0f));
-                        }
+                        _grabJoint ??= _solver.AddJoint(null, pickedBody, mouseWorld, pickedLocalPos,
+                                                        new vec3(_grabStiffness, _grabStiffness, _grabLockAngle ? _grabStiffness : 0f));
                     }
                 }
 
@@ -331,8 +328,7 @@ public class PhysicsTestScene : Scene
                     }
                     else
                     {
-                        Console.WriteLine($"Destroy grab joint");
-                        _solver.RemoveJoint(_grabJoint);
+                        _solver.RemoveForce(_grabJoint);
                         _grabJoint = null;
                     }
                 }
@@ -463,7 +459,6 @@ public class PhysicsTestScene : Scene
                         vec2 pA2 = pA1 + n * 0.25f;
                         defaultWriter.AddLine(pA1, pA2, new vec4(1, 0, 0, 1));
                     }
-                    //defaultWriter.AddLine(manifold.BodyA!.Position.XY, manifold.BodyB!.Position.XY, new vec4(1, 0, 0, 1));
                     break;
                 }
 
@@ -487,6 +482,19 @@ public class PhysicsTestScene : Scene
 
                     defaultWriter.AddLine(centerA, posA, new vec4(0, 1, 0, 1));
                     defaultWriter.AddLine(centerB, posB, new vec4(0, 0, 1, 1));
+                    break;
+                }
+
+                case Spring spring when _showSprings:
+                {
+                    vec2 centerA = spring.BodyA!.Position.XY;
+                    vec2 centerB = spring.BodyB!.Position.XY;
+
+                    //vec2 posA = Transform2D.LocalToWorld(spring.BodyA!.Position, spring.RA);
+                    //vec2 posB = Transform2D.LocalToWorld(spring.BodyB!.Position, spring.RB);
+
+                    defaultWriter.AddLine(centerA, centerB, new vec4(1, 1, 0, 1));
+
                     break;
                 }
             }

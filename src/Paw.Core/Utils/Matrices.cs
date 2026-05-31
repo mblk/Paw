@@ -22,6 +22,16 @@ public struct Matrix2x2
     public readonly vec2 Row1 => new(M11, M12);
     public readonly vec2 Row2 => new(M21, M22);
 
+    public Matrix2x2() { }
+
+    public Matrix2x2(float m11, float m12, float m21, float m22)
+    {
+        M11 = m11;
+        M12 = m12;
+        M21 = m21;
+        M22 = m22;
+    }
+
     /// <summary>
     /// Creates rotation matrix for specified angle. Positive values rotate CCW.
     /// </summary>
@@ -55,6 +65,21 @@ public struct Matrix2x2
         M22 = MathF.Abs(mat.M22),
     };
 
+    public static Matrix2x2 Outer(Vector2 a, Vector2 b)
+    {
+        var row1 = b * a.X;
+        var row2 = b * a.Y;
+
+        return new Matrix2x2()
+        {
+            M11 = row1.X,
+            M12 = row1.Y,
+
+            M21 = row2.X,
+            M22 = row2.Y,
+        };
+    }
+
     public static Vector2 operator *(Matrix2x2 lhs, Vector2 rhs) => new(
             lhs.M11 * rhs.X + lhs.M12 * rhs.Y,
             lhs.M21 * rhs.X + lhs.M22 * rhs.Y);
@@ -65,6 +90,42 @@ public struct Matrix2x2
         M12 = lhs.M11 * rhs.M12 + lhs.M12 * rhs.M22,
         M21 = lhs.M21 * rhs.M11 + lhs.M22 * rhs.M21,
         M22 = lhs.M21 * rhs.M12 + lhs.M22 * rhs.M22,
+    };
+
+    public static Matrix2x2 operator *(Matrix2x2 lhs, float rhs) => new()
+    {
+        M11 = lhs.M11 * rhs,
+        M12 = lhs.M12 * rhs,
+
+        M21 = lhs.M21 * rhs,
+        M22 = lhs.M22 * rhs,
+    };
+
+    public static Matrix2x2 operator /(Matrix2x2 lhs, float rhs) => new()
+    {
+        M11 = lhs.M11 / rhs,
+        M12 = lhs.M12 / rhs,
+
+        M21 = lhs.M21 / rhs,
+        M22 = lhs.M22 / rhs,
+    };
+
+    public static Matrix2x2 operator +(Matrix2x2 lhs, Matrix2x2 rhs) => new()
+    {
+        M11 = lhs.M11 + rhs.M11,
+        M12 = lhs.M12 + rhs.M12,
+
+        M21 = lhs.M21 + rhs.M21,
+        M22 = lhs.M22 + rhs.M22,
+    };
+
+    public static Matrix2x2 operator -(Matrix2x2 lhs, Matrix2x2 rhs) => new()
+    {
+        M11 = lhs.M11 - rhs.M11,
+        M12 = lhs.M12 - rhs.M12,
+
+        M21 = lhs.M21 - rhs.M21,
+        M22 = lhs.M22 - rhs.M22,
     };
 }
 
@@ -96,6 +157,21 @@ public struct Matrix3x3
 
     /// <summary>The third element of the third row.</summary>
     public float M33;
+
+    public Matrix3x3() { }
+
+    public Matrix3x3(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32, float m33)
+    {
+        M11 = m11;
+        M12 = m12;
+        M13 = m13;
+        M21 = m21;
+        M22 = m22;
+        M23 = m23;
+        M31 = m31;
+        M32 = m32;
+        M33 = m33;
+    }
 
     public readonly vec3 Column1 => new(M11, M21, M31);
     public readonly vec3 Column2 => new(M12, M22, M32);
@@ -136,21 +212,6 @@ public struct Matrix3x3
         };
     }
 
-    public static Matrix3x3 operator /(Matrix3x3 lhs, float rhs) => new()
-    {
-        M11 = lhs.M11 / rhs,
-        M12 = lhs.M12 / rhs,
-        M13 = lhs.M13 / rhs,
-
-        M21 = lhs.M21 / rhs,
-        M22 = lhs.M22 / rhs,
-        M23 = lhs.M23 / rhs,
-
-        M31 = lhs.M31 / rhs,
-        M32 = lhs.M32 / rhs,
-        M33 = lhs.M33 / rhs,
-    };
-
     public static Vector3 operator *(Matrix3x3 lhs, Vector3 rhs) => new(
             lhs.M11 * rhs.X + lhs.M12 * rhs.Y + lhs.M13 * rhs.Z,
             lhs.M21 * rhs.X + lhs.M22 * rhs.Y + lhs.M23 * rhs.Z,
@@ -171,6 +232,21 @@ public struct Matrix3x3
         M33 = lhs.M33 * rhs,
     };
 
+    public static Matrix3x3 operator /(Matrix3x3 lhs, float rhs) => new()
+    {
+        M11 = lhs.M11 / rhs,
+        M12 = lhs.M12 / rhs,
+        M13 = lhs.M13 / rhs,
+
+        M21 = lhs.M21 / rhs,
+        M22 = lhs.M22 / rhs,
+        M23 = lhs.M23 / rhs,
+
+        M31 = lhs.M31 / rhs,
+        M32 = lhs.M32 / rhs,
+        M33 = lhs.M33 / rhs,
+    };
+
     public static Matrix3x3 operator +(Matrix3x3 lhs, Matrix3x3 rhs) => new()
     {
         M11 = lhs.M11 + rhs.M11,
@@ -184,6 +260,21 @@ public struct Matrix3x3
         M31 = lhs.M31 + rhs.M31,
         M32 = lhs.M32 + rhs.M32,
         M33 = lhs.M33 + rhs.M33,
+    };
+
+    public static Matrix3x3 operator -(Matrix3x3 lhs, Matrix3x3 rhs) => new()
+    {
+        M11 = lhs.M11 - rhs.M11,
+        M12 = lhs.M12 - rhs.M12,
+        M13 = lhs.M13 - rhs.M13,
+
+        M21 = lhs.M21 - rhs.M21,
+        M22 = lhs.M22 - rhs.M22,
+        M23 = lhs.M23 - rhs.M23,
+
+        M31 = lhs.M31 - rhs.M31,
+        M32 = lhs.M32 - rhs.M32,
+        M33 = lhs.M33 - rhs.M33,
     };
 
 }

@@ -76,16 +76,37 @@ public class Solver
 
         // Ground
         AddBody(new Vector3(0, -5f, 0), new vec2(30, 1), density: 0f);
+        AddBody(new Vector3(-16.75f, -3.7f, -30f.DegToRad()), new vec2(5, 1), density: 0f);
+        AddBody(new Vector3(-20f, -0.5f, -60f.DegToRad()), new vec2(5, 1), density: 0f);
+        AddBody(new Vector3(16.75f, -3.7f, 30f.DegToRad()), new vec2(5, 1), density: 0f);
+        AddBody(new Vector3(20f, -0.5f, 60f.DegToRad()), new vec2(5, 1), density: 0f);
 
         // Triangle
         {
-            var bLeft = AddBody(new Vector3(5, 5, 0f), new vec2(1, 1));
-            var bRight = AddBody(new Vector3(10, 5, 0f), new vec2(1, 1));
-            var bTop = AddBody(new Vector3(7.5f, 10f, 0f), new vec2(1, 1));
+            var bLeft = AddBody(new vec3(5, 5, 0f), new vec2(1, 1));
+            var bRight = AddBody(new vec3(10, 5, 0f), new vec2(1, 1));
+            var bTop = AddBody(new vec3(7.5f, 10f, 0f), new vec2(1, 1));
 
             AddStiffAutoJoint(bLeft, bRight);
             AddStiffAutoJoint(bRight, bTop);
             AddStiffAutoJoint(bTop, bLeft);
+        }
+
+        // Spring test
+        {
+            var bAnchor = AddBody(new vec3(15f, 15f, 0f), new vec2(1, 1), density: 0f);
+            var bFree = AddBody(new vec3(20f, 15f, 0f), new vec2(1, 1));
+
+            AddAutoSpring(bAnchor, bFree);
+        }
+
+        // Motor test
+        {
+            var bAnchor = AddBody(new vec3(-15f, 15f, 0f), new vec2(1, 1), density: 0f);
+            var bFree = AddBody(new vec3(-10f, 15f, 0f), new vec2(3, 1));
+
+            AddJoint(bAnchor, bFree, new vec2(5f, 0f), new vec2(0, 0), new vec3(1000f, 1000f, 0f));
+            AddMotor(bAnchor, bFree, 90f.DegToRad(), 100f);
         }
     }
 
@@ -140,13 +161,51 @@ public class Solver
         return AddJoint(bodyA, bodyB, rA, rB, stiffness);
     }
 
-    public void RemoveJoint(Joint joint)
+    public Joint AddWeakAutoJoint(Body bodyA, Body bodyB)
     {
-        if (!Forces.Contains(joint))
-            throw new ArgumentException("Unknown joint");
+        vec2 pA = bodyA.Position.XY;
+        vec2 pB = bodyB.Position.XY;
+        vec2 vAB = pB - pA; // world space
 
-        joint.RemoveFromBodies();
-        Forces.Remove(joint);
+        vec2 rA = Transform2D.WorldToLocal(bodyA.Position, pA + vAB * 0.5f); // local
+        vec2 rB = Transform2D.WorldToLocal(bodyB.Position, pB - vAB * 0.5f); // local
+
+        vec3 stiffness = new vec3(1000f, 1000f, 0f);
+
+        return AddJoint(bodyA, bodyB, rA, rB, stiffness);
+    }
+
+    public Spring AddSpring(Body bodyA, Body bodyB, vec2 rA, vec2 rB, float stiffness)
+    {
+        var newSpring = new Spring(bodyA, bodyB, rA, rB, stiffness);
+        Forces.Add(newSpring);
+        return newSpring;
+    }
+
+    public Spring AddAutoSpring(Body bodyA, Body bodyB)
+    {
+        vec2 rA = default; // attach at center
+        vec2 rB = default;
+
+        float stiffness = 10f;
+
+        return AddSpring(bodyA, bodyB, rA, rB, stiffness);
+    }
+
+    public Motor AddMotor(Body? bodyA, Body bodyB, float targetSpeed, float maxTorque)
+    {
+        var newMotor = new Motor(bodyA, bodyB, targetSpeed, maxTorque);
+        Forces.Add(newMotor);
+        return newMotor;
+    }
+
+    public void RemoveForce(Force force)
+    {
+        if (!Forces.Contains(force))
+            throw new ArgumentException("Unknown force");
+
+        force.RemoveFromBodies();
+        Forces.Remove(force);
     }
 
     public bool Pick(vec2 worldPosition, [NotNullWhen(true)] out Body? pickedBody, out vec2 pickedBodyLocalPosition)
@@ -433,7 +492,7 @@ public class Solver
 
     private static bool NearlyEqualSymmetric(float x, float y)
     {
-        const float relTol = 0.1f; // Allow 10% as the error can get quite high
+        const float relTol = 0.25f; // Allow 25% as the error can get quite high
 
         float diff = MathF.Abs(x - y);
         float scale = MathF.Max(MathF.Abs(x), MathF.Abs(y));

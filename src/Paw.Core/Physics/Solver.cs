@@ -32,6 +32,8 @@ public class Solver
     // ...
     private readonly ObjectPool<Manifold> _manifoldPool = new();
 
+    private readonly List<Force> _forcesToDelete = [];
+
     public Solver()
     {
         SetDefaultConfig();
@@ -70,74 +72,81 @@ public class Solver
         Bodies.Clear();
         Forces.Clear();
 
-        Bodies.Add(new Body(
-            size: new vec2(2, 1),
-            density: 1.0f,
-            friction: 0.5f,
-            position: new Vector3(-5, 4, 15f.DegToRad()),
-            velocity: vec3.Zero
-            ));
+        AddBody(new Vector3(-5, 4, 15f.DegToRad()), new vec2(2, 1));
 
         // Ground
-        Bodies.Add(new Body(
-            size: new vec2(30, 1),
-            density: 0f,
-            friction: 0.5f,
-            position: new Vector3(0, -5f, 0),
-            velocity: vec3.Zero
-            ));
+        AddBody(new Vector3(0, -5f, 0), new vec2(30, 1), density: 0f);
 
         // Triangle
         {
-            var bLeft = new Body(
-                size: new vec2(1, 1),
-                density: 1.0f,
-                friction: 0.5f,
-                position: new Vector3(5, 5, 0f),
-                velocity: vec3.Zero
-                );
+            var bLeft = AddBody(new Vector3(5, 5, 0f), new vec2(1, 1));
+            var bRight = AddBody(new Vector3(10, 5, 0f), new vec2(1, 1));
+            var bTop = AddBody(new Vector3(7.5f, 10f, 0f), new vec2(1, 1));
 
-            var bRight = new Body(
-                size: new vec2(1, 1),
-                density: 1.0f,
-                friction: 0.5f,
-                position: new Vector3(10, 5, 0f),
-                velocity: vec3.Zero
-                );
-
-            var bTop = new Body(
-                size: new vec2(1, 1),
-                density: 1.0f,
-                friction: 0.5f,
-                position: new Vector3(7.5f, 10f, 0f),
-                velocity: vec3.Zero
-                );
-
-
-            void AddJointInMiddle(Body a, Body b)
-            {
-                var jStiffness = new vec3(100f, 100f, 0f);
-                //var jStiffness = new vec3(float.PositiveInfinity, float.PositiveInfinity, 0f);
-                var jFracture = float.PositiveInfinity;
-
-                vec2 vAB = b.Position.XY - a.Position.XY;
-
-                vec2 rA = vAB * 0.5f;
-                vec2 rB = -(vAB * 0.5f);
-
-                var j = new Joint(a, b, rA, rB, jStiffness, jFracture);
-
-                Forces.Add(j);
-            }
-
-            AddJointInMiddle(bLeft, bRight);
-            AddJointInMiddle(bLeft, bTop);
-            AddJointInMiddle(bTop, bRight);
-
-            Bodies.Add(bLeft);
-            Bodies.Add(bRight);
-            Bodies.Add(bTop);
+            AddStiffAutoJoint(bLeft, bRight);
+            AddStiffAutoJoint(bRight, bTop);
+            AddStiffAutoJoint(bTop, bLeft);
         }
+    }
+
+    public Body AddBody(Vector3 position, Vector2 size, Vector3 velocity = default, float density = 1.0f, float friction = 0.5f)
+    {
+        var newBody = new Body(size: size,
+                               density: density,
+                               friction: friction,
+                               position: position,
+                               velocity: velocity);
+        Bodies.Add(newBody);
+        return newBody;
+    }
+
+    public void RemoveBody(Body body)
+    {
+        if (!Bodies.Contains(body))
+            throw new ArgumentException("Unknown body");
+
+        Bodies.Remove(body);
+
+        _forcesToDelete.Clear();
+        _forcesToDelete.AddRange(body.Forces);
+
+        foreach (var force in _forcesToDelete)
+        {
+            force.RemoveFromBodies();
+            Forces.Remove(force);
+        }
+
+        _forcesToDelete.Clear();
+    }
+
+    public Joint AddJoint(Body? bodyA, Body bodyB, vec2 rA, vec2 rB, vec3 stiffness)
+    {
+        var newJoint = new Joint(bodyA, bodyB, rA, rB, stiffness);
+        Forces.Add(newJoint);
+        return newJoint;
+    }
+
+    public Joint AddStiffAutoJoint(Body bodyA, Body bodyB)
+    {
+        vec2 pA = bodyA.Position.XY;
+        vec2 pB = bodyB.Position.XY;
+        vec2 vAB = pB - pA; // world space
+
+        vec2 rA = Transform2D.WorldToLocal(bodyA.Position, pA + vAB * 0.5f); // local
+        vec2 rB = Transform2D.WorldToLocal(bodyB.Position, pB - vAB * 0.5f); // local
+
+        vec3 stiffness = new vec3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+
+        return AddJoint(bodyA, bodyB, rA, rB, stiffness);
+    }
+
+    public void RemoveJoint(Joint joint)
+    {
+        if (!Forces.Contains(joint))
+            throw new ArgumentException("Unknown joint");
+
+        joint.RemoveFromBodies();
+        Forces.Remove(joint);
     }
 
     public bool Pick(vec2 worldPosition, [NotNullWhen(true)] out Body? pickedBody, out vec2 pickedBodyLocalPosition)
@@ -161,8 +170,6 @@ public class Solver
         pickedBodyLocalPosition = default;
         return false;
     }
-
-    private readonly List<Force> _forcesToDelete = [];
 
     public void Step()
     {
@@ -189,6 +196,7 @@ public class Solver
         }
 
         // Initialize and warmstart forces
+        _forcesToDelete.Clear();
         foreach (var force in Forces)
         {
             // Initialization can including caching anything that is constant over the step
@@ -217,6 +225,9 @@ public class Solver
 
                     // If it's not a hard constraint, we don't let the penalty exceed the material stiffness
                     force.Penalty[i] = MathF.Min(force.Penalty[i], force.Stiffness[i]);
+
+                    force.Penalty[i].VerifyFinite();
+                    force.Lambda[i].VerifyFinite();
                 }
             }
         }
@@ -297,6 +308,7 @@ public class Solver
 
                         // Compute the clamped force magnitude (Sec 3.2)
                         float f = (force.Penalty[i] * force.C[i] + lambda).Clamp(force.fMin[i], force.fMax[i]);
+                        f.VerifyFinite();
 
                         // Compute the diagonally lumped geometric stiffness term (Sec 3.5)
                         mat3 G = mat3.Diagonal(force.H[i].Column1.Length(),
@@ -304,15 +316,6 @@ public class Solver
                                                force.H[i].Column3.Length()) * MathF.Abs(f);
 
                         // Accumulate force (Eq. 13) and hessian (Eq. 17)
-                        {
-                            var aa = force.J[i] * f;
-
-                            if (!float.IsFinite(aa.X) || !float.IsFinite(aa.Y) || !float.IsFinite(aa.Z))
-                            {
-                                Console.WriteLine();
-                            }
-                        }
-
                         rhs += force.J[i] * f;
                         lhs += mat3.Outer(force.J[i], force.J[i] * force.Penalty[i]) + G;
                     }
@@ -320,6 +323,7 @@ public class Solver
 
                 // Solve the SPD linear system using LDL and apply the update (Eq. 4)
                 body.Position -= Solve(lhs, rhs);
+                body.Position.VerifyFinite();
             }
 
             // Dual update, only for non stabilized iterations in the case of post stabilization
@@ -370,44 +374,37 @@ public class Solver
     {
         const float epsilon = 1e-6f;
 
-        // Must be symmetric
-        //Debug.Assert(MathF.Abs(a.M12 - a.M21) <= epsilon);
-        //Debug.Assert(MathF.Abs(a.M13 - a.M31) <= epsilon);
-        //Debug.Assert(MathF.Abs(a.M23 - a.M32) <= epsilon);
-
-        //if (a.M12 != 0f)
-        //    Debug.Assert(MathF.Abs((a.M12 - a.M21) / a.M12) <= 0.01f);
-        //if (a.M13 != 0f)
-        //    Debug.Assert(MathF.Abs((a.M13 - a.M31) / a.M13) <= 0.01f);
-        //if (a.M23 != 0f)
-        //    Debug.Assert(MathF.Abs((a.M23 - a.M32) / a.M23) <= 0.01f);
-
         // Inputs must be finite
-        Debug.Assert(float.IsFinite(a.M11));
-        Debug.Assert(float.IsFinite(a.M12));
-        Debug.Assert(float.IsFinite(a.M13));
-        Debug.Assert(float.IsFinite(a.M21));
-        Debug.Assert(float.IsFinite(a.M22));
-        Debug.Assert(float.IsFinite(a.M23));
-        Debug.Assert(float.IsFinite(a.M31));
-        Debug.Assert(float.IsFinite(a.M32));
-        Debug.Assert(float.IsFinite(a.M33));
-        Debug.Assert(float.IsFinite(b.X));
-        Debug.Assert(float.IsFinite(b.Y));
-        Debug.Assert(float.IsFinite(b.Z));
+        a.Column1.VerifyFinite();
+        a.Column2.VerifyFinite();
+        a.Column3.VerifyFinite();
+        b.VerifyFinite();
+
+        // A must be symmetric
+        Debug.Assert(NearlyEqualSymmetric(a.M12, a.M21));
+        Debug.Assert(NearlyEqualSymmetric(a.M13, a.M31));
+        Debug.Assert(NearlyEqualSymmetric(a.M23, a.M32));
+
+        // Symmetrize noise
+        float M21 = 0.5f * (a.M12 + a.M21);
+        float M31 = 0.5f * (a.M13 + a.M31);
+        float M32 = 0.5f * (a.M23 + a.M32);
 
         // Basic sanity
-        Debug.Assert(a.M11 > 0f);
-        Debug.Assert(a.M22 > 0f);
-        Debug.Assert(a.M33 > 0f);
+        float M11 = a.M11;
+        float M22 = a.M22;
+        float M33 = a.M33;
+        Debug.Assert(M11 > 0f);
+        Debug.Assert(M22 > 0f);
+        Debug.Assert(M33 > 0f);
 
         // Compute LDL^T decomposition
-        float D1 = a.M11;
-        float L21 = a.M21 / a.M11;
-        float L31 = a.M31 / a.M11;
-        float D2 = a.M22 - L21 * L21 * D1;
-        float L32 = (a.M32 - L21 * L31 * D1) / D2;
-        float D3 = a.M33 - (L31 * L31 * D1 + L32 * L32 * D2);
+        float D1 = M11;
+        float L21 = M21 / M11;
+        float L31 = M31 / M11;
+        float D2 = M22 - L21 * L21 * D1;
+        float L32 = (M32 - L21 * L31 * D1) / D2;
+        float D3 = M33 - (L31 * L31 * D1 + L32 * L32 * D2);
 
         // SPD requires positive pivots
         Debug.Assert(D1 > epsilon);
@@ -429,10 +426,18 @@ public class Solver
         float x2 = z2 - L32 * x3;
         float x1 = z1 - L21 * x2 - L31 * x3;
 
-        Debug.Assert(float.IsFinite(x1));
-        Debug.Assert(float.IsFinite(x2));
-        Debug.Assert(float.IsFinite(x3));
+        vec3 x = new vec3(x1, x2, x3);
+        x.VerifyFinite();
+        return x;
+    }
 
-        return new vec3(x1, x2, x3);
+    private static bool NearlyEqualSymmetric(float x, float y)
+    {
+        const float relTol = 0.1f; // Allow 10% as the error can get quite high
+
+        float diff = MathF.Abs(x - y);
+        float scale = MathF.Max(MathF.Abs(x), MathF.Abs(y));
+
+        return diff <= relTol * scale;
     }
 }

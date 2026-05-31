@@ -35,6 +35,7 @@ public class PhysicsTestScene : Scene
     private readonly Mode[] _allModes = Enum.GetValues<Mode>();
 
 
+
     public enum BodyType
     {
         SquareSmall,
@@ -47,7 +48,10 @@ public class PhysicsTestScene : Scene
 
 
     private Body? _selectedBody;
+
     private Joint? _grabJoint;
+    private float _grabStiffness = 1000f;
+    private bool _grabLockAngle = true;
 
 
     private bool _simulate = true;
@@ -171,6 +175,13 @@ public class PhysicsTestScene : Scene
             modeChanged = UI.Radiobuttons("Mouse mode:", ref _mode, _allModes);
 
             //
+            if (_mode == Mode.GrabAndSelect)
+            {
+                UI.Label("Grab:");
+                UI.Input("Stiffness", ref _grabStiffness);
+                UI.Checkbox("Lock angle", ref _grabLockAngle);
+            }
+
             if (_mode == Mode.CreateBody)
             {
                 UI.Radiobuttons("New body:", ref _newBodyType, _allBodyTypes);
@@ -266,6 +277,14 @@ public class PhysicsTestScene : Scene
         if (context.Input.Keyboard.Get(Key.W)) _cameraPos.Y += 10.0f * dt;
         if (context.Input.Keyboard.Get(Key.S)) _cameraPos.Y -= 10.0f * dt;
 
+        if (context.Input.Keyboard.WasPressed(Key.Delete))
+        {
+            if (_selectedBody is { } b)
+            {
+                _solver.RemoveBody(b);
+            }
+        }
+
         // cleanup between modes
         if (modeChanged)
         {
@@ -293,8 +312,8 @@ public class PhysicsTestScene : Scene
                         if (_grabJoint is null)
                         {
                             Console.WriteLine($"Create grab joint");
-                            _grabJoint = new Joint(null, pickedBody, mouseWorld, pickedLocalPos, new vec3(1000, 1000, 0));
-                            _solver.Forces.Add(_grabJoint);
+                            _grabJoint = _solver.AddJoint(null, pickedBody, mouseWorld, pickedLocalPos,
+                                                          new vec3(_grabStiffness, _grabStiffness, _grabLockAngle ? _grabStiffness : 0f));
                         }
                     }
                 }
@@ -313,8 +332,7 @@ public class PhysicsTestScene : Scene
                     else
                     {
                         Console.WriteLine($"Destroy grab joint");
-                        _solver.Forces.Remove(_grabJoint);
-                        _grabJoint.RemoveFromBodies();
+                        _solver.RemoveJoint(_grabJoint);
                         _grabJoint = null;
                     }
                 }
@@ -326,14 +344,8 @@ public class PhysicsTestScene : Scene
             {
                 if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
                 {
-                    var newBody = new Body(size: GetNewBodySize(),
-                                           density: 1.0f, friction: 0.5f,
-                                           position: new Vector3(mouseWorld, 0),
-                                           velocity: vec3.Zero);
-
-                    _solver.Bodies.Add(newBody);
-
-                    _selectedBody = newBody;
+                    _selectedBody = _solver.AddBody(position: new vec3(mouseWorld, 0f),
+                                                    size: GetNewBodySize());
                 }
 
                 if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
@@ -356,20 +368,7 @@ public class PhysicsTestScene : Scene
                         }
                         else if (_selectedBody != pickedBody)
                         {
-                            Console.WriteLine($"new joint");
-
-                            vec2 pA = _selectedBody.Position.XY;
-                            vec2 pB = pickedBody.Position.XY;
-                            vec2 pAB = pB - pA;
-
-                            vec2 rA = Transform2D.WorldToLocal(_selectedBody.Position, pA + pAB * 0.5f);
-                            vec2 rB = Transform2D.WorldToLocal(pickedBody.Position, pB - pAB * 0.5f);
-
-                            vec3 stiffness = new vec3(1000f, 1000f, 0f);
-
-                            var newJoint = new Joint(_selectedBody, pickedBody, rA, rB, stiffness);
-                            _solver.Forces.Add(newJoint);
-
+                            _ = _solver.AddStiffAutoJoint(_selectedBody, pickedBody);
                             _selectedBody = null;
                         }
                     }

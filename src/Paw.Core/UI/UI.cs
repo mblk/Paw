@@ -1734,6 +1734,44 @@ public sealed unsafe class UI : IDisposable
         _ = Layout(consumedSize);
     }
 
+    // convenience buffer and wrapper-methods to prevent allocations in debug builds.
+    private readonly float[] _tableColsBuffer = new float[16];
+
+    public Scope BeginTable()
+    {
+        return BeginTable(_tableColsBuffer.AsSpan().Slice(0, 0));
+    }
+
+    public Scope BeginTable(float col1)
+    {
+        _tableColsBuffer[0] = col1;
+        return BeginTable(_tableColsBuffer.AsSpan().Slice(0, 1));
+    }
+
+    public Scope BeginTable(float col1, float col2)
+    {
+        _tableColsBuffer[0] = col1;
+        _tableColsBuffer[1] = col2;
+        return BeginTable(_tableColsBuffer.AsSpan().Slice(0, 2));
+    }
+
+    public Scope BeginTable(float col1, float col2, float col3)
+    {
+        _tableColsBuffer[0] = col1;
+        _tableColsBuffer[1] = col2;
+        _tableColsBuffer[2] = col3;
+        return BeginTable(_tableColsBuffer.AsSpan().Slice(0, 3));
+    }
+
+    public Scope BeginTable(float col1, float col2, float col3, float col4)
+    {
+        _tableColsBuffer[0] = col1;
+        _tableColsBuffer[1] = col2;
+        _tableColsBuffer[2] = col3;
+        _tableColsBuffer[3] = col4;
+        return BeginTable(_tableColsBuffer.AsSpan().Slice(0, 4));
+    }
+
     /// <summary>
     /// Define column widths:<br />
     /// width &gt; 1: size in pixels<br />

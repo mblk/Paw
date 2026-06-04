@@ -1,4 +1,6 @@
-﻿namespace Paw.Core.Physics;
+﻿using Paw.Core.Utils;
+
+namespace Paw.Core.Physics;
 
 public class Body
 {
@@ -16,6 +18,8 @@ public class Body
     public float Moment;
     public float Friction;
     public float Radius;
+
+    public vec3 ExternalForce;  // N,N,Nm
 
     public readonly List<Force> Forces = [];
 
@@ -46,5 +50,30 @@ public class Body
         }
 
         return false;
+    }
+
+    public void AddForceWorld(vec2 worldForce)
+    {
+        ExternalForce += new vec3(worldForce, 0f);
+    }
+
+    public void AddForceLocal(vec2 localForce)
+    {
+        vec2 worldForce = Transform2D.Rotate(Position.Z, localForce);
+        AddForceWorld(worldForce);
+    }
+
+    public void AddForceAtWorldPoint(vec2 force, vec2 worldPoint)
+    {
+        vec2 r = worldPoint - Position.XY;
+        float torque = vec2.Cross(r, force);
+        ExternalForce += new vec3(force, torque);
+    }
+
+    public void AddForceAtLocalPoint(vec2 localForce, vec2 localPoint)
+    {
+        vec2 worldForce = Transform2D.Rotate(Position.Z, localForce);
+        vec2 worldPoint = Transform2D.LocalToWorld(Position, localPoint);
+        AddForceAtWorldPoint(worldForce, worldPoint);
     }
 }

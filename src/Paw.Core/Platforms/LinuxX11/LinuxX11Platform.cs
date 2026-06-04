@@ -166,6 +166,8 @@ public unsafe class LinuxX11Platform : IPlatform
         private readonly char[] _charInput = new char[8];
         private int _numChars = 0;
 
+        private Key? _firstPressedKey;
+
         public Keyboard()
         {
             Activate();
@@ -193,6 +195,11 @@ public unsafe class LinuxX11Platform : IPlatform
             return wasReleased;
         }
 
+        public Key? GetFirstPressedKey()
+        {
+            return null;
+        }
+
         public void GetSnapshot(KeyboardState state)
         {
             new Span<bool>(_currStates).CopyTo(new Span<bool>(state.CurrStates));
@@ -213,6 +220,7 @@ public unsafe class LinuxX11Platform : IPlatform
                 _charInput[i] = (char)0;
             }
             _numChars = 0;
+            _firstPressedKey = null;
         }
 
         public void Deactivate()
@@ -278,7 +286,14 @@ public unsafe class LinuxX11Platform : IPlatform
         {
             //Console.WriteLine($"{key} >> {isPress}");
 
-            _currStates[GetIndex(key)] = isPress;
+            int index = GetIndex(key);
+
+            _currStates[index] = isPress;
+
+            if (isPress && !_prevStates[index])
+            {
+                _firstPressedKey = key;
+            }
         }
 
         private static Key? MapKeycodeToKey(uint state, uint keycode)

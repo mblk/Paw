@@ -75,11 +75,13 @@ public class Solver
         AddBody(new Vector3(-5, 4, 15f.DegToRad()), new vec2(2, 1));
 
         // Ground
-        AddBody(new Vector3(0, -5f, 0), new vec2(30, 1), density: 0f);
-        AddBody(new Vector3(-16.75f, -3.7f, -30f.DegToRad()), new vec2(5, 1), density: 0f);
-        AddBody(new Vector3(-20f, -0.5f, -60f.DegToRad()), new vec2(5, 1), density: 0f);
-        AddBody(new Vector3(16.75f, -3.7f, 30f.DegToRad()), new vec2(5, 1), density: 0f);
-        AddBody(new Vector3(20f, -0.5f, 60f.DegToRad()), new vec2(5, 1), density: 0f);
+        {
+            AddBody(new Vector3(0, -5f, 0), new vec2(30, 1), density: 0f);
+            AddBody(new Vector3(-16.75f, -3.7f, -30f.DegToRad()), new vec2(5, 1), density: 0f);
+            AddBody(new Vector3(-20f, -0.5f, -60f.DegToRad()), new vec2(5, 1), density: 0f);
+            AddBody(new Vector3(16.75f, -3.7f, 30f.DegToRad()), new vec2(5, 1), density: 0f);
+            AddBody(new Vector3(20f, -0.5f, 60f.DegToRad()), new vec2(5, 1), density: 0f);
+        }
 
         // Triangle
         {
@@ -309,10 +311,19 @@ public class Solver
             // Don't let bodies rotate too fast
             body.Velocity.Z = body.Velocity.Z.Clamp(-50f, +50f);
 
+            // Apply external force
+            vec3 externalAccel = body.Mass > 0f
+                ? Gravity + body.ExternalForce / new vec3(body.Mass, body.Mass, body.Moment)
+                : default;
+            body.ExternalForce = default;
+
             // Compute inertial position (Eq 2)
             body.Inertial = body.Position + body.Velocity * Dt;
             if (body.Mass > 0f)
-                body.Inertial += Gravity * Dt * Dt;
+            {
+                body.Inertial += externalAccel * Dt * Dt;
+                //body.Inertial += Gravity * Dt * Dt;
+            }
 
             // Adaptive warmstart (See original VBD paper)
             vec3 accel = (body.Velocity - body.PrevVelocity) / Dt;

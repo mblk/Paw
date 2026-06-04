@@ -275,6 +275,8 @@ internal unsafe class WindowsPlatform : IPlatform
         private readonly char[] _charInput = new char[8];
         private int _numChars = 0;
 
+        private Key? _firstPressedKey;
+
         public Keyboard()
         {
             Activate();
@@ -300,6 +302,11 @@ internal unsafe class WindowsPlatform : IPlatform
             bool wasReleased = !_currStates[idx] && _prevStates[idx];
             //_prevStates[idx] = _currStates[idx];
             return wasReleased;
+        }
+
+        public Key? GetFirstPressedKey()
+        {
+            return _firstPressedKey;
         }
 
         public void GetSnapshot(KeyboardState state)
@@ -342,7 +349,14 @@ internal unsafe class WindowsPlatform : IPlatform
         {
             //Console.WriteLine($"{key} >> {isPress}");
 
-            _currStates[GetIndex(key)] = isPressed;
+            int index = GetIndex(key);
+
+            _currStates[index] = isPressed;
+
+            if (isPressed && !_prevStates[index])
+            {
+                _firstPressedKey = key;
+            }
         }
 
         public void NextFrame()
@@ -356,6 +370,7 @@ internal unsafe class WindowsPlatform : IPlatform
                 _charInput[i] = (char)0;
             }
             _numChars = 0;
+            _firstPressedKey = null;
         }
 
         public void Deactivate()

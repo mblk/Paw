@@ -111,6 +111,8 @@ public interface IKeyboard
     bool WasPressed(Key key); // edge
     bool WasReleased(Key key); // edge
 
+    Key? GetFirstPressedKey();
+
     void GetSnapshot(KeyboardState state);
 }
 

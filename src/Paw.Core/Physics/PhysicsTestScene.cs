@@ -7,12 +7,10 @@ namespace Paw.Core.Physics;
 
 public class PhysicsTestScene : Scene
 {
-    private readonly Solver _solver = new();
+    private Solver _solver = null!;
 
     private DynamicGeometryRenderer2D _renderer = null!;
 
-
-    private vec2 _mouseScreen;
 
     private int _cameraZoom;
     private vec2 _cameraPos;
@@ -60,6 +58,11 @@ public class PhysicsTestScene : Scene
     private int _tickCount = 0;
 
 
+    private readonly Dictionary<Body, (Key, float)> _thrusters = [];
+
+    private Body? _settingThrusterKeyForBody = null;
+
+
 
     public PhysicsTestScene(SceneContext context)
         : base(context)
@@ -69,6 +72,33 @@ public class PhysicsTestScene : Scene
     public override void Load()
     {
         _renderer = new DynamicGeometryRenderer2D(AssetManager, ["default", "font1"], ["font1"]);
+
+        _solver = new Solver();
+
+        var b1 = _solver.AddBody(new vec3(-3, 0, 0), new vec2(1, 1));
+        var b2 = _solver.AddBody(new vec3(-2, 0, 0), new vec2(1, 1));
+        var b3 = _solver.AddBody(new vec3(-1, 0, 0), new vec2(1, 1));
+        var b4 = _solver.AddBody(new vec3(0, 0, 0), new vec2(1, 1));
+        var b5 = _solver.AddBody(new vec3(1, 0, 0), new vec2(1, 1));
+        var b6 = _solver.AddBody(new vec3(2, 0, 0), new vec2(1, 1));
+        var b7 = _solver.AddBody(new vec3(3, 0, 0), new vec2(1, 1));
+
+        var b2b = _solver.AddBody(new vec3(-2, -1.5f, 0f), new vec2(0.25f, 2f));
+        var b6b = _solver.AddBody(new vec3(+2, -1.5f, 0f), new vec2(0.25f, 2f));
+
+        _thrusters.Add(b1, (Key.A, 1.5f));
+        _thrusters.Add(b4, (Key.W, 10.0f));
+        _thrusters.Add(b7, (Key.D, 1.5f));
+
+        _solver.AddStiffAutoJoint(b1, b2);
+        _solver.AddStiffAutoJoint(b2, b3);
+        _solver.AddStiffAutoJoint(b3, b4);
+        _solver.AddStiffAutoJoint(b4, b5);
+        _solver.AddStiffAutoJoint(b5, b6);
+        _solver.AddStiffAutoJoint(b6, b7);
+
+        _solver.AddStiffAutoJoint(b2, b2b);
+        _solver.AddStiffAutoJoint(b6, b6b);
     }
 
     public override void Unload()
@@ -77,13 +107,27 @@ public class PhysicsTestScene : Scene
 
     public override void Update(UpdateContext context)
     {
-        var dt = context.DeltaTime;
+        float dt = context.DeltaTime;
         var kb = context.Input.Keyboard;
 
-        if (kb.WasPressed(Key.Escape))
+        //
+        // Physics related input
+        //
+
+        foreach (var body in _solver.Bodies)
         {
-            context.SceneController.RequestSceneChange("menu");
+            if (!_thrusters.TryGetValue(body, out (Key Key, float Power) thruster))
+                continue;
+
+            if (kb.Get(thruster.Key))
+            {
+                body.AddForceLocal(new vec2(0, 1) * 9.81f * body.Mass * thruster.Power);
+            }
         }
+
+        //
+        // Physics step
+        //
 
         if (_simulate || _singleStep)
         {
@@ -91,19 +135,39 @@ public class PhysicsTestScene : Scene
             _solver.Step();
             _tickCount++;
         }
-
-        _mouseScreen = new vec2(context.Input.Mouse.X, context.Input.Mouse.Y);
     }
-
-    private readonly float[] _startStopTableCols = [0.333f, 0.333f, 0.333f];
 
     public override void Render(RenderContext context)
     {
-        float dt = context.DeltaTime;
         (int windowWidth, int windowHeight) = context.WindowSize;
+        float dt = context.DeltaTime;
+        var kb = context.Input.Keyboard;
 
         bool modeChanged;
         Body? pickedBody = null;
+
+        //
+        // UI related input
+        //
+
+        if (kb.WasPressed(Key.Escape))
+        {
+            context.SceneController.RequestSceneChange("menu");
+        }
+
+        if (kb.Get(Key.Left)) _cameraPos.X -= 10.0f * dt;
+        if (kb.Get(Key.Right)) _cameraPos.X += 10.0f * dt;
+        if (kb.Get(Key.Up)) _cameraPos.Y += 10.0f * dt;
+        if (kb.Get(Key.Down)) _cameraPos.Y -= 10.0f * dt;
+
+        if (kb.WasPressed(Key.Delete))
+        {
+            if (_selectedBody is { })
+            {
+                _solver.RemoveBody(_selectedBody);
+                _selectedBody = null;
+            }
+        }
 
         //
         // UI
@@ -116,14 +180,7 @@ public class PhysicsTestScene : Scene
         UI.SetNextWindowPositionMode(Core.UI.UI.WindowPositionMode.Left);
         using (UI.BeginWindow(new Vector2(300, 800), "Physics test"))
         {
-            //ReadOnlySpan<float> cols = stackalloc float[] { 0.333f, 0.333f, 0.333f }; // TODO allocs in debug build, but why?
-
-            //Span<float> cols = stackalloc float[3]; // does not alloc in debug build
-            //cols[0] = 0.333f;
-            //cols[1] = 0.333f;
-            //cols[2] = 0.333f;
-
-            using (UI.BeginTable(_startStopTableCols))
+            using (UI.BeginTable(0.333f, 0.333f, 0.333f))
             {
                 if (UI.Button("Start"))
                 {
@@ -195,6 +252,36 @@ public class PhysicsTestScene : Scene
             UI.SetNextWindowPositionMode(Core.UI.UI.WindowPositionMode.Right);
             using (UI.BeginWindow(new Vector2(300, 800), "Selected Body"))
             {
+                if (_thrusters.TryGetValue(_selectedBody, out (Key, float) thruster))
+                {
+
+
+                    UI.Label(Format($"Thruster: key={thruster.Item1} power={thruster.Item2}"));
+                    if (UI.Button("Clear"))
+                    {
+                        _thrusters.Remove(_selectedBody);
+                    }
+                    _settingThrusterKeyForBody = null;
+                }
+                else
+                {
+                    if (_settingThrusterKeyForBody == _selectedBody)
+                    {
+                        UI.Label("Press key ...");
+
+                        Key? firstPressed = kb.GetFirstPressedKey();
+                        if (firstPressed.HasValue)
+                        {
+                            _thrusters.Add(_selectedBody, (firstPressed.Value, 1.0f));
+                            _settingThrusterKeyForBody = null;
+                        }
+                    }
+                    else if (UI.Button("Set thruster key"))
+                    {
+                        _settingThrusterKeyForBody = _selectedBody;
+                    }
+                }
+
                 UI.Label(Format($"Position: {_selectedBody.Position:F3}"));
                 UI.Label(Format($"Velocity: {_selectedBody.Velocity:F3}"));
                 UI.Label(Format($"Size: {_selectedBody.Size:0.###}"));
@@ -236,7 +323,8 @@ public class PhysicsTestScene : Scene
         if (!mat4.Invert(mProj, out mat4 mInvProj))
             throw new InvalidOperationException("can't invert projection matrix");
 
-        vec2 mouseNDC = _mouseScreen / new vec2(windowWidth, -windowHeight) * 2f + new vec2(-1f, 1f);
+        vec2 mouseScreen = new vec2(context.Input.Mouse.X, context.Input.Mouse.Y);
+        vec2 mouseNDC = mouseScreen / new vec2(windowWidth, -windowHeight) * 2f + new vec2(-1f, 1f);
         vec2 mouseView = vec4.Transform(new vec4(mouseNDC, 0f, 1f), mInvProj).XY;
 
         if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
@@ -269,24 +357,6 @@ public class PhysicsTestScene : Scene
             throw new InvalidOperationException("can't invert view+projection matrix");
 
         vec2 mouseWorld = vec4.Transform(new vec4(mouseNDC, 0f, 1f), mInvViewProj).XY;
-
-        //
-        // input
-        //
-
-        if (context.Input.Keyboard.Get(Key.A)) _cameraPos.X -= 10.0f * dt;
-        if (context.Input.Keyboard.Get(Key.D)) _cameraPos.X += 10.0f * dt;
-        if (context.Input.Keyboard.Get(Key.W)) _cameraPos.Y += 10.0f * dt;
-        if (context.Input.Keyboard.Get(Key.S)) _cameraPos.Y -= 10.0f * dt;
-
-        if (context.Input.Keyboard.WasPressed(Key.Delete))
-        {
-            if (_selectedBody is { })
-            {
-                _solver.RemoveBody(_selectedBody);
-                _selectedBody = null;
-            }
-        }
 
         // cleanup between modes
         if (modeChanged)
@@ -415,34 +485,54 @@ public class PhysicsTestScene : Scene
 
         foreach (var body in _solver.Bodies)
         {
-            vec2 pos = body.Position.XY;
-            float angle = body.Position.Z;
-
-            mat2 rot = mat2.Rotation(angle);
-
             vec2 halfSize = body.Size * 0.5f;
-
-            vec2 p1 = rot * new vec2(-halfSize.X, -halfSize.Y) + pos; // bottom left
-            vec2 p2 = rot * new vec2(+halfSize.X, -halfSize.Y) + pos; // bottom right
-            vec2 p3 = rot * new vec2(+halfSize.X, +halfSize.Y) + pos; // top right
-            vec2 p4 = rot * new vec2(-halfSize.X, +halfSize.Y) + pos; // top left
+            vec2 pBL = Transform2D.LocalToWorld(body.Position, new vec2(-halfSize.X, -halfSize.Y)); // bottom left
+            vec2 pBR = Transform2D.LocalToWorld(body.Position, new vec2(+halfSize.X, -halfSize.Y)); // bottom right
+            vec2 pTR = Transform2D.LocalToWorld(body.Position, new vec2(+halfSize.X, +halfSize.Y)); // top right
+            vec2 pTL = Transform2D.LocalToWorld(body.Position, new vec2(-halfSize.X, +halfSize.Y)); // top left
 
             var fillColor = (pickedBody == body || _selectedBody == body) ? selectedBodyColor : bodyColor;
 
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p1, Color = fillColor, UV = default, });
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p2, Color = fillColor, UV = default, });
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p3, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = pBL, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = pBR, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = pTR, Color = fillColor, UV = default, });
 
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p1, Color = fillColor, UV = default, });
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p3, Color = fillColor, UV = default, });
-            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = p4, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = pBL, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = pTR, Color = fillColor, UV = default, });
+            defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = pTL, Color = fillColor, UV = default, });
 
-            defaultWriter.AddLine(p1, p2, borderColor);
-            defaultWriter.AddLine(p2, p3, borderColor);
-            defaultWriter.AddLine(p3, p4, borderColor);
-            defaultWriter.AddLine(p4, p1, borderColor);
+            defaultWriter.AddLine(pBL, pBR, borderColor);
+            defaultWriter.AddLine(pBR, pTR, borderColor);
+            defaultWriter.AddLine(pTR, pTL, borderColor);
+            defaultWriter.AddLine(pTL, pBL, borderColor);
 
-            AddText(pos, Format($"{body.Id}"));
+            if (_thrusters.TryGetValue(body, out (Key Key, float Power) thruster))
+            {
+                float ts = MathF.Sqrt(thruster.Power) * 0.5f;
+                vec4 thrusterColor = bodyColor;
+
+                if (kb.Get(thruster.Key))
+                {
+                    ts *= 1.2f;
+                    thrusterColor = new vec4(1, 0, 0, 1);
+                }
+
+                vec2 ptTL = Transform2D.LocalToWorld(body.Position, new vec2(-0.25f * ts, -halfSize.Y)); // top left
+                vec2 ptTR = Transform2D.LocalToWorld(body.Position, new vec2(+0.25f * ts, -halfSize.Y)); // top right
+
+                vec2 ptBL = Transform2D.LocalToWorld(body.Position, new vec2(-0.5f * ts, -halfSize.Y - 1f * ts)); // bottom left
+                vec2 ptBR = Transform2D.LocalToWorld(body.Position, new vec2(+0.5f * ts, -halfSize.Y - 1f * ts)); // bottom right
+
+                defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = ptTL, Color = thrusterColor, UV = default, });
+                defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = ptBL, Color = thrusterColor, UV = default, });
+                defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = ptBR, Color = thrusterColor, UV = default, });
+
+                defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = ptTL, Color = thrusterColor, UV = default, });
+                defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = ptBR, Color = thrusterColor, UV = default, });
+                defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = ptTR, Color = thrusterColor, UV = default, });
+            }
+
+            //AddText(pos, Format($"{body.Id}"));
         }
 
         foreach (var force in _solver.Forces)
@@ -503,21 +593,18 @@ public class PhysicsTestScene : Scene
         // preview
         if (_mode == Mode.CreateBody && !context.Input.Mouse.Get(MouseButton.Left) && !mouseOverUI)
         {
-            var size = GetNewBodySize();
+            vec2 newSize = GetNewBodySize();
+            vec2 halfSize = newSize * 0.5f;
+            vec3 newPos = new vec3(mouseWorld, 0f);
+            vec2 pBL = Transform2D.LocalToWorld(newPos, new vec2(-halfSize.X, -halfSize.Y)); // bottom left
+            vec2 pBR = Transform2D.LocalToWorld(newPos, new vec2(+halfSize.X, -halfSize.Y)); // bottom right
+            vec2 pTR = Transform2D.LocalToWorld(newPos, new vec2(+halfSize.X, +halfSize.Y)); // top right
+            vec2 pTL = Transform2D.LocalToWorld(newPos, new vec2(-halfSize.X, +halfSize.Y)); // top left
 
-            mat2 rot = mat2.Rotation(0f);
-
-            vec2 halfSize = size * 0.5f;
-
-            vec2 p1 = rot * new vec2(-halfSize.X, -halfSize.Y) + mouseWorld; // bottom left
-            vec2 p2 = rot * new vec2(+halfSize.X, -halfSize.Y) + mouseWorld; // bottom right
-            vec2 p3 = rot * new vec2(+halfSize.X, +halfSize.Y) + mouseWorld; // top right
-            vec2 p4 = rot * new vec2(-halfSize.X, +halfSize.Y) + mouseWorld; // top left
-
-            defaultWriter.AddLine(p1, p2, previewColor);
-            defaultWriter.AddLine(p2, p3, previewColor);
-            defaultWriter.AddLine(p3, p4, previewColor);
-            defaultWriter.AddLine(p4, p1, previewColor);
+            defaultWriter.AddLine(pBL, pBR, previewColor);
+            defaultWriter.AddLine(pBR, pTR, previewColor);
+            defaultWriter.AddLine(pTR, pTL, previewColor);
+            defaultWriter.AddLine(pTL, pBL, previewColor);
         }
 
         // mouse

@@ -52,6 +52,16 @@ public class Body
         return false;
     }
 
+    public vec2 LocalToWorld(vec2 local)
+    {
+        return Transform2D.LocalToWorld(Position, local);
+    }
+
+    public vec2 WorldToLocal(vec2 world)
+    {
+        return Transform2D.WorldToLocal(Position, world);
+    }
+
     public void AddForceWorld(vec2 worldForce)
     {
         ExternalForce += new vec3(worldForce, 0f);

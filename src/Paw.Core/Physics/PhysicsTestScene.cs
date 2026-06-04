@@ -208,7 +208,6 @@ public class PhysicsTestScene : Scene
             bool hasGravity = _solver.Gravity.Length() > 0.1f;
             if (UI.Checkbox("Gravity", ref hasGravity))
             {
-                Console.WriteLine($"Change gravity");
                 _solver.Gravity = hasGravity ? new vec3(0f, -9.81f, 0f) : vec3.Zero;
             }
 
@@ -486,10 +485,10 @@ public class PhysicsTestScene : Scene
         foreach (var body in _solver.Bodies)
         {
             vec2 halfSize = body.Size * 0.5f;
-            vec2 pBL = Transform2D.LocalToWorld(body.Position, new vec2(-halfSize.X, -halfSize.Y)); // bottom left
-            vec2 pBR = Transform2D.LocalToWorld(body.Position, new vec2(+halfSize.X, -halfSize.Y)); // bottom right
-            vec2 pTR = Transform2D.LocalToWorld(body.Position, new vec2(+halfSize.X, +halfSize.Y)); // top right
-            vec2 pTL = Transform2D.LocalToWorld(body.Position, new vec2(-halfSize.X, +halfSize.Y)); // top left
+            vec2 pBL = body.LocalToWorld(new vec2(-halfSize.X, -halfSize.Y)); // bottom left
+            vec2 pTR = body.LocalToWorld(new vec2(+halfSize.X, +halfSize.Y)); // top right
+            vec2 pTL = body.LocalToWorld(new vec2(-halfSize.X, +halfSize.Y)); // top left
+            vec2 pBR = body.LocalToWorld(new vec2(+halfSize.X, -halfSize.Y)); // bottom right
 
             var fillColor = (pickedBody == body || _selectedBody == body) ? selectedBodyColor : bodyColor;
 
@@ -517,11 +516,10 @@ public class PhysicsTestScene : Scene
                     thrusterColor = new vec4(1, 0, 0, 1);
                 }
 
-                vec2 ptTL = Transform2D.LocalToWorld(body.Position, new vec2(-0.25f * ts, -halfSize.Y)); // top left
-                vec2 ptTR = Transform2D.LocalToWorld(body.Position, new vec2(+0.25f * ts, -halfSize.Y)); // top right
-
-                vec2 ptBL = Transform2D.LocalToWorld(body.Position, new vec2(-0.5f * ts, -halfSize.Y - 1f * ts)); // bottom left
-                vec2 ptBR = Transform2D.LocalToWorld(body.Position, new vec2(+0.5f * ts, -halfSize.Y - 1f * ts)); // bottom right
+                vec2 ptTL = body.LocalToWorld(new vec2(-0.25f * ts, -halfSize.Y)); // top left
+                vec2 ptTR = body.LocalToWorld(new vec2(+0.25f * ts, -halfSize.Y)); // top right
+                vec2 ptBL = body.LocalToWorld(new vec2(-0.5f * ts, -halfSize.Y - 1f * ts)); // bottom left
+                vec2 ptBR = body.LocalToWorld(new vec2(+0.5f * ts, -halfSize.Y - 1f * ts)); // bottom right
 
                 defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = ptTL, Color = thrusterColor, UV = default, });
                 defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = ptBL, Color = thrusterColor, UV = default, });
@@ -545,7 +543,7 @@ public class PhysicsTestScene : Scene
                     {
                         var contact = manifold.Contacts[i];
                         vec2 n = contact.Normal;
-                        vec2 pA1 = Transform2D.LocalToWorld(manifold.BodyA!.Position, contact.RA);
+                        vec2 pA1 = manifold.BodyA!.LocalToWorld(contact.RA);
                         vec2 pA2 = pA1 + n * 0.25f;
                         defaultWriter.AddLine(pA1, pA2, new vec4(1, 0, 0, 1));
                     }
@@ -563,11 +561,11 @@ public class PhysicsTestScene : Scene
                         : joint.RB;
 
                     vec2 posA = joint.BodyA is not null
-                        ? Transform2D.LocalToWorld(joint.BodyA!.Position, joint.RA)
+                        ? joint.BodyA!.LocalToWorld(joint.RA)
                         : joint.RA;
 
                     vec2 posB = joint.BodyB is not null
-                        ? Transform2D.LocalToWorld(joint.BodyB!.Position, joint.RB)
+                        ? joint.BodyB.LocalToWorld(joint.RB)
                         : joint.RB;
 
                     defaultWriter.AddLine(centerA, posA, new vec4(0, 1, 0, 1));
@@ -580,11 +578,7 @@ public class PhysicsTestScene : Scene
                     vec2 centerA = spring.BodyA!.Position.XY;
                     vec2 centerB = spring.BodyB!.Position.XY;
 
-                    //vec2 posA = Transform2D.LocalToWorld(spring.BodyA!.Position, spring.RA);
-                    //vec2 posB = Transform2D.LocalToWorld(spring.BodyB!.Position, spring.RB);
-
                     defaultWriter.AddLine(centerA, centerB, new vec4(1, 1, 0, 1));
-
                     break;
                 }
             }

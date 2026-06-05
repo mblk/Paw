@@ -1,0 +1,18 @@
+Get-ChildItem env:
+
+$env:FOO = 'bar';
+
+Remove-Item env:/Foo
+
+$env:CORECLR_ENABLE_PROFILING = 1;
+$env:CORECLR_PROFILER_PATH_64 = 'C:\workspace\repos\Paw\src\Paw.Profiler.Windows\x64\Debug\Paw.Profiler.Windows.dll'
+$env:CORECLR_PROFILER = '{9F2716B7-F482-45F8-BDD5-867512FB9225}';
+$env:DOTNEXT_LOGDIR = 'c:\temp';
+
+
+
+export CORECLR_ENABLE_PROFILING=1
+export CORECLR_PROFILER_PATH_64=/mnt/c/workspace/repos/Paw/src/Paw.Profiler.Linux/build/libPaw.Profiler.Linux.so
+export CORECLR_PROFILER={9F2716B7-F482-45F8-BDD5-867512FB9225}
+export DOTNEXT_LOGDIR=/mnt/c/workspace/repos/Paw/src/Paw.Profiler.Linux/build
+

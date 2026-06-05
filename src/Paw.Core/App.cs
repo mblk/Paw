@@ -2,6 +2,7 @@
 using Paw.Core.Platforms;
 using Paw.Core.Resources;
 using Paw.Core.Utils;
+using System.Threading;
 
 namespace Paw.Core;
 
@@ -21,6 +22,8 @@ public abstract class App
     public void Run()
     {
         SystemInfo.PrintSystemAndBuildInfo();
+
+        Thread.CurrentThread.Name = "Main thread";
 
         // init platform
 

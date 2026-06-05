@@ -1,8 +1,17 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>
   <Project Path="src/Paw.BindingGen/Paw.BindingGen.csproj" />
   <Project Path="src/Paw.Core/Paw.Core.csproj" />
   <Project Path="src/Paw.Demo/Paw.Demo.csproj" />
+  <Project Path="src/Paw.Profiler.Linux/Paw.Profiler.Linux.vcxproj" Id="be84ef82-1f1f-4656-8efd-bf552faddb50">
+    <Build Project="false" />
+  </Project>
+  <Project Path="src/Paw.Profiler.Shared/Paw.Profiler.Shared.vcxitems" Id="b19e6595-dff9-4d31-a22c-d42d1365d85e" />
+  <Project Path="src/Paw.Profiler.Windows/Paw.Profiler.Windows.vcxproj" Id="af4cf4e3-f8a0-4540-aa64-5b2c4752aad7" />
 </Solution>

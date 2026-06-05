@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+#
+# use:
+# source ../Paw.Profiler.Linux/set_env.sh
+#
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+BUILD_DIR="$SCRIPT_DIR/build"
+
+export CORECLR_ENABLE_PROFILING=1
+export CORECLR_PROFILER_PATH_64="$BUILD_DIR/libPaw.Profiler.Linux.so"
+export CORECLR_PROFILER="{9F2716B7-F482-45F8-BDD5-867512FB9225}"
+export DOTNEXT_LOGDIR="$BUILD_DIR"
+
+echo "CORECLR_ENABLE_PROFILING: $CORECLR_ENABLE_PROFILING"
+echo "CORECLR_PROFILER_PATH_64: $CORECLR_PROFILER_PATH_64"
+echo "CORECLR_PROFILER:         $CORECLR_PROFILER"
+echo "DOTNEXT_LOGDIR:           $DOTNEXT_LOGDIR"

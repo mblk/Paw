@@ -121,8 +121,8 @@ public unsafe class LinuxX11Platform : IPlatform
 
         int* ctxAttribs = stackalloc int[]
         {
-            GLX.GLX_CONTEXT_MAJOR_VERSION_ARB, GL.MajorVersion,
-            GLX.GLX_CONTEXT_MINOR_VERSION_ARB, GL.MinorVersion,
+            GLX.GLX_CONTEXT_MAJOR_VERSION_ARB, 4, //GL.MajorVersion,        // TODO WSL does not suppert 4.6, maybe change Bindings to 4.5 ?
+            GLX.GLX_CONTEXT_MINOR_VERSION_ARB, 5, //GL.MinorVersion,
             GLX.GLX_CONTEXT_PROFILE_MASK_ARB,  GLX.GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
             0
         };

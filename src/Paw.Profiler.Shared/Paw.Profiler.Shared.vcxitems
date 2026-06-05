@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{b19e6595-dff9-4d31-a22c-d42d1365d85e}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreProfiler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreProfilerFactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Logger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)CoreProfiler.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CoreProfilerFactory.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DllMain.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Logger.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)OS.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)notes.txt" />
+  </ItemGroup>
+</Project>

@@ -11,11 +11,8 @@ namespace Paw.Core.Platforms.Windows.Native;
 //| `DWORD`                                             | Immer 32-Bit unsigned                                     | `uint`               |
 //| `POINT`                                             | Zwei `LONG` (immer 32-Bit signed)                         | `int`/`int`          |
 
-
 internal static class User32
 {
-    public delegate nint WndProcDelegate(nint hWnd, uint msg, nuint wParam, nint lParam);
-
     public const int CW_USEDEFAULT = unchecked((int)0x80000000);
     public const int CS_OWNDC = 0x0020;
 

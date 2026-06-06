@@ -11,7 +11,7 @@ internal unsafe class WindowsPlatform : IPlatform
 {
     private const string _windowClassName = "GLWndClass";
 
-    private readonly FrozenDictionary<uint, string> _messagesToPrint = new Dictionary<uint, string>
+    private static readonly FrozenDictionary<uint, string> _messagesToPrint = new Dictionary<uint, string>
     {
         [User32.WM_DESTROY] = "WM_DESTROY",
         [User32.WM_QUIT] = "WM_QUIT",
@@ -33,15 +33,10 @@ internal unsafe class WindowsPlatform : IPlatform
 
     }.ToFrozenDictionary();
 
-    private readonly User32.WndProcDelegate _globalWindowProcedure;
-
-    private readonly Dictionary<IntPtr, Window> _windows = [];
+    private static readonly Dictionary<IntPtr, Window> _windows = [];
 
     public WindowsPlatform(PlatformOptions options)
     {
-        // create new delegate instance and store it in a field, to prevent it from being GC'ed
-        _globalWindowProcedure = GlobalWindowProcedure;
-
         RegisterWindowClass();
     }
 
@@ -83,7 +78,7 @@ internal unsafe class WindowsPlatform : IPlatform
         {
             cbSize = (uint)Marshal.SizeOf<User32.WNDCLASSEXW>(),
             style = User32.CS_OWNDC, // own DC for each window
-            lpfnWndProc = Marshal.GetFunctionPointerForDelegate(_globalWindowProcedure),
+            lpfnWndProc = (nint)(delegate* unmanaged[Stdcall]<nint, uint, nuint, nint, nint>)&GlobalWindowProcedure,
             lpszClassName = _windowClassName,
             hInstance = hInstance,
             hCursor = User32.LoadCursorW(IntPtr.Zero, (nint)User32.IDC_ARROW),
@@ -93,7 +88,8 @@ internal unsafe class WindowsPlatform : IPlatform
             throw new Exception("RegisterClassExW failed.");
     }
 
-    private nint GlobalWindowProcedure(nint hWnd, uint msg, nuint wParam, nint lParam)
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static nint GlobalWindowProcedure(nint hWnd, uint msg, nuint wParam, nint lParam)
     {
         if (_messagesToPrint.TryGetValue(msg, out var name))
         {

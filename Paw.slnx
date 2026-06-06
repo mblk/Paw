@@ -5,6 +5,7 @@
   </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
+    <File Path="publish.txt" />
   </Folder>
   <Project Path="src/Paw.BindingGen/Paw.BindingGen.csproj" />
   <Project Path="src/Paw.Core/Paw.Core.csproj" />

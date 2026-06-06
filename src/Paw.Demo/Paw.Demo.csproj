@@ -5,6 +5,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,11 +16,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Paw.Core\Paw.Core.csproj" />
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <AssemblyAttribute Include="Paw.Core.Utils.BuildDateAttribute">
-      <_Parameter1>$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>-->
 
 </Project>

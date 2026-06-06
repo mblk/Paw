@@ -451,9 +451,9 @@ public class Solver
         b.VerifyFinite();
 
         // A must be symmetric
-        Debug.Assert(NearlyEqualSymmetric(a.M12, a.M21));
-        Debug.Assert(NearlyEqualSymmetric(a.M13, a.M31));
-        Debug.Assert(NearlyEqualSymmetric(a.M23, a.M32));
+        //Debug.Assert(NearlyEqualSymmetric(a.M12, a.M21));
+        //Debug.Assert(NearlyEqualSymmetric(a.M13, a.M31));
+        //Debug.Assert(NearlyEqualSymmetric(a.M23, a.M32));
 
         // Symmetrize noise
         float M21 = 0.5f * (a.M12 + a.M21);

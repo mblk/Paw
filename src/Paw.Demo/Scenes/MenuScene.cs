@@ -39,7 +39,7 @@ internal class MenuScene : Scene
 
             foreach (var sceneId in _allScenes)
             {
-                if (UI.Button(Format($"Load Scene: {sceneId} ({sceneKey})")) || kb.WasPressed(sceneKey))
+                if (UI.Button(Format($"Load Scene: {sceneId} ({Enum.GetName(sceneKey)})")) || kb.WasPressed(sceneKey))
                 {
                     context.SceneController.RequestSceneChange(sceneId);
                 }

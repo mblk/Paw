@@ -253,9 +253,7 @@ public class PhysicsTestScene : Scene
             {
                 if (_thrusters.TryGetValue(_selectedBody, out (Key, float) thruster))
                 {
-
-
-                    UI.Label(Format($"Thruster: key={thruster.Item1} power={thruster.Item2}"));
+                    UI.Label(Format($"Thruster: key={Enum.GetName(thruster.Item1)} power={thruster.Item2}"));
                     if (UI.Button("Clear"))
                     {
                         _thrusters.Remove(_selectedBody);

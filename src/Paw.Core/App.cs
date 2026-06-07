@@ -2,6 +2,7 @@
 using Paw.Core.Platforms;
 using Paw.Core.Resources;
 using Paw.Core.Utils;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Paw.Core;
@@ -63,7 +64,7 @@ public abstract class App
         double avgAllocedBytesPerFrame = 0;
         //long gcTotalLast = GC.GetTotalAllocatedBytes(); // ignore other .net threads
         long gcTotalLast = GC.GetAllocatedBytesForCurrentThread();
-        var lastTime = DateTime.Now;
+        long lastTime = Stopwatch.GetTimestamp();
 
         // prepare reusable buffers
         var updateContext = new UpdateContext()
@@ -89,8 +90,8 @@ public abstract class App
             // timing
             //
 
-            var now = DateTime.Now;
-            double dt = (double)(now - lastTime).TotalSeconds;
+            long now = Stopwatch.GetTimestamp();
+            TimeSpan dt = Stopwatch.GetElapsedTime(lastTime, now);
             lastTime = now;
 
             //
@@ -99,7 +100,7 @@ public abstract class App
 
             (assetManager as AssetManagerWithHotReload)?.ProcessChanges();
 
-            updateContext.DeltaTime = (float)dt;
+            updateContext.DeltaTime = (float)dt.TotalSeconds;
             updateContext.WindowSize = window.Size;
 
             sceneManager.Update(updateContext);
@@ -126,7 +127,7 @@ public abstract class App
 
             var (windowWidth, windowHeight) = window.Size;
 
-            renderContext.DeltaTime = (float)dt;
+            renderContext.DeltaTime = (float)dt.TotalSeconds;
             renderContext.WindowSize = window.Size;
 
             using (gl.PushDebugGroup("Frame"))
@@ -153,7 +154,7 @@ public abstract class App
             // stats
             //
 
-            totalTime += dt;
+            totalTime += dt.TotalSeconds;
             numFrames++;
 
             if (totalTime > 0.5)

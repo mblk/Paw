@@ -20,8 +20,6 @@ public struct Body
 
     public vec3 ExternalForce;  // N,N,Nm
 
-    //public List<Force> Forces = [];
-
     public Body()
     {
     }
@@ -37,30 +35,14 @@ public struct Body
         Mass = size.X * size.Y * density;
         Moment = Mass * vec2.Dot(size, size) / 12.0f;
         Radius = (size * 0.5f).Length();
-
-        //Forces = [];
     }
 
-    //public bool IsConstrainedTo(Body otherBody)
-    //{
-    //    foreach (var force in Forces)
-    //    {
-    //        if (force.BodyA.HasValue && force.BodyA.Value.Id == this.Id && force.BodyB.HasValue && force.BodyB.Value.Id == otherBody.Id ||
-    //            force.BodyA.HasValue && force.BodyA.Value.Id == otherBody.Id && force.BodyB.HasValue && force.BodyB.Value.Id == this.Id)
-    //        {
-    //            return true;
-    //        }
-    //    }
-
-    //    return false;
-    //}
-
-    public vec2 LocalToWorld(vec2 local)
+    public readonly vec2 LocalToWorld(vec2 local)
     {
         return Transform2D.LocalToWorld(Position, local);
     }
 
-    public vec2 WorldToLocal(vec2 world)
+    public readonly vec2 WorldToLocal(vec2 world)
     {
         return Transform2D.WorldToLocal(Position, world);
     }

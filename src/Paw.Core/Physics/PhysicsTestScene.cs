@@ -48,7 +48,7 @@ public class PhysicsTestScene : Scene
 
     private BodyRef _selectedBody;
 
-    private Joint? _grabJoint;
+    private ConstraintRef _grabJoint;
     private float _grabStiffness = 1000f;
     private bool _grabLockAngle = true;
 
@@ -121,7 +121,9 @@ public class PhysicsTestScene : Scene
 
             if (kb.Get(thruster.Key))
             {
-                _solver.AddForceLocal(bodyRef, new vec2(0, 1) * 9.81f * _solver.GetMass(bodyRef) * thruster.Power);
+                var body = _solver.GetCopyOfBody(bodyRef);
+
+                _solver.AddForceLocal(bodyRef, new vec2(0, 1) * 9.81f * body.Mass * thruster.Power);
             }
         }
 
@@ -174,7 +176,7 @@ public class PhysicsTestScene : Scene
         //
 
         //UI.Overlay(Format($"Bodies: {_solver.Bodies.Count}"));
-        UI.Overlay(Format($"Forces: {_solver.Forces.Count}"));
+        //UI.Overlay(Format($"Forces: {_solver.Forces.Count}"));
         UI.Overlay(Format($"Ticks: {_tickCount}"));
 
         UI.SetNextWindowPositionMode(Core.UI.UI.WindowPositionMode.Left);
@@ -279,13 +281,15 @@ public class PhysicsTestScene : Scene
                     }
                 }
 
-                //UI.Label(Format($"Position: {_selectedBody.Position:F3}"));
-                //UI.Label(Format($"Velocity: {_selectedBody.Velocity:F3}"));
-                //UI.Label(Format($"Size: {_selectedBody.Size:0.###}"));
-                //UI.Label(Format($"Mass: {_selectedBody.Mass:0.###}"));
-                //UI.Label(Format($"Moment: {_selectedBody.Moment:F3}"));
-                //UI.Label(Format($"Friction: {_selectedBody.Friction:F3}"));
-                //UI.Label(Format($"Radius: {_selectedBody.Radius:F3}"));
+                Body body = _solver.GetCopyOfBody(_selectedBody);
+
+                UI.Label(Format($"Position: {body.Position:F3}"));
+                UI.Label(Format($"Velocity: {body.Velocity:F3}"));
+                UI.Label(Format($"Size: {body.Size:0.###}"));
+                UI.Label(Format($"Mass: {body.Mass:0.###}"));
+                UI.Label(Format($"Moment: {body.Moment:F3}"));
+                UI.Label(Format($"Friction: {body.Friction:F3}"));
+                UI.Label(Format($"Radius: {body.Radius:F3}"));
 
                 //UI.Label(Format($"Forces: {_selectedBody.Forces.Count}"));
 
@@ -360,10 +364,10 @@ public class PhysicsTestScene : Scene
         {
             _selectedBody = default;
 
-            if (_grabJoint is { })
+            if (_grabJoint != default)
             {
-                _solver.RemoveForce(_grabJoint);
-                _grabJoint = null;
+                _solver.RemoveConstraint(_grabJoint);
+                _grabJoint = default;
             }
         }
 
@@ -371,13 +375,16 @@ public class PhysicsTestScene : Scene
         {
             case Mode.GrabAndSelect:
             {
-                if (_solver.Pick(mouseWorld, out pickedBody, out vec2 pickedLocalPos))
+                if (_solver.PickBody(mouseWorld, out pickedBody, out vec2 pickedLocalPos))
                 {
                     if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
                     {
                         _selectedBody = pickedBody;
 
-                        _grabJoint ??= _solver.AddJoint(default, pickedBody, mouseWorld, pickedLocalPos,
+                        if (_grabJoint != default)
+                            throw new Exception("grab joint already exists");
+
+                        _grabJoint = _solver.AddJoint(default, pickedBody, mouseWorld, pickedLocalPos,
                                                         new vec3(_grabStiffness, _grabStiffness, _grabLockAngle ? _grabStiffness : 0f));
                     }
                 }
@@ -387,16 +394,17 @@ public class PhysicsTestScene : Scene
                     _selectedBody = default;
                 }
 
-                if (_grabJoint is not null)
+                if (_grabJoint != default)
                 {
                     if (context.Input.Mouse.Get(MouseButton.Left) && !mouseOverUI)
                     {
-                        _grabJoint.RA = mouseWorld;
+                        _solver.SetJointPosA(_grabJoint, mouseWorld);
+                        //_grabJoint.RA = mouseWorld;
                     }
                     else
                     {
-                        _solver.RemoveForce(_grabJoint);
-                        _grabJoint = null;
+                        _solver.RemoveConstraint(_grabJoint);
+                        _grabJoint = default;
                     }
                 }
 
@@ -421,7 +429,7 @@ public class PhysicsTestScene : Scene
 
             case Mode.CreateJoint:
             {
-                if (_solver.Pick(mouseWorld, out pickedBody, out vec2 pickedLocalPos))
+                if (_solver.PickBody(mouseWorld, out pickedBody, out vec2 pickedLocalPos))
                 {
                     if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
                     {
@@ -533,15 +541,19 @@ public class PhysicsTestScene : Scene
             //AddText(pos, Format($"{body.Id}"));
         }
 
-        foreach (var force in _solver.Forces)
+        foreach (ConstraintRef constraintRef in _solver.AliveConstraints)
         {
-            switch (force)
+            Constraint constraint = _solver.GetCopyOfConstraint(constraintRef);
+
+            switch (constraint.Type)
             {
-                case Manifold manifold when _showManifolds:
+                case ConstraintType.Manifold when _showManifolds:
                 {
+                    Manifold manifold = _solver.GetCopyOfManifold(constraintRef);
+
                     for (int i = 0; i < manifold.NumContacts; i++)
                     {
-                        Body bodyA = _solver.GetCopyOfBody(manifold.BodyA);
+                        Body bodyA = _solver.GetCopyOfBody(constraint.BodyA);
 
                         var contact = manifold.Contacts[i];
                         vec2 n = contact.Normal;
@@ -549,36 +561,42 @@ public class PhysicsTestScene : Scene
                         vec2 pA2 = pA1 + n * 0.25f;
                         defaultWriter.AddLine(pA1, pA2, new vec4(1, 0, 0, 1));
                     }
+
                     break;
                 }
 
-                case Joint joint when _showJoints:
+                case ConstraintType.Joint when _showJoints:
                 {
-                    vec2 centerA = joint.BodyA != default
-                        ? _solver.GetCopyOfBody(joint.BodyA).Position.XY
+                    Joint joint = _solver.GetCopyOfJoint(constraintRef);
+
+                    vec2 centerA = constraint.BodyA != default
+                        ? _solver.GetCopyOfBody(constraint.BodyA).Position.XY
                         : joint.RA;
 
-                    vec2 centerB = joint.BodyB != default
-                        ? _solver.GetCopyOfBody(joint.BodyB).Position.XY
+                    vec2 centerB = constraint.BodyB != default
+                        ? _solver.GetCopyOfBody(constraint.BodyB).Position.XY
                         : joint.RB;
 
-                    vec2 posA = joint.BodyA != default
-                        ? _solver.GetCopyOfBody(joint.BodyA).LocalToWorld(joint.RA)
+                    vec2 posA = constraint.BodyA != default
+                        ? _solver.GetCopyOfBody(constraint.BodyA).LocalToWorld(joint.RA)
                         : joint.RA;
 
-                    vec2 posB = joint.BodyB != default
-                        ? _solver.GetCopyOfBody(joint.BodyB).LocalToWorld(joint.RB)
+                    vec2 posB = constraint.BodyB != default
+                        ? _solver.GetCopyOfBody(constraint.BodyB).LocalToWorld(joint.RB)
                         : joint.RB;
 
                     defaultWriter.AddLine(centerA, posA, new vec4(0, 1, 0, 1));
                     defaultWriter.AddLine(centerB, posB, new vec4(0, 0, 1, 1));
+
                     break;
                 }
 
-                case Spring spring when _showSprings:
+                case ConstraintType.Spring when _showSprings:
                 {
-                    vec2 centerA = _solver.GetCopyOfBody(spring.BodyA).Position.XY;
-                    vec2 centerB = _solver.GetCopyOfBody(spring.BodyB).Position.XY;
+                    Spring spring = _solver.GetCopyOfSpring(constraintRef);
+
+                    vec2 centerA = _solver.GetCopyOfBody(constraint.BodyA).Position.XY;
+                    vec2 centerB = _solver.GetCopyOfBody(constraint.BodyB).Position.XY;
 
                     defaultWriter.AddLine(centerA, centerB, new vec4(1, 1, 0, 1));
                     break;

@@ -2,7 +2,7 @@
 
 namespace Paw.Core.Physics;
 
-public class Joint : Force
+public struct Joint
 {
     public vec2 RA;
     public vec2 RB;
@@ -10,41 +10,30 @@ public class Joint : Force
     public float TorqueArm;
     public float RestAngle;
 
-    public override int Rows => 3;
+    public static int Rows => 3;
 
-    public Joint(BodyRef bodyA, BodyRef bodyB, vec2 rA, vec2 rB, vec3 stiffness, float fracture = float.PositiveInfinity)
+    public void OneTimeInit(ref Constraint constraint,
+                            BodyRef bodyRefA, BodyRef bodyRefB, bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB,
+                            vec2 rA, vec2 rB, vec3 stiffness, float fracture = float.PositiveInfinity)
     {
-        Reset();
-        //AddToBodies(bodyA, bodyB);
+        constraint.Reset();
 
-        BodyA = bodyA;
-        BodyB = bodyB;
+        constraint.Type = ConstraintType.Joint;
+
+        constraint.BodyA = bodyRefA;
+        constraint.BodyB = bodyRefB;
+
+        constraint.Stiffness[0] = stiffness.X;
+        constraint.Stiffness[1] = stiffness.Y;
+        constraint.Stiffness[2] = stiffness.Z;
+
+        constraint.fMin[2] = -fracture;
+        constraint.fMax[2] = fracture;
+        constraint.Fracture[2] = fracture;
 
         RA = rA;
         RB = rB;
 
-        Stiffness[0] = stiffness.X;
-        Stiffness[1] = stiffness.Y;
-        Stiffness[2] = stiffness.Z;
-
-        fMin[2] = -fracture;
-        fMax[2] = fracture;
-        Fracture[2] = fracture;
-
-        //if (bodyA != default)
-        //{
-        //    RestAngle = bodyA.Position.Z - bodyB.Position.Z;
-        //    TorqueArm = (bodyA.Size + bodyB.Size).LengthSquared(); // why LengthSquared?
-        //}
-        //else
-        //{
-        //    RestAngle = 0f - bodyB.Position.Z;
-        //    TorqueArm = bodyB.Size.LengthSquared();
-        //}
-    }
-
-    public override void OneTimeInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
-    {
         if (hasBodyA)
         {
             RestAngle = bodyA.Position.Z - bodyB.Position.Z;
@@ -57,7 +46,7 @@ public class Joint : Force
         }
     }
 
-    public override bool PerTickInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
+    public bool PerTickInit(ref Constraint constraint, bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
     {
         // Store constraint function at beginnning of timestep C(x-)
         // Note: if bodyA is null, it is assumed that the joint connects a body to the world space position rA
@@ -75,10 +64,10 @@ public class Joint : Force
             C0 = new vec3(cXY, cZ);
         }
 
-        return Stiffness[0] != 0f || Stiffness[1] != 0f || Stiffness[2] != 0f;
+        return constraint.Stiffness[0] != 0f || constraint.Stiffness[1] != 0f || constraint.Stiffness[2] != 0f;
     }
 
-    public override void ComputeConstraint(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB, float alpha)
+    public void ComputeConstraint(ref Constraint constraint, bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB, float alpha)
     {
         // Compute constraint function at current state C(x)
         vec3 Cn;
@@ -99,39 +88,39 @@ public class Joint : Force
         for (int i = 0; i < Rows; i++)
         {
             // Store stabilized constraint function, if a hard constraint (Eq. 18)
-            if (float.IsInfinity(Stiffness[i]))
-                C[i] = Cn[i] - C0[i] * alpha;
+            if (float.IsInfinity(constraint.Stiffness[i]))
+                constraint.C[i] = Cn[i] - C0[i] * alpha;
             else
-                C[i] = Cn[i];
+                constraint.C[i] = Cn[i];
         }
     }
 
-    public override void ComputeDerivatives(bool isBodyA, in Body bodyA, in Body bodyB)
+    public void ComputeDerivatives(ref Constraint constraint, bool isBodyA, in Body bodyA, in Body bodyB)
     {
         // Compute the first and second derivatives for the desired body
         if (isBodyA)
         {
             vec2 r = Transform2D.Rotate(bodyA.Position.Z, RA);
 
-            J[0] = new vec3(1.0f, 0.0f, -r.Y);
-            J[1] = new vec3(0.0f, 1.0f, r.X);
-            J[2] = new vec3(0.0f, 0.0f, TorqueArm);
+            constraint.J[0] = new vec3(1.0f, 0.0f, -r.Y);
+            constraint.J[1] = new vec3(0.0f, 1.0f, r.X);
+            constraint.J[2] = new vec3(0.0f, 0.0f, TorqueArm);
 
-            H[0] = new mat3() { M33 = -r.X };
-            H[1] = new mat3() { M33 = -r.Y };
-            H[2] = default;
+            constraint.H[0] = new mat3() { M33 = -r.X };
+            constraint.H[1] = new mat3() { M33 = -r.Y };
+            constraint.H[2] = default;
         }
         else
         {
             vec2 r = Transform2D.Rotate(bodyB.Position.Z, RB);
 
-            J[0] = new vec3(-1.0f, 0.0f, r.Y);
-            J[1] = new vec3(0.0f, -1.0f, -r.X);
-            J[2] = new vec3(0.0f, 0.0f, -TorqueArm);
+            constraint.J[0] = new vec3(-1.0f, 0.0f, r.Y);
+            constraint.J[1] = new vec3(0.0f, -1.0f, -r.X);
+            constraint.J[2] = new vec3(0.0f, 0.0f, -TorqueArm);
 
-            H[0] = new mat3() { M33 = r.X };
-            H[1] = new mat3() { M33 = r.Y };
-            H[2] = default;
+            constraint.H[0] = new mat3() { M33 = r.X };
+            constraint.H[1] = new mat3() { M33 = r.Y };
+            constraint.H[2] = default;
         }
     }
 }

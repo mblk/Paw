@@ -1,9 +1,10 @@
 ﻿using Paw.Core.Utils;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Paw.Core.Physics;
 
-public class Manifold : Force
+public struct Manifold
 {
     // Used to track contact features between frames
     [StructLayout(LayoutKind.Explicit)]
@@ -46,19 +47,29 @@ public class Manifold : Force
         public bool Stick;
     }
 
-    public Contact[] Contacts = new Contact[2];
+    [InlineArray(2)]
+    public struct ContactsArray
+    {
+        private Contact _element0;
+    }
+
+    public ContactsArray Contacts;
     public int NumContacts;
     public float Friction;
 
-    public Manifold(BodyRef bodyA, BodyRef bodyB)
+    public readonly int Rows => NumContacts * 2;
+
+    public void OneTimeInit(ref Constraint constraint, BodyRef bodyRefA, BodyRef bodyRefB, bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
     {
-        Reset();
+        constraint.Reset();
 
-        BodyA = bodyA;
-        BodyB = bodyB;
+        constraint.Type = ConstraintType.Manifold;
 
-        fMax[0] = fMax[2] = 0f;
-        fMin[0] = fMin[2] = float.NegativeInfinity;
+        constraint.BodyA = bodyRefA;
+        constraint.BodyB = bodyRefB;
+
+        constraint.fMax[0] = constraint.fMax[2] = 0f;
+        constraint.fMin[0] = constraint.fMin[2] = float.NegativeInfinity;
 
         Contacts[0] = default;
         Contacts[1] = default;
@@ -67,41 +78,35 @@ public class Manifold : Force
         Friction = 0;
     }
 
-    public override int Rows => NumContacts * 2;
-
-    public override void OneTimeInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
-    {
-    }
-
-    public override bool PerTickInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
+    public bool PerTickInit(ref Constraint constraint, bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
     {
         // Compute friction
         Friction = MathF.Sqrt(bodyA!.Friction * bodyB.Friction);
 
         // Store previous contact state
         ReadOnlySpan<Contact> oldContacts = [Contacts[0], Contacts[1]]; // uses stackalloc
-        ReadOnlySpan<float> oldPenalty = [Penalty[0], Penalty[1], Penalty[2], Penalty[3]];
-        ReadOnlySpan<float> oldLambda = [Lambda[0], Lambda[1], Lambda[2], Lambda[3]];
+        ReadOnlySpan<float> oldPenalty = [constraint.Penalty[0], constraint.Penalty[1], constraint.Penalty[2], constraint.Penalty[3]];
+        ReadOnlySpan<float> oldLambda = [constraint.Lambda[0], constraint.Lambda[1], constraint.Lambda[2], constraint.Lambda[3]];
         ReadOnlySpan<bool> oldStick = [Contacts[0].Stick, Contacts[1].Stick];
         int oldNumContacts = NumContacts;
 
         // Compute new contacts
-        NumContacts = Collision.Collide(bodyA, bodyB, Contacts);
+        NumContacts = Collision.Collide(bodyA, bodyB, ref Contacts);
 
         // Merge old contact data with new contacts
         for (int i = 0; i < NumContacts; i++)
         {
-            Penalty[i * 2 + 0] = Penalty[i * 2 + 1] = 0.0f;
-            Lambda[i * 2 + 0] = Lambda[i * 2 + 1] = 0.0f;
+            constraint.Penalty[i * 2 + 0] = constraint.Penalty[i * 2 + 1] = 0.0f;
+            constraint.Lambda[i * 2 + 0] = constraint.Lambda[i * 2 + 1] = 0.0f;
 
             for (int j = 0; j < oldNumContacts; j++)
             {
                 if (Contacts[i].FP.Value == oldContacts[j].FP.Value)
                 {
-                    Penalty[i * 2 + 0] = oldPenalty[j * 2 + 0];
-                    Penalty[i * 2 + 1] = oldPenalty[j * 2 + 1];
-                    Lambda[i * 2 + 0] = oldLambda[j * 2 + 0];
-                    Lambda[i * 2 + 1] = oldLambda[j * 2 + 1];
+                    constraint.Penalty[i * 2 + 0] = oldPenalty[j * 2 + 0];
+                    constraint.Penalty[i * 2 + 1] = oldPenalty[j * 2 + 1];
+                    constraint.Lambda[i * 2 + 0] = oldLambda[j * 2 + 0];
+                    constraint.Lambda[i * 2 + 1] = oldLambda[j * 2 + 1];
                     Contacts[i].Stick = oldStick[j];
 
                     // If static friction in last frame, use the old contact points
@@ -143,7 +148,7 @@ public class Manifold : Force
         return NumContacts > 0;
     }
 
-    public override void ComputeConstraint(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB, float alpha)
+    public void ComputeConstraint(ref Constraint constraint, bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB, float alpha)
     {
         for (int i = 0; i < NumContacts; i++)
         {
@@ -151,33 +156,33 @@ public class Manifold : Force
             vec3 dpA = bodyA.Position - bodyA.Initial;
             vec3 dpB = bodyB.Position - bodyB.Initial;
 
-            C[i * 2 + 0] = Contacts[i].C0.X * (1 - alpha) + vec3.Dot(Contacts[i].JAn, dpA) + vec3.Dot(Contacts[i].JBn, dpB);
-            C[i * 2 + 1] = Contacts[i].C0.Y * (1 - alpha) + vec3.Dot(Contacts[i].JAt, dpA) + vec3.Dot(Contacts[i].JBt, dpB);
+            constraint.C[i * 2 + 0] = Contacts[i].C0.X * (1 - alpha) + vec3.Dot(Contacts[i].JAn, dpA) + vec3.Dot(Contacts[i].JBn, dpB);
+            constraint.C[i * 2 + 1] = Contacts[i].C0.Y * (1 - alpha) + vec3.Dot(Contacts[i].JAt, dpA) + vec3.Dot(Contacts[i].JBt, dpB);
 
             // Update the friction bounds using the latest lambda values
-            float frictionBound = MathF.Abs(Lambda[i * 2 + 0]) * Friction;
-            fMax[i * 2 + 1] = frictionBound;
-            fMin[i * 2 + 1] = -frictionBound;
+            float frictionBound = MathF.Abs(constraint.Lambda[i * 2 + 0]) * Friction;
+            constraint.fMax[i * 2 + 1] = frictionBound;
+            constraint.fMin[i * 2 + 1] = -frictionBound;
 
             // Check if the contact is sticking, so that on the next frame we can use the old contact points for better static friction handling
-            Contacts[i].Stick = MathF.Abs(Lambda[i * 2 + 1]) < frictionBound && MathF.Abs(Contacts[i].C0.Y) < SolverConfig.STICK_THRESH;
+            Contacts[i].Stick = MathF.Abs(constraint.Lambda[i * 2 + 1]) < frictionBound && MathF.Abs(Contacts[i].C0.Y) < SolverConfig.STICK_THRESH;
         }
     }
 
-    public override void ComputeDerivatives(bool isBodyA, in Body bodyA, in Body bodyB)
+    public void ComputeDerivatives(ref Constraint constraint, bool isBodyA, in Body bodyA, in Body bodyB)
     {
         // Just store precomputed derivatives in J for the desired body
         for (int i = 0; i < NumContacts; i++)
         {
             if (isBodyA)
             {
-                J[i * 2 + 0] = Contacts[i].JAn;
-                J[i * 2 + 1] = Contacts[i].JAt;
+                constraint.J[i * 2 + 0] = Contacts[i].JAn;
+                constraint.J[i * 2 + 1] = Contacts[i].JAt;
             }
             else
             {
-                J[i * 2 + 0] = Contacts[i].JBn;
-                J[i * 2 + 1] = Contacts[i].JBt;
+                constraint.J[i * 2 + 0] = Contacts[i].JBn;
+                constraint.J[i * 2 + 1] = Contacts[i].JBt;
             }
         }
     }

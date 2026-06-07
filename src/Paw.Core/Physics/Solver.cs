@@ -14,7 +14,7 @@ public static class SolverConfig
 }
 
 public readonly record struct BodyRef(uint Index, uint Gen);
-
+public readonly record struct ConstraintRef(uint Index, uint Gen);
 
 public class Solver
 {
@@ -31,11 +31,9 @@ public class Solver
 
         public BodyRef Current { get; private set; }
 
-        object IEnumerator.Current => Current;
+        readonly object IEnumerator.Current => Current;
 
-        public void Dispose()
-        {
-        }
+        public readonly void Dispose() { }
 
         public bool MoveNext()
         {
@@ -47,7 +45,6 @@ public class Solver
             while (_index < _solver._bodies.Length)
             {
                 uint currentIndex = _index++;
-
                 ref Body body = ref _solver._bodies[currentIndex];
 
                 if (body.Used)
@@ -75,17 +72,73 @@ public class Solver
             _solver = solver;
         }
 
-        public IEnumerator<BodyRef> GetEnumerator()
+        public BodyEnumerator GetEnumerator() => new(_solver); // no boxing
+
+        IEnumerator<BodyRef> IEnumerable<BodyRef>.GetEnumerator() => GetEnumerator(); // with boxing
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator(); // with boxing
+    }
+
+    public struct ConstraintEnumerator : IEnumerator<ConstraintRef>
+    {
+        private readonly Solver _solver;
+        private uint _index;
+
+        public ConstraintEnumerator(Solver solver)
         {
-            return new BodyEnumerator(_solver);
+            _solver = solver;
+            Reset();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public ConstraintRef Current { get; private set; }
+
+        readonly object IEnumerator.Current => Current;
+
+        public readonly void Dispose() { }
+
+        public bool MoveNext()
         {
-            return GetEnumerator();
+            if (_index == uint.MaxValue)
+            {
+                _index = 0;
+            }
+
+            while (_index < _solver._constraints.Length)
+            {
+                uint currentIndex = _index++;
+                ref Constraint constraint = ref _solver._constraints[currentIndex];
+
+                if (constraint.Used)
+                {
+                    Current = new ConstraintRef(currentIndex, constraint.Gen);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void Reset()
+        {
+            _index = uint.MaxValue;
         }
     }
 
+    public readonly struct ConstraintEnumerable : IEnumerable<ConstraintRef>
+    {
+        private readonly Solver _solver;
+
+        public ConstraintEnumerable(Solver solver)
+        {
+            _solver = solver;
+        }
+
+        public ConstraintEnumerator GetEnumerator() => new(_solver); // no boxing
+
+        IEnumerator<ConstraintRef> IEnumerable<ConstraintRef>.GetEnumerator() => GetEnumerator(); // with boxing
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator(); // with boxing
+    }
 
 
 
@@ -104,16 +157,18 @@ public class Solver
 
     // state
     private Body[] _bodies = new Body[100];
+    private Constraint[] _constraints = new Constraint[100];
 
-    public readonly List<Force> Forces = [];
+    private Manifold[] _manifolds = new Manifold[100];
+    private Joint[] _joints = new Joint[100];
+    private Spring[] _springs = new Spring[100];
+    private Motor[] _motors = new Motor[100];
 
-    private readonly Dictionary<BodyRef, List<Force>> _bodyForces = []; // temporary
-
-    private readonly List<Force> _forcesToDelete = [];
+    private readonly Dictionary<BodyRef, List<ConstraintRef>> _bodyConstraints = []; // TODO temporary, find solution for mapping
 
 
-
-    public IEnumerable<BodyRef> AliveBodies => new BodyEnumerable(this);
+    public BodyEnumerable AliveBodies => new(this);
+    public ConstraintEnumerable AliveConstraints => new(this);
 
 
     public Solver()
@@ -151,16 +206,21 @@ public class Solver
 
     public void Reset()
     {
-        for (int i = 0; i < _bodies.Length; i++)
+        for (uint i = 0; i < _bodies.Length; i++)
         {
             ref Body b = ref _bodies[i];
 
-            b.Gen = 1; // Start at 1 - default(Body) must be invalid
+            b.Gen = 1; // Start at 1 - default(BodyRef) must be invalid
             b.Used = false;
         }
 
-        //Bodies.Clear();
-        Forces.Clear();
+        for (uint i = 0; i < _constraints.Length; i++)
+        {
+            ref Constraint c = ref _constraints[i];
+
+            c.Gen = 1; // Start at 1 - default(ConstraintRef) must be invalid
+            c.Used = false;
+        }
 
         AddBody(new Vector3(-5, 4, 15f.DegToRad()), new vec2(2, 1));
 
@@ -204,7 +264,6 @@ public class Solver
 
     public BodyRef AddBody(Vector3 position, Vector2 size, Vector3 velocity = default, float density = 1.0f, float friction = 0.5f)
     {
-        // find free slot
         uint index = GetFreeBodyIndex();
 
         ref Body body = ref _bodies[index];
@@ -213,48 +272,34 @@ public class Solver
         body.Gen++;
 
         body.Setup(size: size,
-                               density: density,
-                               friction: friction,
-                               position: position,
-                               velocity: velocity);
+                    density: density,
+                    friction: friction,
+                    position: position,
+                    velocity: velocity);
 
         var bodyRef = new BodyRef(index, body.Gen);
 
         return bodyRef;
     }
 
-    private uint GetFreeBodyIndex()
+    public void RemoveBody(BodyRef bodyRef)
     {
-        for (uint i = 0; i < _bodies.Length; i++)
+        if (!Exists(bodyRef))
+            throw new Exception();
+
+        if (_bodyConstraints.TryGetValue(bodyRef, out List<ConstraintRef>? constraintRefs))
         {
-            if (!_bodies[i].Used)
+            _bodyConstraints.Remove(bodyRef);
+
+            foreach (var constraintRef in constraintRefs)
             {
-                return i;
+                RemoveConstraint(constraintRef);
             }
         }
 
-        throw new Exception("no more free bodies");
-    }
+        ref Body body = ref _bodies[bodyRef.Index];
 
-    public void RemoveBody(BodyRef bodyRef)
-    {
-        //if (!Bodies.Contains(body))
-        //    throw new ArgumentException("Unknown body");
-
-        //Bodies.Remove(body);
-
-        //_forcesToDelete.Clear();
-        //_forcesToDelete.AddRange(body.Forces);
-
-        //foreach (var force in _forcesToDelete)
-        //{
-        //    force.RemoveFromBodies();
-        //    Forces.Remove(force);
-        //}
-
-        //_forcesToDelete.Clear();
-
-        throw new NotImplementedException();
+        body.Used = false;
     }
 
     public Body GetCopyOfBody(BodyRef bodyRef)
@@ -263,14 +308,6 @@ public class Solver
             throw new Exception("body does not exist");
 
         return _bodies[bodyRef.Index];
-    }
-
-    public float GetMass(BodyRef bodyRef)
-    {
-        if (!Exists(bodyRef))
-            throw new Exception("body does not exist");
-
-        return _bodies[bodyRef.Index].Mass;
     }
 
     public void AddForceLocal(BodyRef bodyRef, vec2 localForce)
@@ -283,24 +320,59 @@ public class Solver
         body.AddForceLocal(localForce);
     }
 
-    public Joint AddJoint(BodyRef bodyRefA, BodyRef bodyRefB, vec2 rA, vec2 rB, vec3 stiffness)
+    private ConstraintRef AddManifold(BodyRef bodyRefA, BodyRef bodyRefB)
     {
-        var newJoint = new Joint(bodyRefA, bodyRefB, rA, rB, stiffness);
+        if (!Exists(bodyRefA)) throw new Exception(); // mandatory
+        if (!Exists(bodyRefB)) throw new Exception(); // mandatory
+
+        uint index = GetFreeConstraintIndex();
+
+        ref Constraint constraint = ref _constraints[index];
+        ref Manifold manifold = ref _manifolds[index];
+
+        constraint.Used = true;
+        constraint.Gen++;
 
         bool hasBodyA = bodyRefA != default;
         bool hasBodyB = bodyRefB != default;
         ref Body bodyA = ref _bodies[bodyRefA.Index];
         ref Body bodyB = ref _bodies[bodyRefB.Index];
-        newJoint.OneTimeInit(hasBodyA, hasBodyB, bodyA, bodyB);
 
-        AddForceToBody(bodyRefA, newJoint);
-        AddForceToBody(bodyRefB, newJoint);
-        Forces.Add(newJoint);
+        manifold.OneTimeInit(ref constraint, bodyRefA, bodyRefB, hasBodyA, hasBodyB, bodyA, bodyB);
 
-        return newJoint;
+        var constraintRef = new ConstraintRef(index, constraint.Gen);
+        AddConstraintToBody(bodyRefA, constraintRef);
+        AddConstraintToBody(bodyRefB, constraintRef);
+        return constraintRef;
     }
 
-    public Joint AddStiffAutoJoint(BodyRef bodyRefA, BodyRef bodyRefB)
+    public ConstraintRef AddJoint(BodyRef bodyRefA, BodyRef bodyRefB, vec2 rA, vec2 rB, vec3 stiffness)
+    {
+        if (bodyRefA != default && !Exists(bodyRefA)) throw new Exception(); // optional
+        if (!Exists(bodyRefB)) throw new Exception(); // mandatory
+
+        uint index = GetFreeConstraintIndex();
+
+        ref Constraint constraint = ref _constraints[index];
+        ref Joint joint = ref _joints[index];
+
+        constraint.Used = true;
+        constraint.Gen++;
+
+        bool hasBodyA = bodyRefA != default;
+        bool hasBodyB = bodyRefB != default;
+        ref Body bodyA = ref _bodies[bodyRefA.Index];
+        ref Body bodyB = ref _bodies[bodyRefB.Index];
+
+        joint.OneTimeInit(ref constraint, bodyRefA, bodyRefB, hasBodyA, hasBodyB, bodyA, bodyB, rA, rB, stiffness);
+
+        var constraintRef = new ConstraintRef(index, constraint.Gen);
+        if (hasBodyA) AddConstraintToBody(bodyRefA, constraintRef);
+        AddConstraintToBody(bodyRefB, constraintRef);
+        return constraintRef;
+    }
+
+    public ConstraintRef AddStiffAutoJoint(BodyRef bodyRefA, BodyRef bodyRefB)
     {
         if (!Exists(bodyRefA) || !Exists(bodyRefB))
             throw new Exception("Body does not exist");
@@ -320,7 +392,7 @@ public class Solver
         return AddJoint(bodyRefA, bodyRefB, rA, rB, stiffness);
     }
 
-    public Joint AddWeakAutoJoint(BodyRef bodyRefA, BodyRef bodyRefB)
+    public ConstraintRef AddWeakAutoJoint(BodyRef bodyRefA, BodyRef bodyRefB)
     {
         if (!Exists(bodyRefA) || !Exists(bodyRefB))
             throw new Exception("Body does not exist");
@@ -340,24 +412,33 @@ public class Solver
         return AddJoint(bodyRefA, bodyRefB, rA, rB, stiffness);
     }
 
-    public Spring AddSpring(BodyRef bodyRefA, BodyRef bodyRefB, vec2 rA, vec2 rB, float stiffness)
+    public ConstraintRef AddSpring(BodyRef bodyRefA, BodyRef bodyRefB, vec2 rA, vec2 rB, float stiffness)
     {
-        var newSpring = new Spring(bodyRefA, bodyRefB, rA, rB, stiffness);
+        if (!Exists(bodyRefA)) throw new Exception(); // mandatory
+        if (!Exists(bodyRefB)) throw new Exception(); // mandatory
+
+        uint index = GetFreeConstraintIndex();
+
+        ref Constraint constraint = ref _constraints[index];
+        ref Spring spring = ref _springs[index];
+
+        constraint.Used = true;
+        constraint.Gen++;
 
         bool hasBodyA = bodyRefA != default;
         bool hasBodyB = bodyRefB != default;
         ref Body bodyA = ref _bodies[bodyRefA.Index];
         ref Body bodyB = ref _bodies[bodyRefB.Index];
-        newSpring.OneTimeInit(hasBodyA, hasBodyB, bodyA, bodyB);
 
-        AddForceToBody(bodyRefA, newSpring);
-        AddForceToBody(bodyRefB, newSpring);
-        Forces.Add(newSpring);
+        spring.OneTimeInit(ref constraint, bodyRefA, bodyRefB, hasBodyA, hasBodyB, bodyA, bodyB, rA, rB, stiffness);
 
-        return newSpring;
+        var constraintRef = new ConstraintRef(index, constraint.Gen);
+        AddConstraintToBody(bodyRefA, constraintRef);
+        AddConstraintToBody(bodyRefB, constraintRef);
+        return constraintRef;
     }
 
-    public Spring AddAutoSpring(BodyRef bodyRefA, BodyRef bodyRefB)
+    public ConstraintRef AddAutoSpring(BodyRef bodyRefA, BodyRef bodyRefB)
     {
         vec2 rA = default; // attach at center
         vec2 rB = default;
@@ -367,45 +448,126 @@ public class Solver
         return AddSpring(bodyRefA, bodyRefB, rA, rB, stiffness);
     }
 
-    public Motor AddMotor(BodyRef bodyRefA, BodyRef bodyRefB, float targetSpeed, float maxTorque)
+    public ConstraintRef AddMotor(BodyRef bodyRefA, BodyRef bodyRefB, float targetSpeed, float maxTorque)
     {
-        var newMotor = new Motor(bodyRefA, bodyRefB, targetSpeed, maxTorque);
+        if (bodyRefA != default && !Exists(bodyRefA)) throw new Exception(); // optional
+        if (!Exists(bodyRefB)) throw new Exception(); // mandatory
+
+        uint index = GetFreeConstraintIndex();
+
+        ref Constraint constraint = ref _constraints[index];
+        ref Motor motor = ref _motors[index];
+
+        constraint.Used = true;
+        constraint.Gen++;
 
         bool hasBodyA = bodyRefA != default;
         bool hasBodyB = bodyRefB != default;
         ref Body bodyA = ref _bodies[bodyRefA.Index];
         ref Body bodyB = ref _bodies[bodyRefB.Index];
-        newMotor.OneTimeInit(hasBodyA, hasBodyB, bodyA, bodyB);
 
-        AddForceToBody(bodyRefA, newMotor);
-        AddForceToBody(bodyRefB, newMotor);
-        Forces.Add(newMotor);
+        motor.OneTimeInit(ref constraint, bodyRefA, bodyRefB, hasBodyA, hasBodyB, bodyA, bodyB, targetSpeed, maxTorque);
 
-        return newMotor;
+        var constraintRef = new ConstraintRef(index, constraint.Gen);
+        AddConstraintToBody(bodyRefA, constraintRef);
+        AddConstraintToBody(bodyRefB, constraintRef);
+        return constraintRef;
     }
 
-    public void RemoveForce(Force force)
+    public void RemoveConstraint(ConstraintRef constraintRef)
     {
-        if (!Forces.Contains(force))
-            throw new ArgumentException("Unknown force");
+        if (!Exists(constraintRef))
+            throw new Exception();
 
-        //force.RemoveFromBodies();
+        ref Constraint constraint = ref _constraints[constraintRef.Index];
 
-        if (force.BodyA != default)
-            RemoveForceFromBody(force.BodyA, force);
-        if (force.BodyB != default)
-            RemoveForceFromBody(force.BodyB, force);
+        if (constraint.BodyA != default)
+        {
+            RemoveConstraintFromBody(constraint.BodyA, constraintRef);
+        }
 
-        Forces.Remove(force);
+        if (constraint.BodyB != default)
+        {
+            RemoveConstraintFromBody(constraint.BodyB, constraintRef);
+        }
+
+        constraint.Used = false;
     }
 
-    public bool Pick(vec2 worldPosition, [NotNullWhen(true)] out BodyRef pickedBodyRef, out vec2 pickedBodyLocalPosition)
+    public void SetJointPosA(ConstraintRef constraintRef, vec2 rA)
     {
-        //foreach (var body in Bodies)
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        ref Constraint constraint = ref _constraints[constraintRef.Index];
+
+        if (constraint.Type != ConstraintType.Joint)
+            throw new Exception("not a joint");
+
+        ref Joint joint = ref _joints[constraintRef.Index];
+
+        joint.RA = rA;
+    }
+
+    public Constraint GetCopyOfConstraint(ConstraintRef constraintRef)
+    {
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        return _constraints[constraintRef.Index];
+    }
+
+    public Manifold GetCopyOfManifold(ConstraintRef constraintRef)
+    {
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        if (_constraints[constraintRef.Index].Type != ConstraintType.Manifold)
+            throw new Exception();
+
+        return _manifolds[constraintRef.Index];
+    }
+
+    public Joint GetCopyOfJoint(ConstraintRef constraintRef)
+    {
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        if (_constraints[constraintRef.Index].Type != ConstraintType.Joint)
+            throw new Exception();
+
+        return _joints[constraintRef.Index];
+    }
+
+    public Spring GetCopyOfSpring(ConstraintRef constraintRef)
+    {
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        if (_constraints[constraintRef.Index].Type != ConstraintType.Spring)
+            throw new Exception();
+
+        return _springs[constraintRef.Index];
+    }
+
+    public Motor GetCopyOfMotor(ConstraintRef constraintRef)
+    {
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        if (_constraints[constraintRef.Index].Type != ConstraintType.Motor)
+            throw new Exception();
+
+        return _motors[constraintRef.Index];
+    }
+
+    public bool PickBody(vec2 worldPosition, [NotNullWhen(true)] out BodyRef pickedBodyRef, out vec2 pickedBodyLocalPosition)
+    {
         for (uint i = 0; i < _bodies.Length; i++)
         {
             ref Body body = ref _bodies[i];
-            if (!body.Used) continue;
+            if (!body.Used)
+                continue;
 
             mat2 invRot = mat2.Rotation(-body.Position.Z);
             vec2 localPosition = invRot * (worldPosition - body.Position.XY);
@@ -423,18 +585,6 @@ public class Solver
         pickedBodyRef = default;
         pickedBodyLocalPosition = default;
         return false;
-    }
-
-
-
-    public ref Body TryGetBody(BodyRef bodyRef)
-    {
-        ref Body body = ref _bodies[bodyRef.Index];
-
-        // ?
-
-
-        return ref body;
     }
 
     public bool Exists(BodyRef bodyRef)
@@ -456,18 +606,58 @@ public class Solver
         return true;
     }
 
-    public bool IsConstrainedTo(BodyRef bodyA, BodyRef bodyB)
+    public bool Exists(ConstraintRef constraintRef)
+    {
+        if (constraintRef == default)
+            return false;
+
+        if (constraintRef.Index >= _constraints.Length)
+            return false;
+
+        ref Constraint constraint = ref _constraints[constraintRef.Index];
+
+        if (!constraint.Used)
+            return false;
+
+        if (constraint.Gen != constraintRef.Gen)
+            return false;
+
+        return true;
+    }
+
+    private ref Body GetBody(BodyRef bodyRef)
+    {
+        if (!Exists(bodyRef))
+            throw new ArgumentException("Invalid BodyRef");
+
+        return ref _bodies[bodyRef.Index];
+    }
+
+    private ref Constraint GetConstraint(ConstraintRef constraintRef)
+    {
+        if (!Exists(constraintRef))
+            throw new ArgumentException("Invalid ConstraintRef");
+
+        return ref _constraints[constraintRef.Index];
+    }
+
+    public bool AreConstrained(BodyRef bodyA, BodyRef bodyB)
     {
         if (!Exists(bodyA) || !Exists(bodyB))
+            throw new Exception();
+
+        if (!_bodyConstraints.TryGetValue(bodyA, out List<ConstraintRef>? constraintRefs))
             return false;
 
-        if (!_bodyForces.TryGetValue(bodyA, out List<Force>? forcesA))
-            return false;
-
-        foreach (Force force in forcesA)
+        foreach (var constraintRef in constraintRefs)
         {
-            if (force.BodyA == bodyA && force.BodyB == bodyB ||
-                force.BodyA == bodyB && force.BodyB == bodyA)
+            if (!Exists(constraintRef))
+                throw new Exception();
+
+            ref Constraint constraint = ref _constraints[constraintRef.Index];
+
+            if (constraint.BodyA == bodyA && constraint.BodyB == bodyB ||
+                constraint.BodyA == bodyB && constraint.BodyB == bodyA)
             {
                 return true;
             }
@@ -476,30 +666,36 @@ public class Solver
         return false;
     }
 
-    public void AddForceToBody(BodyRef bodyRef, Force force)
+    private void AddConstraintToBody(BodyRef bodyRef, ConstraintRef constraintRef)
     {
-        if (bodyRef == default)
-            return;
-
         if (!Exists(bodyRef))
-            return;
+            throw new Exception();
 
-        if (!_bodyForces.TryGetValue(bodyRef, out List<Force>? forces))
-        {
-            _bodyForces.Add(bodyRef, forces = new List<Force>());
-        }
+        if (!Exists(constraintRef))
+            throw new Exception();
 
-        forces.Add(force);
+        if (!_bodyConstraints.TryGetValue(bodyRef, out List<ConstraintRef>? constraintRefs))
+            _bodyConstraints.Add(bodyRef, constraintRefs = []);
+
+        constraintRefs.Add(constraintRef);
     }
 
-    public void RemoveForceFromBody(BodyRef bodyRef, Force force)
+    private void RemoveConstraintFromBody(BodyRef bodyRef, ConstraintRef constraintRef)
     {
-        if (!_bodyForces.TryGetValue(bodyRef, out List<Force>? forces))
+        if (!Exists(bodyRef))
+            throw new Exception();
+
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        if (!_bodyConstraints.TryGetValue(bodyRef, out List<ConstraintRef>? constraintRefs))
             return;
 
-        forces.Remove(force);
-    }
+        bool removed = constraintRefs.Remove(constraintRef);
 
+        if (!removed)
+            throw new Exception();
+    }
 
     public void Step()
     {
@@ -508,102 +704,78 @@ public class Solver
         for (uint indexA = 0; indexA < _bodies.Length; indexA++)
         {
             Body bodyA = _bodies[indexA];
-            if (!bodyA.Used) continue;
+            if (!bodyA.Used)
+                continue;
 
             var bodyRefA = new BodyRef(indexA, bodyA.Gen);
 
             for (uint indexB = indexA + 1; indexB < _bodies.Length; indexB++)
             {
                 Body bodyB = _bodies[indexB];
-                if (!bodyB.Used) continue;
+                if (!bodyB.Used)
+                    continue;
 
                 var bodyRefB = new BodyRef(indexB, bodyB.Gen);
 
                 vec2 dp = bodyA.Position.XY - bodyB.Position.XY;
                 float r = bodyA.Radius + bodyB.Radius;
 
-                if (vec2.Dot(dp, dp) < r * r && !IsConstrainedTo(bodyRefA, bodyRefB))
+                if (vec2.Dot(dp, dp) < r * r && !AreConstrained(bodyRefA, bodyRefB))
                 {
-                    var manifold = new Manifold(bodyRefA, bodyRefB);
-
-                    // manifold.OneTimeInit ...
-
-                    //manifold.AddToBodies(bodyA, bodyB);
-                    AddForceToBody(bodyRefA, manifold);
-                    AddForceToBody(bodyRefB, manifold);
-
-                    Forces.Add(manifold);
+                    _ = AddManifold(bodyRefA, bodyRefB);
                 }
             }
         }
 
         // Initialize and warmstart forces
-        _forcesToDelete.Clear();
-        foreach (var force in Forces)
+        for (uint constraintIndex = 0; constraintIndex < _constraints.Length; constraintIndex++)
         {
-            bool hasBodyA = Exists(force.BodyA);
-            bool hasBodyB = Exists(force.BodyB);
+            ref Constraint constraint = ref _constraints[constraintIndex];
+            if (!constraint.Used)
+                continue;
 
-            ref Body bodyA = ref _bodies[force.BodyA.Index];
-            ref Body bodyB = ref _bodies[force.BodyB.Index];
+            var constraintRef = new ConstraintRef(constraintIndex, constraint.Gen);
 
             // Initialization can including caching anything that is constant over the step
-            if (!force.PerTickInit(hasBodyA, hasBodyB, bodyA, bodyB))
+            if (!PerTickConstraintInit(constraintRef))
             {
                 // Force has returned false meaning it is inactive, so remove it from the solver
-                _forcesToDelete.Add(force);
+                RemoveConstraint(constraintRef);
             }
             else
             {
-                for (int i = 0; i < force.Rows; i++)
+                int constraintRows = GetConstraintRows(constraintRef);
+                for (int i = 0; i < constraintRows; i++)
                 {
                     if (PostStabilize)
                     {
                         // With post stabilization, we can reuse the full lambda from the previous step,
                         // and only need to reduce the penalty parameters
-                        force.Penalty[i] = (force.Penalty[i] * Gamma).Clamp(SolverConfig.PENALTY_MIN, SolverConfig.PENALTY_MAX);
+                        constraint.Penalty[i] = (constraint.Penalty[i] * Gamma).Clamp(SolverConfig.PENALTY_MIN, SolverConfig.PENALTY_MAX);
                     }
                     else
                     {
                         // Warmstart the dual variables and penalty parameters (Eq. 19)
                         // Penalty is safely clamped to a minimum and maximum value
-                        force.Lambda[i] = force.Lambda[i] * Alpha * Gamma;
-                        force.Penalty[i] = (force.Penalty[i] * Gamma).Clamp(SolverConfig.PENALTY_MIN, SolverConfig.PENALTY_MAX);
+                        constraint.Lambda[i] = constraint.Lambda[i] * Alpha * Gamma;
+                        constraint.Penalty[i] = (constraint.Penalty[i] * Gamma).Clamp(SolverConfig.PENALTY_MIN, SolverConfig.PENALTY_MAX);
                     }
 
                     // If it's not a hard constraint, we don't let the penalty exceed the material stiffness
-                    force.Penalty[i] = MathF.Min(force.Penalty[i], force.Stiffness[i]);
+                    constraint.Penalty[i] = MathF.Min(constraint.Penalty[i], constraint.Stiffness[i]);
 
-                    force.Penalty[i].VerifyFinite();
-                    force.Lambda[i].VerifyFinite();
+                    constraint.Penalty[i].VerifyFinite();
+                    constraint.Lambda[i].VerifyFinite();
                 }
             }
         }
 
-        foreach (var force in _forcesToDelete)
-        {
-            bool r = Forces.Remove(force);
-            Debug.Assert(r);
-
-            //force.RemoveFromBodies();
-
-            if (force.BodyA != default)
-            {
-                RemoveForceFromBody(force.BodyA, force);
-            }
-            if (force.BodyB != default)
-            {
-                RemoveForceFromBody(force.BodyB, force);
-            }
-        }
-        _forcesToDelete.Clear();
-
         // Initialize and warmstart bodies (ie primal variables)
-        //foreach (var body in Bodies)
         for (uint bodyIndex = 0; bodyIndex < _bodies.Length; bodyIndex++)
         {
             ref Body body = ref _bodies[bodyIndex];
-            if (!body.Used) continue;
+            if (!body.Used)
+                continue;
 
             // Don't let bodies rotate too fast
             body.Velocity.Z = body.Velocity.Z.Clamp(-50f, +50f);
@@ -650,11 +822,11 @@ public class Solver
                 currentAlpha = it < Iterations ? 1.0f : 0.0f;
 
             // Primal update
-            //foreach (var body in Bodies)
             for (uint bodyIndex = 0; bodyIndex < _bodies.Length; bodyIndex++)
             {
                 ref Body body = ref _bodies[bodyIndex];
-                if (!body.Used) continue;
+                if (!body.Used)
+                    continue;
 
                 var bodyRef = new BodyRef(bodyIndex, body.Gen);
 
@@ -668,44 +840,41 @@ public class Solver
                 vec3 rhs = M / (Dt * Dt) * (body.Position - body.Inertial);
 
                 // Iterate over all forces acting on the body
-                //foreach (var force in body.Forces)
-
-                if (!_bodyForces.TryGetValue(new BodyRef(bodyIndex, body.Gen), out List<Force>? forces))
+                if (!_bodyConstraints.TryGetValue(new BodyRef(bodyIndex, body.Gen), out List<ConstraintRef>? constraintRefs))
                 {
-                    forces = [];
+                    constraintRefs = [];
                 }
-
-                foreach (var force in forces)
+                foreach (var constraintRef in constraintRefs)
                 {
-                    bool hasBodyA = Exists(force.BodyA);
-                    bool hasBodyB = Exists(force.BodyB);
+                    Debug.Assert(Exists(constraintRef));
 
-                    ref Body bodyA = ref _bodies[force.BodyA.Index];
-                    ref Body bodyB = ref _bodies[force.BodyB.Index];
+                    ref Constraint constraint = ref _constraints[constraintRef.Index];
 
-                    bool isBodyA = bodyRef == force.BodyA;
+                    if (constraint.BodyA != default) Debug.Assert(Exists(constraint.BodyA));
+                    if (constraint.BodyB != default) Debug.Assert(Exists(constraint.BodyB));
 
                     // Compute constraint and its derivatives
-                    force.ComputeConstraint(hasBodyA, hasBodyB, bodyA, bodyB, currentAlpha);
-                    force.ComputeDerivatives(isBodyA, bodyA, bodyB);
+                    ComputeConstraint(constraintRef, currentAlpha);
+                    ComputeDerivatives(constraintRef, isBodyA: bodyRef == constraint.BodyA);
 
-                    for (int i = 0; i < force.Rows; i++)
+                    int constraintRows = GetConstraintRows(constraintRef);
+                    for (int i = 0; i < constraintRows; i++)
                     {
                         // Use lambda as 0 if it's not a hard constraint
-                        float lambda = float.IsInfinity(force.Stiffness[i]) ? force.Lambda[i] : 0.0f;
+                        float lambda = float.IsInfinity(constraint.Stiffness[i]) ? constraint.Lambda[i] : 0.0f;
 
                         // Compute the clamped force magnitude (Sec 3.2)
-                        float f = (force.Penalty[i] * force.C[i] + lambda).Clamp(force.fMin[i], force.fMax[i]);
+                        float f = (constraint.Penalty[i] * constraint.C[i] + lambda).Clamp(constraint.fMin[i], constraint.fMax[i]);
                         f.VerifyFinite();
 
                         // Compute the diagonally lumped geometric stiffness term (Sec 3.5)
-                        mat3 G = mat3.Diagonal(force.H[i].Column1.Length(),
-                                               force.H[i].Column2.Length(),
-                                               force.H[i].Column3.Length()) * MathF.Abs(f);
+                        mat3 G = mat3.Diagonal(constraint.H[i].Column1.Length(),
+                                               constraint.H[i].Column2.Length(),
+                                               constraint.H[i].Column3.Length()) * MathF.Abs(f);
 
                         // Accumulate force (Eq. 13) and hessian (Eq. 17)
-                        rhs += force.J[i] * f;
-                        lhs += mat3.Outer(force.J[i], force.J[i] * force.Penalty[i]) + G;
+                        rhs += constraint.J[i] * f;
+                        lhs += mat3.Outer(constraint.J[i], constraint.J[i] * constraint.Penalty[i]) + G;
                     }
                 }
 
@@ -719,34 +888,35 @@ public class Solver
             // but make sure not to persist the penalty or lambda updates done during the stabilization iterations for the next frame.
             if (it < Iterations)
             {
-                foreach (var force in Forces)
+                for (uint constraintIndex = 0; constraintIndex < _constraints.Length; constraintIndex++)
                 {
-                    bool hasBodyA = Exists(force.BodyA);
-                    bool hasBodyB = Exists(force.BodyB);
+                    ref Constraint constraint = ref _constraints[constraintIndex];
+                    if (!constraint.Used)
+                        continue;
 
-                    ref Body bodyA = ref _bodies[force.BodyA.Index];
-                    ref Body bodyB = ref _bodies[force.BodyB.Index];
+                    var constraintRef = new ConstraintRef(constraintIndex, constraint.Gen);
 
                     // Compute constraint
-                    force.ComputeConstraint(hasBodyA, hasBodyB, bodyA, bodyB, currentAlpha);
+                    ComputeConstraint(constraintRef, currentAlpha);
 
-                    for (int i = 0; i < force.Rows; i++)
+                    int constraintRows = GetConstraintRows(constraintRef);
+                    for (int i = 0; i < constraintRows; i++)
                     {
                         // Use lambda as 0 if it's not a hard constraint
-                        float lambda = float.IsInfinity(force.Stiffness[i]) ? force.Lambda[i] : 0.0f;
+                        float lambda = float.IsInfinity(constraint.Stiffness[i]) ? constraint.Lambda[i] : 0.0f;
 
                         // Update lambda (Eq 11)
-                        force.Lambda[i] = (force.Penalty[i] * force.C[i] + lambda).Clamp(force.fMin[i], force.fMax[i]);
+                        constraint.Lambda[i] = (constraint.Penalty[i] * constraint.C[i] + lambda).Clamp(constraint.fMin[i], constraint.fMax[i]);
 
                         // Disable the force if it has exceeded its fracture threshold
-                        //if ( MathF.Abs(force.Lambda[i]) >= force.Fracture[i])
-                        //    force.Disable();
+                        //if ( MathF.Abs(constraint.Lambda[i]) >= constraint.Fracture[i])
+                        //    constraint.Disable();
 
                         // Update the penalty parameter and clamp to material stiffness if we are within the force bounds (Eq. 16)
-                        if (force.fMin[i] < force.Lambda[i] && force.Lambda[i] < force.fMax[i])
-                            force.Penalty[i] = MathF.Min(force.Penalty[i] + Beta * MathF.Abs(force.C[i]),
-                                                         MathF.Min(SolverConfig.PENALTY_MAX,
-                                                                   force.Stiffness[i]));
+                        if (constraint.fMin[i] < constraint.Lambda[i] && constraint.Lambda[i] < constraint.fMax[i])
+                            constraint.Penalty[i] = MathF.Min(constraint.Penalty[i] + Beta * MathF.Abs(constraint.C[i]),
+                                                              MathF.Min(SolverConfig.PENALTY_MAX,
+                                                                        constraint.Stiffness[i]));
                     }
                 }
             }
@@ -754,11 +924,11 @@ public class Solver
             // If we are are the final iteration before post stabilization, compute velocities (BDF1)
             if (it == Iterations - 1)
             {
-                //foreach (var body in Bodies)
                 for (uint bodyIndex = 0; bodyIndex < _bodies.Length; bodyIndex++)
                 {
                     ref Body body = ref _bodies[bodyIndex];
-                    if (!body.Used) continue;
+                    if (!body.Used)
+                        continue;
 
                     body.PrevVelocity = body.Velocity;
 
@@ -838,5 +1008,194 @@ public class Solver
         float scale = MathF.Max(MathF.Abs(x), MathF.Abs(y));
 
         return diff <= relTol * scale;
+    }
+
+    private int GetConstraintRows(ConstraintRef constraintRef)
+    {
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        return _constraints[constraintRef.Index].Type switch
+        {
+            ConstraintType.Manifold => _manifolds[constraintRef.Index].Rows,
+            ConstraintType.Joint => Joint.Rows,
+            ConstraintType.Spring => Spring.Rows,
+            ConstraintType.Motor => Motor.Rows,
+            _ => throw new NotImplementedException(),
+        };
+    }
+
+    private bool PerTickConstraintInit(ConstraintRef constraintRef)
+    {
+        if (!Exists(constraintRef))
+            throw new Exception();
+
+        ref Constraint constraint = ref _constraints[constraintRef.Index];
+
+        BodyRef bodyRefA = constraint.BodyA;
+        BodyRef bodyRefB = constraint.BodyB;
+        bool hasBodyA = bodyRefA != default; // TODO != default or Exists()?
+        bool hasBodyB = bodyRefB != default;
+        if (hasBodyA) Debug.Assert(Exists(bodyRefA));
+        if (hasBodyB) Debug.Assert(Exists(bodyRefB));
+        ref Body bodyA = ref _bodies[bodyRefA.Index];
+        ref Body bodyB = ref _bodies[bodyRefB.Index];
+
+        switch (constraint.Type)
+        {
+            case ConstraintType.Manifold:
+            {
+                ref Manifold manifold = ref _manifolds[constraintRef.Index];
+                return manifold.PerTickInit(ref constraint, hasBodyA, hasBodyB, bodyA, bodyB);
+            }
+
+            case ConstraintType.Joint:
+            {
+                ref Joint joint = ref _joints[constraintRef.Index];
+                return joint.PerTickInit(ref constraint, hasBodyA, hasBodyB, bodyA, bodyB);
+            }
+
+            case ConstraintType.Spring:
+            {
+                ref Spring spring = ref _springs[constraintRef.Index];
+                return spring.PerTickInit(ref constraint, hasBodyA, hasBodyB, bodyA, bodyB);
+            }
+
+            case ConstraintType.Motor:
+            {
+                ref Motor motor = ref _motors[constraintRef.Index];
+                return motor.PerTickInit(ref constraint, hasBodyA, hasBodyB, bodyA, bodyB);
+            }
+
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    private void ComputeConstraint(ConstraintRef constraintRef, float alpha)
+    {
+        if (!Exists(constraintRef)) throw new Exception();
+
+        ref Constraint constraint = ref _constraints[constraintRef.Index];
+
+        BodyRef bodyRefA = constraint.BodyA;
+        BodyRef bodyRefB = constraint.BodyB;
+        bool hasBodyA = bodyRefA != default; // TODO != default or Exists()?
+        bool hasBodyB = bodyRefB != default;
+        if (hasBodyA) Debug.Assert(Exists(bodyRefA));
+        if (hasBodyB) Debug.Assert(Exists(bodyRefB));
+        ref Body bodyA = ref _bodies[bodyRefA.Index];
+        ref Body bodyB = ref _bodies[bodyRefB.Index];
+
+        switch (constraint.Type)
+        {
+            case ConstraintType.Manifold:
+            {
+                ref Manifold manifold = ref _manifolds[constraintRef.Index];
+                manifold.ComputeConstraint(ref constraint, hasBodyA, hasBodyB, bodyA, bodyB, alpha);
+                break;
+            }
+
+            case ConstraintType.Joint:
+            {
+                ref Joint joint = ref _joints[constraintRef.Index];
+                joint.ComputeConstraint(ref constraint, hasBodyA, hasBodyB, bodyA, bodyB, alpha);
+                break;
+            }
+
+            case ConstraintType.Spring:
+            {
+                ref Spring spring = ref _springs[constraintRef.Index];
+                spring.ComputeConstraint(ref constraint, hasBodyA, hasBodyB, bodyA, bodyB, alpha);
+                break;
+            }
+
+            case ConstraintType.Motor:
+            {
+                ref Motor motor = ref _motors[constraintRef.Index];
+                motor.ComputeConstraint(ref constraint, hasBodyA, hasBodyB, bodyA, bodyB, alpha);
+                break;
+            }
+
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    private void ComputeDerivatives(ConstraintRef constraintRef, bool isBodyA)
+    {
+        if (!Exists(constraintRef)) throw new Exception();
+
+        ref Constraint constraint = ref _constraints[constraintRef.Index];
+
+        BodyRef bodyRefA = constraint.BodyA;
+        BodyRef bodyRefB = constraint.BodyB;
+        bool hasBodyA = bodyRefA != default; // TODO != default or Exists()?
+        bool hasBodyB = bodyRefB != default;
+        if (hasBodyA) Debug.Assert(Exists(bodyRefA));
+        if (hasBodyB) Debug.Assert(Exists(bodyRefB));
+        ref Body bodyA = ref _bodies[bodyRefA.Index];
+        ref Body bodyB = ref _bodies[bodyRefB.Index];
+
+        switch (constraint.Type)
+        {
+            case ConstraintType.Manifold:
+            {
+                ref Manifold manifold = ref _manifolds[constraintRef.Index];
+                manifold.ComputeDerivatives(ref constraint, isBodyA, bodyA, bodyB);
+                break;
+            }
+
+            case ConstraintType.Joint:
+            {
+                ref Joint joint = ref _joints[constraintRef.Index];
+                joint.ComputeDerivatives(ref constraint, isBodyA, bodyA, bodyB);
+                break;
+            }
+
+            case ConstraintType.Spring:
+            {
+                ref Spring spring = ref _springs[constraintRef.Index];
+                spring.ComputeDerivatives(ref constraint, isBodyA, bodyA, bodyB);
+                break;
+            }
+
+            case ConstraintType.Motor:
+            {
+                ref Motor motor = ref _motors[constraintRef.Index];
+                motor.ComputeDerivatives(ref constraint, isBodyA, bodyA, bodyB);
+                break;
+            }
+
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    private uint GetFreeBodyIndex()
+    {
+        for (uint i = 0; i < _bodies.Length; i++)
+        {
+            if (!_bodies[i].Used)
+            {
+                return i;
+            }
+        }
+
+        throw new Exception("no more free bodies");
+    }
+
+
+    private uint GetFreeConstraintIndex()
+    {
+        for (uint i = 0; i < _constraints.Length; i++)
+        {
+            if (!_constraints[i].Used)
+            {
+                return i;
+            }
+        }
+
+        throw new Exception("no more free constraints");
     }
 }

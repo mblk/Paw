@@ -715,6 +715,9 @@ public class Solver
                 if (!bodyB.Used)
                     continue;
 
+                if (bodyA.Mass == 0f && bodyB.Mass == 0f)
+                    continue;
+
                 var bodyRefB = new BodyRef(indexB, bodyB.Gen);
 
                 vec2 dp = bodyA.Position.XY - bodyB.Position.XY;

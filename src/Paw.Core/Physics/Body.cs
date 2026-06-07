@@ -2,11 +2,10 @@
 
 namespace Paw.Core.Physics;
 
-public class Body
+public struct Body
 {
-    private static int _nextId = 1;
-
-    public int Id;
+    public uint Gen;
+    public bool Used;
 
     public vec3 Position;       // x,y,angle
     public vec3 Initial;
@@ -21,12 +20,14 @@ public class Body
 
     public vec3 ExternalForce;  // N,N,Nm
 
-    public readonly List<Force> Forces = [];
+    //public List<Force> Forces = [];
 
-    public Body(vec2 size, float density, float friction, vec3 position, vec3 velocity)
+    public Body()
     {
-        Id = _nextId++;
+    }
 
+    public void Setup(vec2 size, float density, float friction, vec3 position, vec3 velocity)
+    {
         Position = position;
         Velocity = velocity;
         PrevVelocity = velocity;
@@ -36,21 +37,23 @@ public class Body
         Mass = size.X * size.Y * density;
         Moment = Mass * vec2.Dot(size, size) / 12.0f;
         Radius = (size * 0.5f).Length();
+
+        //Forces = [];
     }
 
-    public bool IsConstrainedTo(Body otherBody)
-    {
-        foreach (var force in Forces)
-        {
-            if (force.BodyA == this && force.BodyB == otherBody ||
-                force.BodyA == otherBody && force.BodyB == this)
-            {
-                return true;
-            }
-        }
+    //public bool IsConstrainedTo(Body otherBody)
+    //{
+    //    foreach (var force in Forces)
+    //    {
+    //        if (force.BodyA.HasValue && force.BodyA.Value.Id == this.Id && force.BodyB.HasValue && force.BodyB.Value.Id == otherBody.Id ||
+    //            force.BodyA.HasValue && force.BodyA.Value.Id == otherBody.Id && force.BodyB.HasValue && force.BodyB.Value.Id == this.Id)
+    //        {
+    //            return true;
+    //        }
+    //    }
 
-        return false;
-    }
+    //    return false;
+    //}
 
     public vec2 LocalToWorld(vec2 local)
     {

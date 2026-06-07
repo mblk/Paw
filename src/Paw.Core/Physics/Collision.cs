@@ -58,7 +58,7 @@ public static class Collision
         public FeaturePair FP;
     }
 
-    public static int Collide(Body bodyA, Body bodyB, Contact[] contacts) // OBB-vs-OBB collision test
+    public static int Collide(in Body bodyA, in Body bodyB, Contact[] contacts) // OBB-vs-OBB collision test
     {
         // Setup
         vec2 hsA = bodyA.Size * 0.5f;

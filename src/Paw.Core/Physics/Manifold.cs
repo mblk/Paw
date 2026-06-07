@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Paw.Core.Physics;
 
-public class Manifold : Force, IPoolable
+public class Manifold : Force
 {
     // Used to track contact features between frames
     [StructLayout(LayoutKind.Explicit)]
@@ -50,14 +50,12 @@ public class Manifold : Force, IPoolable
     public int NumContacts;
     public float Friction;
 
-    public Manifold()
+    public Manifold(BodyRef bodyA, BodyRef bodyB)
     {
         Reset();
-    }
 
-    public new void Reset()
-    {
-        base.Reset();
+        BodyA = bodyA;
+        BodyB = bodyB;
 
         fMax[0] = fMax[2] = 0f;
         fMin[0] = fMin[2] = float.NegativeInfinity;
@@ -71,10 +69,14 @@ public class Manifold : Force, IPoolable
 
     public override int Rows => NumContacts * 2;
 
-    public override bool Initialize()
+    public override void OneTimeInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
+    {
+    }
+
+    public override bool PerTickInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
     {
         // Compute friction
-        Friction = MathF.Sqrt(BodyA!.Friction * BodyB!.Friction);
+        Friction = MathF.Sqrt(bodyA!.Friction * bodyB.Friction);
 
         // Store previous contact state
         ReadOnlySpan<Contact> oldContacts = [Contacts[0], Contacts[1]]; // uses stackalloc
@@ -84,7 +86,7 @@ public class Manifold : Force, IPoolable
         int oldNumContacts = NumContacts;
 
         // Compute new contacts
-        NumContacts = Collision.Collide(BodyA!, BodyB!, Contacts);
+        NumContacts = Collision.Collide(bodyA, bodyB, Contacts);
 
         // Merge old contact data with new contacts
         for (int i = 0; i < NumContacts; i++)
@@ -125,8 +127,8 @@ public class Manifold : Force, IPoolable
                 M22 = tangent.Y,
             };
 
-            vec2 rAW = Contacts[i].RA.Rotate(BodyA!.Position.Z);
-            vec2 rBW = Contacts[i].RB.Rotate(BodyB!.Position.Z);
+            vec2 rAW = Contacts[i].RA.Rotate(bodyA.Position.Z);
+            vec2 rBW = Contacts[i].RB.Rotate(bodyB.Position.Z);
 
             // Precompute the constraint and derivatives at C(x-), since we use a truncated Taylor series for contacts (Sec 4).
             // Note that we discard the second order term, since it is insignificant for contacts
@@ -135,19 +137,19 @@ public class Manifold : Force, IPoolable
             Contacts[i].JAt = new vec3(+basis.M21, +basis.M22, +vec2.Cross(rAW, tangent));
             Contacts[i].JBt = new vec3(-basis.M21, -basis.M22, -vec2.Cross(rBW, tangent));
 
-            Contacts[i].C0 = basis * (BodyA!.Position.XY + rAW - BodyB!.Position.XY - rBW) + new vec2(SolverConfig.COLLISION_MARGIN, 0);
+            Contacts[i].C0 = basis * (bodyA.Position.XY + rAW - bodyB.Position.XY - rBW) + new vec2(SolverConfig.COLLISION_MARGIN, 0);
         }
 
         return NumContacts > 0;
     }
 
-    public override void ComputeConstraint(float alpha)
+    public override void ComputeConstraint(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB, float alpha)
     {
         for (int i = 0; i < NumContacts; i++)
         {
             // Compute the Taylor series approximation of the constraint function C(x) (Sec 4)
-            vec3 dpA = BodyA!.Position - BodyA!.Initial;
-            vec3 dpB = BodyB!.Position - BodyB!.Initial;
+            vec3 dpA = bodyA.Position - bodyA.Initial;
+            vec3 dpB = bodyB.Position - bodyB.Initial;
 
             C[i * 2 + 0] = Contacts[i].C0.X * (1 - alpha) + vec3.Dot(Contacts[i].JAn, dpA) + vec3.Dot(Contacts[i].JBn, dpB);
             C[i * 2 + 1] = Contacts[i].C0.Y * (1 - alpha) + vec3.Dot(Contacts[i].JAt, dpA) + vec3.Dot(Contacts[i].JBt, dpB);
@@ -162,12 +164,12 @@ public class Manifold : Force, IPoolable
         }
     }
 
-    public override void ComputeDerivatives(Body body)
+    public override void ComputeDerivatives(bool isBodyA, in Body bodyA, in Body bodyB)
     {
         // Just store precomputed derivatives in J for the desired body
         for (int i = 0; i < NumContacts; i++)
         {
-            if (body == BodyA)
+            if (isBodyA)
             {
                 J[i * 2 + 0] = Contacts[i].JAn;
                 J[i * 2 + 1] = Contacts[i].JAt;

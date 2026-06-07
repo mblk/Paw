@@ -12,10 +12,10 @@ public class Joint : Force
 
     public override int Rows => 3;
 
-    public Joint(Body? bodyA, Body bodyB, vec2 rA, vec2 rB, vec3 stiffness, float fracture = float.PositiveInfinity)
+    public Joint(BodyRef bodyA, BodyRef bodyB, vec2 rA, vec2 rB, vec3 stiffness, float fracture = float.PositiveInfinity)
     {
         Reset();
-        AddToBodies(bodyA, bodyB);
+        //AddToBodies(bodyA, bodyB);
 
         BodyA = bodyA;
         BodyB = bodyB;
@@ -31,7 +31,21 @@ public class Joint : Force
         fMax[2] = fracture;
         Fracture[2] = fracture;
 
-        if (bodyA is not null)
+        //if (bodyA != default)
+        //{
+        //    RestAngle = bodyA.Position.Z - bodyB.Position.Z;
+        //    TorqueArm = (bodyA.Size + bodyB.Size).LengthSquared(); // why LengthSquared?
+        //}
+        //else
+        //{
+        //    RestAngle = 0f - bodyB.Position.Z;
+        //    TorqueArm = bodyB.Size.LengthSquared();
+        //}
+    }
+
+    public override void OneTimeInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
+    {
+        if (hasBodyA)
         {
             RestAngle = bodyA.Position.Z - bodyB.Position.Z;
             TorqueArm = (bodyA.Size + bodyB.Size).LengthSquared(); // why LengthSquared?
@@ -43,42 +57,42 @@ public class Joint : Force
         }
     }
 
-    public override bool Initialize()
+    public override bool PerTickInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB)
     {
         // Store constraint function at beginnning of timestep C(x-)
         // Note: if bodyA is null, it is assumed that the joint connects a body to the world space position rA
 
-        if (BodyA is not null)
+        if (hasBodyA)
         {
-            vec2 cXY = Transform2D.LocalToWorld(BodyA.Position, RA) - Transform2D.LocalToWorld(BodyB!.Position, RB);
-            float cZ = (BodyA.Position.Z - BodyB!.Position.Z - RestAngle) * TorqueArm;
+            vec2 cXY = Transform2D.LocalToWorld(bodyA.Position, RA) - Transform2D.LocalToWorld(bodyB.Position, RB);
+            float cZ = (bodyA.Position.Z - bodyB.Position.Z - RestAngle) * TorqueArm;
             C0 = new vec3(cXY, cZ);
         }
         else
         {
-            vec2 cXY = RA - Transform2D.LocalToWorld(BodyB!.Position, RB);
-            float cZ = (0f - BodyB!.Position.Z - RestAngle) * TorqueArm;
+            vec2 cXY = RA - Transform2D.LocalToWorld(bodyB.Position, RB);
+            float cZ = (0f - bodyB.Position.Z - RestAngle) * TorqueArm;
             C0 = new vec3(cXY, cZ);
         }
 
         return Stiffness[0] != 0f || Stiffness[1] != 0f || Stiffness[2] != 0f;
     }
 
-    public override void ComputeConstraint(float alpha)
+    public override void ComputeConstraint(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB, float alpha)
     {
         // Compute constraint function at current state C(x)
         vec3 Cn;
 
-        if (BodyA is not null)
+        if (hasBodyA)
         {
-            vec2 cXY = Transform2D.LocalToWorld(BodyA.Position, RA) - Transform2D.LocalToWorld(BodyB!.Position, RB);
-            float cZ = (BodyA.Position.Z - BodyB!.Position.Z - RestAngle) * TorqueArm;
+            vec2 cXY = Transform2D.LocalToWorld(bodyA.Position, RA) - Transform2D.LocalToWorld(bodyB.Position, RB);
+            float cZ = (bodyA.Position.Z - bodyB.Position.Z - RestAngle) * TorqueArm;
             Cn = new vec3(cXY, cZ);
         }
         else
         {
-            vec2 cXY = RA - Transform2D.LocalToWorld(BodyB!.Position, RB);
-            float cZ = (0f - BodyB!.Position.Z - RestAngle) * TorqueArm;
+            vec2 cXY = RA - Transform2D.LocalToWorld(bodyB.Position, RB);
+            float cZ = (0f - bodyB.Position.Z - RestAngle) * TorqueArm;
             Cn = new vec3(cXY, cZ);
         }
 
@@ -92,12 +106,12 @@ public class Joint : Force
         }
     }
 
-    public override void ComputeDerivatives(Body body)
+    public override void ComputeDerivatives(bool isBodyA, in Body bodyA, in Body bodyB)
     {
         // Compute the first and second derivatives for the desired body
-        if (body == BodyA)
+        if (isBodyA)
         {
-            vec2 r = Transform2D.Rotate(BodyA.Position.Z, RA);
+            vec2 r = Transform2D.Rotate(bodyA.Position.Z, RA);
 
             J[0] = new vec3(1.0f, 0.0f, -r.Y);
             J[1] = new vec3(0.0f, 1.0f, r.X);
@@ -109,7 +123,7 @@ public class Joint : Force
         }
         else
         {
-            vec2 r = Transform2D.Rotate(BodyB!.Position.Z, RB);
+            vec2 r = Transform2D.Rotate(bodyB.Position.Z, RB);
 
             J[0] = new vec3(-1.0f, 0.0f, r.Y);
             J[1] = new vec3(0.0f, -1.0f, -r.X);

@@ -35,9 +35,9 @@ public class Program : App
 
         //sceneManager.SetCurrentScene("uitest1");
         //sceneManager.SetCurrentScene("materialbrowser");
-        //sceneManager.SetCurrentScene("physicstest");
+        sceneManager.SetCurrentScene("physicstest");
 
-        sceneManager.SetCurrentScene("menu");
+        //sceneManager.SetCurrentScene("menu");
     }
 #endif
 

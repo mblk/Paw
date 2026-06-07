@@ -46,7 +46,7 @@ public class PhysicsTestScene : Scene
     private readonly BodyType[] _allBodyTypes = Enum.GetValues<BodyType>();
 
 
-    private Body? _selectedBody;
+    private BodyRef _selectedBody;
 
     private Joint? _grabJoint;
     private float _grabStiffness = 1000f;
@@ -58,9 +58,9 @@ public class PhysicsTestScene : Scene
     private int _tickCount = 0;
 
 
-    private readonly Dictionary<Body, (Key, float)> _thrusters = [];
+    private readonly Dictionary<BodyRef, (Key, float)> _thrusters = [];
 
-    private Body? _settingThrusterKeyForBody = null;
+    private BodyRef _settingThrusterKeyForBody;
 
 
 
@@ -114,14 +114,14 @@ public class PhysicsTestScene : Scene
         // Physics related input
         //
 
-        foreach (var body in _solver.Bodies)
+        foreach (BodyRef bodyRef in _solver.AliveBodies)
         {
-            if (!_thrusters.TryGetValue(body, out (Key Key, float Power) thruster))
+            if (!_thrusters.TryGetValue(bodyRef, out (Key Key, float Power) thruster))
                 continue;
 
             if (kb.Get(thruster.Key))
             {
-                body.AddForceLocal(new vec2(0, 1) * 9.81f * body.Mass * thruster.Power);
+                _solver.AddForceLocal(bodyRef, new vec2(0, 1) * 9.81f * _solver.GetMass(bodyRef) * thruster.Power);
             }
         }
 
@@ -144,7 +144,7 @@ public class PhysicsTestScene : Scene
         var kb = context.Input.Keyboard;
 
         bool modeChanged;
-        Body? pickedBody = null;
+        BodyRef pickedBody = default;
 
         //
         // UI related input
@@ -165,7 +165,7 @@ public class PhysicsTestScene : Scene
             if (_selectedBody is { })
             {
                 _solver.RemoveBody(_selectedBody);
-                _selectedBody = null;
+                _selectedBody = default;
             }
         }
 
@@ -173,7 +173,7 @@ public class PhysicsTestScene : Scene
         // UI
         //
 
-        UI.Overlay(Format($"Bodies: {_solver.Bodies.Count}"));
+        //UI.Overlay(Format($"Bodies: {_solver.Bodies.Count}"));
         UI.Overlay(Format($"Forces: {_solver.Forces.Count}"));
         UI.Overlay(Format($"Ticks: {_tickCount}"));
 
@@ -246,7 +246,7 @@ public class PhysicsTestScene : Scene
             }
         }
 
-        if (_selectedBody is not null)
+        if (_selectedBody != default)
         {
             UI.SetNextWindowPositionMode(Core.UI.UI.WindowPositionMode.Right);
             using (UI.BeginWindow(new Vector2(300, 800), "Selected Body"))
@@ -258,7 +258,7 @@ public class PhysicsTestScene : Scene
                     {
                         _thrusters.Remove(_selectedBody);
                     }
-                    _settingThrusterKeyForBody = null;
+                    _settingThrusterKeyForBody = default;
                 }
                 else
                 {
@@ -270,7 +270,7 @@ public class PhysicsTestScene : Scene
                         if (firstPressed.HasValue)
                         {
                             _thrusters.Add(_selectedBody, (firstPressed.Value, 1.0f));
-                            _settingThrusterKeyForBody = null;
+                            _settingThrusterKeyForBody = default;
                         }
                     }
                     else if (UI.Button("Set thruster key"))
@@ -279,27 +279,27 @@ public class PhysicsTestScene : Scene
                     }
                 }
 
-                UI.Label(Format($"Position: {_selectedBody.Position:F3}"));
-                UI.Label(Format($"Velocity: {_selectedBody.Velocity:F3}"));
-                UI.Label(Format($"Size: {_selectedBody.Size:0.###}"));
-                UI.Label(Format($"Mass: {_selectedBody.Mass:0.###}"));
-                UI.Label(Format($"Moment: {_selectedBody.Moment:F3}"));
-                UI.Label(Format($"Friction: {_selectedBody.Friction:F3}"));
-                UI.Label(Format($"Radius: {_selectedBody.Radius:F3}"));
+                //UI.Label(Format($"Position: {_selectedBody.Position:F3}"));
+                //UI.Label(Format($"Velocity: {_selectedBody.Velocity:F3}"));
+                //UI.Label(Format($"Size: {_selectedBody.Size:0.###}"));
+                //UI.Label(Format($"Mass: {_selectedBody.Mass:0.###}"));
+                //UI.Label(Format($"Moment: {_selectedBody.Moment:F3}"));
+                //UI.Label(Format($"Friction: {_selectedBody.Friction:F3}"));
+                //UI.Label(Format($"Radius: {_selectedBody.Radius:F3}"));
 
-                UI.Label(Format($"Forces: {_selectedBody.Forces.Count}"));
+                //UI.Label(Format($"Forces: {_selectedBody.Forces.Count}"));
 
-                foreach (var force in _selectedBody.Forces)
-                {
-                    UI.Label(Format($"Force {force.GetType().Name}"));
+                //foreach (var force in _selectedBody.Forces)
+                //{
+                //    UI.Label(Format($"Force {force.GetType().Name}"));
 
-                    for (int i = 0; i < force.Rows; i++)
-                    {
-                        UI.Label(Format($"C[{i}]: {force.C[i]:F3}"));
-                        UI.Label(Format($"Penalty[{i}]: {force.Penalty[i]:F3}"));
-                        UI.Label(Format($"Lambda[{i}]: {force.Lambda[i]:F3}"));
-                    }
-                }
+                //    for (int i = 0; i < force.Rows; i++)
+                //    {
+                //        UI.Label(Format($"C[{i}]: {force.C[i]:F3}"));
+                //        UI.Label(Format($"Penalty[{i}]: {force.Penalty[i]:F3}"));
+                //        UI.Label(Format($"Lambda[{i}]: {force.Lambda[i]:F3}"));
+                //    }
+                //}
             }
         }
 
@@ -358,7 +358,7 @@ public class PhysicsTestScene : Scene
         // cleanup between modes
         if (modeChanged)
         {
-            _selectedBody = null;
+            _selectedBody = default;
 
             if (_grabJoint is { })
             {
@@ -377,14 +377,14 @@ public class PhysicsTestScene : Scene
                     {
                         _selectedBody = pickedBody;
 
-                        _grabJoint ??= _solver.AddJoint(null, pickedBody, mouseWorld, pickedLocalPos,
+                        _grabJoint ??= _solver.AddJoint(default, pickedBody, mouseWorld, pickedLocalPos,
                                                         new vec3(_grabStiffness, _grabStiffness, _grabLockAngle ? _grabStiffness : 0f));
                     }
                 }
 
                 if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
                 {
-                    _selectedBody = null;
+                    _selectedBody = default;
                 }
 
                 if (_grabJoint is not null)
@@ -413,7 +413,7 @@ public class PhysicsTestScene : Scene
 
                 if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
                 {
-                    _selectedBody = null;
+                    _selectedBody = default;
                 }
 
                 break;
@@ -425,21 +425,21 @@ public class PhysicsTestScene : Scene
                 {
                     if (context.Input.Mouse.WasPressed(MouseButton.Left) && !mouseOverUI)
                     {
-                        if (_selectedBody is null)
+                        if (_selectedBody == default)
                         {
                             _selectedBody = pickedBody;
                         }
                         else if (_selectedBody != pickedBody)
                         {
                             _ = _solver.AddStiffAutoJoint(_selectedBody, pickedBody);
-                            _selectedBody = null;
+                            _selectedBody = default;
                         }
                     }
                 }
 
                 if (context.Input.Mouse.WasPressed(MouseButton.Right) && !mouseOverUI)
                 {
-                    _selectedBody = null;
+                    _selectedBody = default;
                 }
 
                 break;
@@ -480,15 +480,17 @@ public class PhysicsTestScene : Scene
             AddText(new Vector2(0, +10), "+10");
         }
 
-        foreach (var body in _solver.Bodies)
+        foreach (BodyRef bodyRef in _solver.AliveBodies)
         {
+            Body body = _solver.GetCopyOfBody(bodyRef);
+
             vec2 halfSize = body.Size * 0.5f;
             vec2 pBL = body.LocalToWorld(new vec2(-halfSize.X, -halfSize.Y)); // bottom left
             vec2 pTR = body.LocalToWorld(new vec2(+halfSize.X, +halfSize.Y)); // top right
             vec2 pTL = body.LocalToWorld(new vec2(-halfSize.X, +halfSize.Y)); // top left
             vec2 pBR = body.LocalToWorld(new vec2(+halfSize.X, -halfSize.Y)); // bottom right
 
-            var fillColor = (pickedBody == body || _selectedBody == body) ? selectedBodyColor : bodyColor;
+            var fillColor = (pickedBody == bodyRef || _selectedBody == bodyRef) ? selectedBodyColor : bodyColor;
 
             defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = pBL, Color = fillColor, UV = default, });
             defaultWriter.AddVertex(new DynamicGeometryRenderer2D.Vertex() { Position = pBR, Color = fillColor, UV = default, });
@@ -503,7 +505,7 @@ public class PhysicsTestScene : Scene
             defaultWriter.AddLine(pTR, pTL, borderColor);
             defaultWriter.AddLine(pTL, pBL, borderColor);
 
-            if (_thrusters.TryGetValue(body, out (Key Key, float Power) thruster))
+            if (_thrusters.TryGetValue(bodyRef, out (Key Key, float Power) thruster))
             {
                 float ts = MathF.Sqrt(thruster.Power) * 0.5f;
                 vec4 thrusterColor = bodyColor;
@@ -539,9 +541,11 @@ public class PhysicsTestScene : Scene
                 {
                     for (int i = 0; i < manifold.NumContacts; i++)
                     {
+                        Body bodyA = _solver.GetCopyOfBody(manifold.BodyA);
+
                         var contact = manifold.Contacts[i];
                         vec2 n = contact.Normal;
-                        vec2 pA1 = manifold.BodyA!.LocalToWorld(contact.RA);
+                        vec2 pA1 = bodyA.LocalToWorld(contact.RA);
                         vec2 pA2 = pA1 + n * 0.25f;
                         defaultWriter.AddLine(pA1, pA2, new vec4(1, 0, 0, 1));
                     }
@@ -550,20 +554,20 @@ public class PhysicsTestScene : Scene
 
                 case Joint joint when _showJoints:
                 {
-                    vec2 centerA = joint.BodyA is not null
-                        ? joint.BodyA.Position.XY
+                    vec2 centerA = joint.BodyA != default
+                        ? _solver.GetCopyOfBody(joint.BodyA).Position.XY
                         : joint.RA;
 
-                    vec2 centerB = joint.BodyB is not null
-                        ? joint.BodyB.Position.XY
+                    vec2 centerB = joint.BodyB != default
+                        ? _solver.GetCopyOfBody(joint.BodyB).Position.XY
                         : joint.RB;
 
-                    vec2 posA = joint.BodyA is not null
-                        ? joint.BodyA!.LocalToWorld(joint.RA)
+                    vec2 posA = joint.BodyA != default
+                        ? _solver.GetCopyOfBody(joint.BodyA).LocalToWorld(joint.RA)
                         : joint.RA;
 
-                    vec2 posB = joint.BodyB is not null
-                        ? joint.BodyB.LocalToWorld(joint.RB)
+                    vec2 posB = joint.BodyB != default
+                        ? _solver.GetCopyOfBody(joint.BodyB).LocalToWorld(joint.RB)
                         : joint.RB;
 
                     defaultWriter.AddLine(centerA, posA, new vec4(0, 1, 0, 1));
@@ -573,8 +577,8 @@ public class PhysicsTestScene : Scene
 
                 case Spring spring when _showSprings:
                 {
-                    vec2 centerA = spring.BodyA!.Position.XY;
-                    vec2 centerB = spring.BodyB!.Position.XY;
+                    vec2 centerA = _solver.GetCopyOfBody(spring.BodyA).Position.XY;
+                    vec2 centerB = _solver.GetCopyOfBody(spring.BodyB).Position.XY;
 
                     defaultWriter.AddLine(centerA, centerB, new vec4(1, 1, 0, 1));
                     break;

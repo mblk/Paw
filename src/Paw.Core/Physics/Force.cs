@@ -7,8 +7,8 @@ public abstract class Force
 {
     public const int MAX_ROWS = 4;
 
-    public Body? BodyA;
-    public Body? BodyB;
+    public BodyRef BodyA; // optional
+    public BodyRef BodyB; // mandatory
 
     public vec3[] J = new vec3[MAX_ROWS];
     public mat3[] H = new mat3[MAX_ROWS];
@@ -40,38 +40,41 @@ public abstract class Force
         }
     }
 
-    public void AddToBodies(Body? bodyA, Body? bodyB)
-    {
-        if (bodyA is not null)
-        {
-            BodyA = bodyA;
-            bodyA.Forces.Add(this);
-        }
+    //public void AddToBodies(Body? bodyA, Body? bodyB)
+    //{
+    //    if (bodyA is not null)
+    //    {
+    //        BodyA = bodyA;
+    //        bodyA.Forces.Add(this);
+    //    }
 
-        if (bodyB is not null)
-        {
-            BodyB = bodyB;
-            bodyB.Forces.Add(this);
-        }
-    }
+    //    if (bodyB is not null)
+    //    {
+    //        BodyB = bodyB;
+    //        bodyB.Forces.Add(this);
+    //    }
+    //}
 
-    public void RemoveFromBodies()
-    {
-        if (BodyA is not null)
-        {
-            bool r = BodyA.Forces.Remove(this);
-            Debug.Assert(r);
-        }
+    //public void RemoveFromBodies()
+    //{
+    //    if (BodyA is not null)
+    //    {
+    //        bool r = BodyA.Forces.Remove(this);
+    //        Debug.Assert(r);
+    //    }
 
-        if (BodyB is not null)
-        {
-            bool r = BodyB.Forces.Remove(this);
-            Debug.Assert(r);
-        }
-    }
+    //    if (BodyB is not null)
+    //    {
+    //        bool r = BodyB.Forces.Remove(this);
+    //        Debug.Assert(r);
+    //    }
+    //}
 
     public abstract int Rows { get; }
-    public abstract bool Initialize();
-    public abstract void ComputeConstraint(float alpha);
-    public abstract void ComputeDerivatives(Body body);
+
+    public abstract void OneTimeInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB);
+    public abstract bool PerTickInit(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB);
+
+    public abstract void ComputeConstraint(bool hasBodyA, bool hasBodyB, in Body bodyA, in Body bodyB, float alpha);
+    public abstract void ComputeDerivatives(bool isBodyA, in Body bodyA, in Body bodyB);
 }

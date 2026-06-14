@@ -8,6 +8,7 @@
     <File Path="publish.txt" />
   </Folder>
   <Project Path="src/Paw.BindingGen/Paw.BindingGen.csproj" />
+  <Project Path="src/Paw.Core.Tests/Paw.Core.Tests.csproj" />
   <Project Path="src/Paw.Core/Paw.Core.csproj" />
   <Project Path="src/Paw.Demo/Paw.Demo.csproj" />
   <Project Path="src/Paw.Profiler.Linux/Paw.Profiler.Linux.vcxproj" Id="be84ef82-1f1f-4656-8efd-bf552faddb50">

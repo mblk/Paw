@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Paw.Core.Utils;
+namespace Paw.Core.Utils.DataStructures;
 
 public interface IPoolable
 {

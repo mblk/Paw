@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.Diagnostics;
 
 namespace Paw.Core.Utils.DataStructures;
 
@@ -9,6 +10,13 @@ namespace Paw.Core.Utils.DataStructures;
 public class PackedGenPool<T>
     where T : unmanaged
 {
+    // TODO ideas:
+    // private int _version
+    //     increase in Alloc/Free/Clear/etc
+    //     check during access via Enumerator
+
+
+
     private struct Slot
     {
         public bool Used;
@@ -154,6 +162,29 @@ public class PackedGenPool<T>
         }
     }
 
+    public int FreeWhere(Func<T, bool> predicate) // TODO but can this be done without allocating?
+    {
+        int removed = 0;
+
+        // iterate from back to front
+        for (int denseIndex = _count - 1; denseIndex >= 0; denseIndex--)
+        {
+            T data = _dense[denseIndex];
+
+            if (predicate(data))
+            {
+                var slotIndex = _denseToSlot[denseIndex];
+                var slot = _slots[slotIndex];
+                var genIndex = new GenIndex(_poolId, slotIndex, slot.Gen);
+
+                Free(genIndex);
+                removed++;
+            }
+        }
+
+        return removed;
+    }
+
     public bool IsValid(GenIndex index)
     {
         if (index.PoolId != _poolId)
@@ -259,4 +290,67 @@ public class PackedGenPool<T>
 
         return currentSize * 2;
     }
+
+    #region Custom Enumerators
+
+    public readonly struct IndexAndDataEnumerable : IEnumerable<(GenIndex, T)>
+    {
+        private readonly PackedGenPool<T> _pool;
+
+        public IndexAndDataEnumerable(PackedGenPool<T> pool) => _pool = pool;
+
+        public IndexAndDataEnumerator GetEnumerator() => new(_pool);
+        IEnumerator<(GenIndex, T)> IEnumerable<(GenIndex, T)>.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public struct IndexAndDataEnumerator : IEnumerator<(GenIndex, T)>
+    {
+        private readonly PackedGenPool<T> _pool;
+        private int _denseIndex;
+
+        public (GenIndex, T) Current { get; private set; }
+        readonly object IEnumerator.Current => Current;
+
+        public IndexAndDataEnumerator(PackedGenPool<T> pool)
+        {
+            _pool = pool;
+            Reset();
+        }
+
+        public readonly void Dispose() { }
+
+        public bool MoveNext()
+        {
+            _denseIndex++;
+
+            if (_denseIndex >= _pool._count)
+            {
+                return false;
+            }
+
+            var data = _pool._dense[_denseIndex];
+
+            var slotIndex = _pool._denseToSlot[_denseIndex];
+            var slot = _pool._slots[slotIndex];
+            Debug.Assert(slot.Used == true);
+            Debug.Assert(slot.DenseIndex == _denseIndex);
+
+            var genIndex = new GenIndex(_pool._poolId, slotIndex, slot.Gen);
+
+            Current = (genIndex, data);
+
+            return true;
+        }
+
+        public void Reset()
+        {
+            _denseIndex = -1;
+            Current = default;
+        }
+    }
+
+    public IndexAndDataEnumerable GetIndexAndData() => new(this);
+
+    #endregion
 }
